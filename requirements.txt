@@ -1,0 +1,6 @@
+pandas>=2.0
+numpy>=1.24
+matplotlib>=3.7
+mplsoccer>=1.2
+pytest>=7
+requests>=2.31
