@@ -1,0 +1,5 @@
+# disclosure signal: market cap / liquidity (optional, the alert runs without them)
+finance-datareader>=0.9
+pykrx>=1.0
+# trends: Claude extraction (optional, the rule-based extractor needs nothing extra)
+anthropic>=1.0

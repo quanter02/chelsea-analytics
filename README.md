@@ -99,6 +99,20 @@ These analyses use event and shot data only, with no tracking data and no video.
 - [StatsBomb Open Data](https://github.com/statsbomb/open-data): free for non-commercial use with attribution.
 - [Understat](https://understat.com): personal / research use. Understat data is not redistributed here.
 
+## Also in this repo: text and disclosure signals
+
+| Module | Question | Docs |
+|---|---|---|
+| **Buyback signal** (`src/disclosure/`) | Which new buyback filings match the pattern that beat random dates in the 2016–2026 backtest? Daily graded alert (Markdown / Telegram) | [docs/disclosure_signal.md](docs/disclosure_signal.md) |
+| **Text trend report** (`src/trends/`) | What do people in their 20s and 30s talk about, by age band, with confidence intervals? Collect → extract (rules or Claude) → HTML report | [docs/trends_report.md](docs/trends_report.md) |
+
+```bash
+python -m disclosure.alert                # needs DART_API_KEY
+python -m trends.collect youtube --query "20대 연애 고민"   # needs YOUTUBE_API_KEY
+python -m trends.run
+python -m pytest -q tests/test_disclosure.py tests/test_trends.py
+```
+
 ---
 Made by **jw_football_data**, a big-data student in Korea who is learning to turn numbers into match plans.
 Roadmap: [ROADMAP.md](ROADMAP.md)

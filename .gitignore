@@ -1,0 +1,6 @@
+__pycache__/
+# local data (see data/README.md): signals and collected text stay on your machine
+data/cache/
+data/derived/
+data/disclosure/
+data/trends/

@@ -9,6 +9,8 @@ or rebuilt on your own machine.
 | `derived/` | Built from `cache/` | Rebuilt automatically | `cfc.report` |
 | `understat_2026/` | [Understat](https://understat.com), EPL 2026/27 | `python -m cfc.live --fetch` | `cfc.live` |
 | `translation/` | Understat player-seasons, 6 leagues, 2014/15–2025/26 | Collected manually (format below) | `cfc.translation_report` |
+| `disclosure/` | DART Open API | `python -m disclosure.alert` writes daily alerts here | `disclosure.alert` |
+| `trends/` | YouTube Data API, your own datasets | `python -m trends.collect ...` | `trends.run` |
 | `fingerprint/` | Understat team-seasons, Bundesliga 2023/24 | Collected manually (format below) | `cfc.live` (manager fingerprint) |
 
 **Why the Understat files aren't in the repo.** Understat data is free for personal and research use,

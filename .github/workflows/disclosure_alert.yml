@@ -1,0 +1,38 @@
+name: disclosure-alert
+
+# Weekdays 20:10 KST. Off unless the repository variable DISCLOSURE_ALERTS is "on".
+on:
+  schedule:
+    - cron: "10 11 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "YYYY-MM-DD (default: today KST)"
+        required: false
+
+jobs:
+  alert:
+    if: vars.DISCLOSURE_ALERTS == 'on' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pandas numpy requests finance-datareader
+      - name: Build and send alert
+        env:
+          PYTHONPATH: src
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          ALERT_DATE: ${{ inputs.date }}
+        run: |
+          args=""
+          [ -n "$ALERT_DATE" ] && args="--date $ALERT_DATE"
+          [ -n "$TELEGRAM_BOT_TOKEN" ] && args="$args --send"
+          python -m disclosure.alert $args
+      - uses: actions/upload-artifact@v4
+        with:
+          name: disclosure-alert
+          path: data/disclosure/*.md
