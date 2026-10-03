@@ -27,6 +27,20 @@ MODELS = [
     dict(model_id="large",        version="v2", skill=1.5, abstain_t=0.50, gamma=1.00, cost=0.030, latency=2200, from_day=60),
 ]
 
+# 온라인 시나리오 (240일): 공지된 버전 교체 → 조용한 성능 저하 → 신규 모델 등장
+DRIFT_DAYS = 240
+DRIFT_EVENTS = {60: "large v1→v2 (공지된 버전 교체)", 110: "large v2 조용한 성능 저하 (버전 번호 그대로)", 150: "newcomer 등장"}
+DRIFT_MODELS = [
+    dict(model_id="small-fast",   version="v1", skill=0.2, abstain_t=0.00, gamma=0.55, cost=0.002, latency=300),
+    dict(model_id="mid-bold",     version="v1", skill=0.7, abstain_t=0.00, gamma=0.50, cost=0.008, latency=900),
+    dict(model_id="mid-cautious", version="v1", skill=0.6, abstain_t=0.62, gamma=1.00, cost=0.008, latency=900),
+    dict(model_id="large",        version="v1", skill=1.1, abstain_t=0.50, gamma=0.90, cost=0.030, latency=2500, until_day=60),
+    dict(model_id="large",        version="v2", skill=1.5, abstain_t=0.50, gamma=1.00, cost=0.030, latency=2200, from_day=60, until_day=110),
+    # 제공사가 버전 표기 없이 모델을 바꿈: 성능은 떨어졌는데 확신도는 오히려 과장됨
+    dict(model_id="large",        version="v2", skill=0.3, abstain_t=0.00, gamma=0.45, cost=0.030, latency=2200, from_day=110),
+    dict(model_id="newcomer",     version="v1", skill=1.6, abstain_t=0.55, gamma=1.00, cost=0.020, latency=1500, from_day=150),
+]
+
 # 피해 크기 (USD). 실제 변화를 놓치는 것보다 가짜 변화에 데이터를 버리는 쪽이 더 비싸다고 가정.
 LOSS = {
     ("R", "M"): 50, ("R", "N"): 40,
@@ -42,8 +56,11 @@ def loss_matrix() -> pd.DataFrame:
     return pd.DataFrame(rows, columns=["task_type", "true_label", "answer", "loss_usd"])
 
 
-def simulate(n_inputs: int = 3000, days: int = 180, seed: int = 0, label_delay_days: float = 14.0):
-    """(predictions, outcomes) 데이터프레임을 반환. 정답은 지연되어 붙고, 마지막 날 기준 일부는 대기 중."""
+def simulate(n_inputs: int = 3000, days: int = 180, seed: int = 0, label_delay_days: float = 14.0,
+             models: list[dict] | None = None, label_all: bool = False):
+    """(predictions, outcomes) 데이터프레임을 반환. 정답은 지연되어 붙고, 마지막 날 기준 일부는 대기 중.
+    label_all=True 면 기간 밖에 확정될 정답까지 모두 반환 (온라인 시뮬레이션에서 labeled_at 으로 걸러 씀)."""
+    models = MODELS if models is None else models
     rng = np.random.default_rng(seed)
     day = np.sort(rng.uniform(0, days, n_inputs))
     truth = rng.choice(LABELS, n_inputs, p=[0.3, 0.3, 0.4])
@@ -54,7 +71,7 @@ def simulate(n_inputs: int = 3000, days: int = 180, seed: int = 0, label_delay_d
 
     preds = []
     for i in range(n_inputs):
-        for m in MODELS:
+        for m in models:
             if not (m.get("from_day", 0) <= day[i] < m.get("until_day", days + 1)):
                 continue
             q = 1 / 3 + (2 / 3) / (1 + np.exp(-1.5 * (m["skill"] - difficulty[i])))   # 내부 확신 = 맞힐 확률
@@ -76,7 +93,7 @@ def simulate(n_inputs: int = 3000, days: int = 180, seed: int = 0, label_delay_d
     preds = pd.DataFrame(preds)
 
     labeled_day = day + rng.exponential(label_delay_days, n_inputs)
-    done = labeled_day < days
+    done = np.ones(n_inputs, bool) if label_all else labeled_day < days
     outcomes = pd.DataFrame(dict(
         input_hash=np.array(hashes)[done], task_type=TASK, true_label=truth[done],
         label_source=rng.choice(["deploy_log", "human_review", "later_data"], done.sum(), p=[0.4, 0.3, 0.3]),

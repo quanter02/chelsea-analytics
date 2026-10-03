@@ -75,3 +75,16 @@ def test_simulation_is_reproducible_and_overconfidence_shows_in_ece():
     _, scored = P.load(con)
     _, ece = P.calibration(scored)
     assert ece["mid-bold@v1"] > ece["mid-cautious@v1"]          # gamma < 1 인 모델이 과신
+
+
+def test_online_static_keeps_policy_and_adaptive_flags_silent_drift():
+    from llmrel import online
+    p, o = S.simulate(1500, days=S.DRIFT_DAYS, seed=3, models=S.DRIFT_MODELS, label_all=True)
+    con = db.connect()
+    db.insert(con, "predictions", p); db.insert(con, "outcomes", o); db.insert(con, "loss_matrix", S.loss_matrix())
+    _, scored = P.load(con)
+    static, none = online.run(scored, S.HUMAN_REVIEW_USD, "static", end_day=180, step=14)
+    assert static.policy.nunique() == 1 and none.empty
+    _, alarms = online.run(scored, S.HUMAN_REVIEW_USD, "adaptive", end_day=180, step=7)
+    hit = alarms[(alarms.model == "large@v2") & (alarms.direction == "악화")]
+    assert len(hit) and hit.day.min() > 110                      # 성능 저하(110일) 이후에만 경보

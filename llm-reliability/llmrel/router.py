@@ -32,21 +32,27 @@ def latest_versions(scored: pd.DataFrame) -> pd.DataFrame:
     return scored[scored.model_version == scored.model_id.map(last)]
 
 
-def wide(scored: pd.DataFrame) -> dict:
-    """문항 × 모델 배열로 변환 (모든 모델이 답한 문항만)."""
+def wide(scored: pd.DataFrame, weights: pd.Series | None = None) -> dict:
+    """문항 × 모델 배열로 변환. 어떤 모델이 답하지 않은 문항은 그 모델 칸이 비어 있다.
+    weights: 문항별 가중치 (온라인 모드의 망각 계수). 없으면 모두 1."""
     d = latest_versions(scored)
     models = sorted(d.model_id.unique())
-    piv = {c: d.pivot_table(index="input_hash", columns="model_id", values=c, aggfunc="first")[models]
-           for c in ("answer", "confidence", "evidence_ok", "cost_usd")}
-    keep = piv["answer"].dropna().index
+    piv = {c: d.pivot_table(index="input_hash", columns="model_id", values=c, aggfunc="first").reindex(columns=models)
+           for c in ("answer", "confidence", "evidence_ok", "cost_usd", "loss_usd")}
+    keep = piv["answer"].index
     truth = d.drop_duplicates("input_hash").set_index("input_hash").true_label.reindex(keep)
     when = d.groupby("input_hash").created_at.min().reindex(keep)
-    return dict(models=models, truth=truth.to_numpy(), when=when.to_numpy(), index=keep,
-                **{c: piv[c].loc[keep] for c in piv})
+    w = np.ones(len(keep)) if weights is None else weights.reindex(keep).fillna(0).to_numpy()
+    return dict(models=models, truth=truth.to_numpy(), when=when.to_numpy(), index=keep, weight=w,
+                loss=piv.pop("loss_usd"), **piv)
 
 
 def evaluate(W: dict, policy: Policy, loss_lookup: dict, human_usd: float, mask=None) -> dict:
-    n = len(W["truth"]); mask = np.ones(n, bool) if mask is None else mask
+    """정책의 문항당 평균 비용. 정책에 들어간 모델이 모두 답한 문항만 평가한다 (가중 평균)."""
+    n = len(W["truth"]); mask = np.ones(n, bool) if mask is None else mask.copy()
+    for m, _ in policy.steps:
+        mask &= W["answer"][m].notna().to_numpy()
+    w = W.get("weight", np.ones(n))[mask]
     truth = W["truth"][mask]
     decided = np.zeros(mask.sum(), bool); call = np.zeros(mask.sum()); err = np.zeros(mask.sum())
     for m, tau in policy.steps:
@@ -54,13 +60,18 @@ def evaluate(W: dict, policy: Policy, loss_lookup: dict, human_usd: float, mask=
         ok = W["evidence_ok"][m].fillna(0).to_numpy()[mask] == 1
         call += np.where(~decided, W["cost_usd"][m].to_numpy()[mask], 0)
         take = ~decided & (ans != "ABSTAIN") & (conf >= tau) & (ok | (not policy.require_evidence))
-        err += np.where(take, [loss_lookup.get((t, a), 0.0) for t, a in zip(truth, ans)], 0)
+        if "loss" in W:
+            loss = W["loss"][m].fillna(0).to_numpy()[mask]
+        else:
+            loss = np.array([loss_lookup.get((t, a), 0.0) for t, a in zip(truth, ans)])
+        err += np.where(take, loss, 0)
         decided |= take
     human = np.where(~decided, human_usd, 0.0)
     total = call + err + human
-    return dict(policy=str(policy), steps=len(policy.steps), total=total.mean(), error_loss=err.mean(),
-                human_cost=human.mean(), call_cost=call.mean(), human_share=(~decided).mean(),
-                wrong_share=(err > 0).mean())
+    avg = (lambda x: np.average(x, weights=w)) if w.sum() > 0 else (lambda x: np.nan)
+    return dict(policy=str(policy), steps=len(policy.steps), n_eval=int(mask.sum()), weight=float(w.sum()),
+                total=avg(total), error_loss=avg(err), human_cost=avg(human), call_cost=avg(call),
+                human_share=avg(~decided), wrong_share=avg(err > 0))
 
 
 def candidates(models: list[str], max_steps: int = 2):
@@ -75,6 +86,8 @@ def candidates(models: list[str], max_steps: int = 2):
 def search(scored: pd.DataFrame, loss_matrix: pd.DataFrame, human_usd: float, train_share: float = 0.7, max_steps: int = 2):
     """시간 순으로 앞부분에서 정책을 고르고, 뒷부분에서 성능을 확인 (미래 데이터 누설 방지)."""
     W = wide(scored)
+    full = W["answer"].notna().all(axis=1).to_numpy()            # 모든 모델이 답한 문항만 (정책 간 공정 비교)
+    W = {k: (v[full] if isinstance(v, np.ndarray) else v.loc[full] if isinstance(v, pd.DataFrame) else v) for k, v in W.items()}
     lookup = {(r.true_label, r.answer): r.loss_usd for r in loss_matrix.itertuples() if r.answer != "ABSTAIN"}
     cut = np.quantile(pd.to_datetime(W["when"]).astype("int64"), train_share)
     train = pd.to_datetime(W["when"]).astype("int64").to_numpy() <= cut
