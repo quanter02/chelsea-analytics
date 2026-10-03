@@ -88,3 +88,21 @@ def test_online_static_keeps_policy_and_adaptive_flags_silent_drift():
     _, alarms = online.run(scored, S.HUMAN_REVIEW_USD, "adaptive", end_day=180, step=7)
     hit = alarms[(alarms.model == "large@v2") & (alarms.direction == "악화")]
     assert len(hit) and hit.day.min() > 110                      # 성능 저하(110일) 이후에만 경보
+
+
+def test_marginal_utility_of_reports_diminishes():
+    from llmrel import extraction as X
+    p, mus = X.PRIOR_TRUE, []
+    for _ in range(5):                                          # 같은 사건에 '사실' 보고가 계속 쌓임
+        mus.append(X.mu_report(p, 0.8, 1.0)); p = X.update(p, 0.8, True)
+    assert all(a > b for a, b in zip(mus, mus[1:]))
+    assert X.mu_report(0.7, 0.5, 1.0) == pytest.approx(0)       # 동전 던지기 수준 채널은 가치 0
+    assert X.mu_discovery(0.8, 1.0) > X.mu_report(X.PRIOR_TRUE, 0.8, 1.0)   # 첫 발견 > 확인
+
+
+def test_marginal_policy_beats_extract_everything():
+    from llmrel import extraction as X
+    ev, _, vids = X.simulate_feed(0)
+    res = {p.name: X.run(ev, vids, p)[0] for p in X.POLICIES}
+    assert res["한계효용 기준"]["total"] < res["전부 추출, 검증 없음"]["total"]
+    assert res["한계효용 기준"]["extracted"] < res["사건당 앞 2개만 추출"]["extracted"]
