@@ -106,3 +106,17 @@ def test_marginal_policy_beats_extract_everything():
     res = {p.name: X.run(ev, vids, p)[0] for p in X.POLICIES}
     assert res["한계효용 기준"]["total"] < res["전부 추출, 검증 없음"]["total"]
     assert res["한계효용 기준"]["extracted"] < res["사건당 앞 2개만 추출"]["extracted"]
+
+
+def test_football_predictions_use_only_past_results():
+    from llmrel import football as F
+    teams = ["A", "B", "C", "D"]
+    rows = [dict(match_id=str(i), league="X", date=f"2015-08-{i + 1:02d}", kickoff="15:00:00.000",
+                 home=teams[i % 4], away=teams[(i + 1) % 4], hs=i % 3, as_=1, result="H" if i % 3 > 1 else "A" if i % 3 < 1 else "D")
+            for i in range(12)]
+    m = pd.DataFrame(rows); m["ts"] = pd.to_datetime(m.date + " 15:00:00")
+    base = F.predict(m)
+    m2 = m.copy(); m2.loc[11, ["hs", "as_", "result"]] = [9, 0, "H"]           # 마지막 경기 결과만 바꿈
+    alt = F.predict(m2)
+    early = lambda d: d[d.input_hash != "11"].reset_index(drop=True)
+    pd.testing.assert_frame_equal(early(base), early(alt))                       # 앞선 예측은 그대로

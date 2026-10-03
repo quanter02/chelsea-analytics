@@ -24,8 +24,8 @@ STRATEGIES = {
 }
 
 
-def _days(ts: pd.Series) -> pd.Series:
-    return (pd.to_datetime(ts) - pd.Timestamp(START)).dt.total_seconds() / 86400
+def _days(ts: pd.Series, origin=START) -> pd.Series:
+    return (pd.to_datetime(ts) - pd.Timestamp(origin)).dt.total_seconds() / 86400
 
 
 def _input_weights(vis: pd.DataFrame, T: float, half_life: float | None) -> pd.Series | None:
@@ -36,9 +36,10 @@ def _input_weights(vis: pd.DataFrame, T: float, half_life: float | None) -> pd.S
 
 
 def run(scored_all: pd.DataFrame, human_usd: float, strategy: str, start_day: int = 90, end_day: int = 240,
-        step: int = 7, min_weight: float = 100.0, cusum_h: float = 5.0, cusum_k: float = 0.5, discard_back: int = 21):
+        step: int = 7, min_weight: float = 100.0, cusum_h: float = 5.0, cusum_k: float = 0.5, discard_back: int = 21,
+        origin=START):
     cfg = STRATEGIES[strategy]
-    S = scored_all.assign(cday=lambda d: _days(d.created_at), lday=lambda d: _days(d.labeled_at))
+    S = scored_all.assign(cday=lambda d: _days(d.created_at, origin), lday=lambda d: _days(d.labeled_at, origin))
     discard: dict[str, float] = {}           # 모델 → 이 날 이전에 만들어진 예측은 버림
     cus: dict[str, tuple[float, float]] = {}
     policy, rows, alarms = None, [], []
@@ -81,6 +82,8 @@ def run(scored_all: pd.DataFrame, human_usd: float, strategy: str, start_day: in
 
         # 다음 한 주 동안 이 정책을 실제로 썼을 때의 비용 (정답은 시뮬레이션이 알고 있음)
         week = S[(S.cday > T) & (S.cday <= T + step)]
+        if week.empty:                                     # 판단할 일이 없는 주 (예: 리그 휴식기)
+            continue
         real = R.evaluate(R.wide(week), policy, {}, human_usd)
         rows.append(dict(strategy=strategy, day=T, policy=str(policy),
                          first_model=policy.steps[0][0] if policy.steps else "사람",

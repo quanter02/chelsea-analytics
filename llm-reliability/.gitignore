@@ -1,3 +1,4 @@
 *.sqlite
 __pycache__/
 .pytest_cache/
+data_cache/

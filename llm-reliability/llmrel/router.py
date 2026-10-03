@@ -47,10 +47,13 @@ def wide(scored: pd.DataFrame, weights: pd.Series | None = None) -> dict:
                 loss=piv.pop("loss_usd"), **piv)
 
 
-def evaluate(W: dict, policy: Policy, loss_lookup: dict, human_usd: float, mask=None) -> dict:
+def evaluate(W: dict, policy: Policy, loss_lookup: dict, human_usd: float, mask=None, per_input: bool = False) -> dict:
     """정책의 문항당 평균 비용. 정책에 들어간 모델이 모두 답한 문항만 평가한다 (가중 평균)."""
     n = len(W["truth"]); mask = np.ones(n, bool) if mask is None else mask.copy()
     for m, _ in policy.steps:
+        if m not in W["answer"].columns:                         # 이 기간에 답이 없는 모델
+            mask[:] = False
+            break
         mask &= W["answer"][m].notna().to_numpy()
     w = W.get("weight", np.ones(n))[mask]
     truth = W["truth"][mask]
@@ -69,7 +72,8 @@ def evaluate(W: dict, policy: Policy, loss_lookup: dict, human_usd: float, mask=
     human = np.where(~decided, human_usd, 0.0)
     total = call + err + human
     avg = (lambda x: np.average(x, weights=w)) if w.sum() > 0 else (lambda x: np.nan)
-    return dict(policy=str(policy), steps=len(policy.steps), n_eval=int(mask.sum()), weight=float(w.sum()),
+    extra = {"per_input": pd.Series(total, index=np.asarray(W["index"])[mask] if W.get("index") is not None else None)} if per_input else {}
+    return extra | dict(policy=str(policy), steps=len(policy.steps), n_eval=int(mask.sum()), weight=float(w.sum()),
                 total=avg(total), error_loss=avg(err), human_cost=avg(human), call_cost=avg(call),
                 human_share=avg(~decided), wrong_share=avg(err > 0))
 
@@ -87,7 +91,7 @@ def search(scored: pd.DataFrame, loss_matrix: pd.DataFrame, human_usd: float, tr
     """시간 순으로 앞부분에서 정책을 고르고, 뒷부분에서 성능을 확인 (미래 데이터 누설 방지)."""
     W = wide(scored)
     full = W["answer"].notna().all(axis=1).to_numpy()            # 모든 모델이 답한 문항만 (정책 간 공정 비교)
-    W = {k: (v[full] if isinstance(v, np.ndarray) else v.loc[full] if isinstance(v, pd.DataFrame) else v) for k, v in W.items()}
+    W = {k: (v[full] if isinstance(v, (np.ndarray, pd.Index)) else v.loc[full] if isinstance(v, pd.DataFrame) else v) for k, v in W.items()}
     lookup = {(r.true_label, r.answer): r.loss_usd for r in loss_matrix.itertuples() if r.answer != "ABSTAIN"}
     cut = np.quantile(pd.to_datetime(W["when"]).astype("int64"), train_share)
     train = pd.to_datetime(W["when"]).astype("int64").to_numpy() <= cut
