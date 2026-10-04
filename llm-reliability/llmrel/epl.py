@@ -91,11 +91,14 @@ BASE = np.array([0.46, 0.25, 0.29])      # 리그 평균 홈승·무·원정승 
 
 
 def run(df: pd.DataFrame, k: float = 0.05, h: float = 0.25, c: float = 0.8, p: float = -0.2, rho: float = 0.0,
-        w: float = 0.0, g: float = 0.0, mu0: float = 0.3) -> pd.DataFrame:
-    """w: 확률을 리그 평균 쪽으로 당기는 비율 (과신 보정). 0이면 그대로.
-    g: 팀 실력 갱신에 쓰는 '득점'을 실제 골과 xG 중 얼마나 xG로 볼지 (xG가 있는 경기만). 0이면 골만."""
-    """경기 순서대로 예측 → 갱신. 반환: 경기별 [pH, pD, pA] 와 기대골."""
+        w: float = 0.0, g: float = 0.0, cap: float = 99.0, e: float = 1.0, early: int = 6, mu0: float = 0.3) -> pd.DataFrame:
+    """경기 순서대로 예측 → 갱신. 반환: 경기별 [pH, pD, pA] 와 기대골.
+    w: 확률을 리그 평균 쪽으로 당기는 비율 (과신 보정). 0이면 그대로.
+    g: 팀 실력 갱신에 쓰는 '득점'을 실제 골과 xG 중 얼마나 xG로 볼지 (xG가 있는 경기만). 0이면 골만.
+    cap: 한 경기에서 갱신에 반영하는 득점(골·xG 섞은 값)의 상한. 대승·대패 한 경기가 실력 추정을 흔드는 것을 막는다.
+    e: 각 팀의 시즌 첫 early 경기 동안 갱신 속도 배수 (1보다 작으면 시즌 초 결과를 덜 믿음)."""
     a, d = {}, {}
+    played_n: dict = {}
     mu = mu0
     season, teams_prev = None, set()
     out = np.zeros((len(df), 5))
@@ -107,15 +110,20 @@ def run(df: pd.DataFrame, k: float = 0.05, h: float = 0.25, c: float = 0.8, p: f
             for t in teams - set(a):
                 a[t], d[t] = p, p
             season = r.season
+            played_n = {}
         lh = exp(mu + h + a[r.home] - d[r.away]); la = exp(mu + a[r.away] - d[r.home])
         out[i, :3] = (1 - w) * probs(lh, la, rho) + w * BASE; out[i, 3:] = (lh, la)
         if r.played:
             th, ta = r.hg, r.ag
             if g and not np.isnan(r.hxg):                           # 골은 운이 섞이므로 xG를 섞어 실력을 더 안정적으로 갱신
                 th, ta = (1 - g) * r.hg + g * r.hxg, (1 - g) * r.ag + g * r.axg
+            th, ta = min(th, cap), min(ta, cap)
             eh, ea = th - lh, ta - la
-            a[r.home] += k * eh; d[r.away] -= k * eh
-            a[r.away] += k * ea; d[r.home] -= k * ea
+            kh = k * (e if played_n.get(r.home, 0) < early else 1.0)
+            ka = k * (e if played_n.get(r.away, 0) < early else 1.0)
+            a[r.home] += kh * eh; d[r.away] -= ka * eh                 # 각 팀은 자기 경기 수 기준으로 속도 결정
+            a[r.away] += ka * ea; d[r.home] -= kh * ea
+            played_n[r.home] = played_n.get(r.home, 0) + 1; played_n[r.away] = played_n.get(r.away, 0) + 1
             mu += k * 0.05 * (eh + ea)
     res = df.copy()
     res[["pH", "pD", "pA", "xh", "xa"]] = out
@@ -135,11 +143,12 @@ def losses(res: pd.DataFrame, kind: str = "rps") -> np.ndarray:
 
 SPLITS = {"train": SEASONS[:11], "val": ["2021-22", "2022-23", "2023-24"], "test": ["2024-25", "2025-26"], "live": ["2026-27"]}
 GRID = {"k": [0.02, 0.03, 0.04, 0.05, 0.06, 0.08, 0.1], "h": [0.1, 0.15, 0.2, 0.25, 0.3, 0.35],
-        "c": [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], "p": [0.0, -0.1, -0.2, -0.3, -0.4], "rho": [0.0, 0.05, 0.1, 0.15, 0.2, 0.25], "w": [0.0, 0.05, 0.1, 0.15, 0.2, 0.3], "g": [0.0, 0.25, 0.5, 0.75, 1.0]}
-START = dict(k=0.05, h=0.25, c=0.8, p=-0.2, rho=0.0, w=0.0, g=0.0)
+        "c": [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], "p": [0.0, -0.1, -0.2, -0.3, -0.4], "rho": [0.0, 0.05, 0.1, 0.15, 0.2, 0.25], "w": [0.0, 0.05, 0.1, 0.15, 0.2, 0.3], "g": [0.0, 0.25, 0.5, 0.75, 1.0],
+        "cap": [99.0, 4.0, 3.0, 2.5, 2.0], "e": [0.5, 0.75, 1.0, 1.25, 1.5, 2.0]}
+START = dict(k=0.05, h=0.25, c=0.8, p=-0.2, rho=0.0, w=0.0, g=0.0, cap=99.0, e=1.0)
 # 실험대가 고른 설정 (2026-10-04). 골 모드: 이번 시즌 xG 없음 → 지금 사용. xG 모드: 이번 시즌 xG가 쌓이면 사용.
-GOALS_MODE = dict(k=0.04, h=0.25, c=0.8, p=-0.2, rho=0.0, w=0.0, g=0.0)
-XG_MODE = dict(k=0.05, h=0.25, c=0.9, p=-0.2, rho=0.0, w=0.0, g=0.5)
+GOALS_MODE = dict(k=0.04, h=0.25, c=0.8, p=-0.2, rho=0.0, w=0.0, g=0.0, cap=99.0, e=1.0)
+XG_MODE = dict(k=0.05, h=0.25, c=0.9, p=-0.2, rho=0.0, w=0.0, g=0.5, cap=99.0, e=1.0)
 
 
 def current_mode(df: pd.DataFrame, season: str = "2026-27", need: int = 30) -> tuple[str, dict]:

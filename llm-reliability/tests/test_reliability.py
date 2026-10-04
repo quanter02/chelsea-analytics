@@ -285,3 +285,14 @@ def test_understat_parsing():
     df = understat.parse_dates(understat.parse_html(html))
     assert len(df) == 1 and df.home[0] == "Manchester United" and df.away[0] == "Tottenham Hotspur"
     assert abs(df.hxg[0] - 1.83) < 1e-9 and df.date[0] == "2026-10-10"
+
+
+def test_epl_cap_and_early_rules_default_off():
+    from llmrel import epl
+    df = epl.load()
+    base = epl.run(df, **{k: v for k, v in epl.XG_MODE.items() if k not in ("cap", "e")})
+    same = epl.run(df, **epl.XG_MODE)
+    assert abs(epl.losses(base).mean() - epl.losses(same).mean()) < 1e-12   # cap=99, e=1 은 기존과 같음
+    capped = epl.run(df, **{**epl.XG_MODE, "cap": 2.0})
+    t = capped[(capped.date == "2026-10-10") & (capped.home == "Manchester United")].iloc[0]
+    assert t.pH < same[(same.date == "2026-10-10") & (same.home == "Manchester United")].iloc[0].pH
