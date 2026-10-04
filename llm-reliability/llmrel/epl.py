@@ -32,6 +32,26 @@ def norm(team: str) -> str:
     return t[4:] if t.startswith("AFC ") else t
 
 
+FBREF = {"Brighton": "Brighton & Hove Albion", "Huddersfield": "Huddersfield Town", "Manchester Utd": "Manchester United",
+         "Newcastle Utd": "Newcastle United", "Nott'ham Forest": "Nottingham Forest", "Sheffield Utd": "Sheffield United",
+         "Tottenham": "Tottenham Hotspur", "West Brom": "West Bromwich Albion", "West Ham": "West Ham United", "Wolves": "Wolverhampton Wanderers"}
+
+
+def load_xg() -> pd.DataFrame:
+    """fbref 경기별 xG (worldfootballR_data 공개 사본, 2017/18~2025/26 초반). 이름을 openfootball 표기로 맞춘다."""
+    f = D / "fbref_epl_xg.csv"
+    if not f.exists():
+        return pd.DataFrame(columns=["date", "home", "away", "hxg", "axg"])
+    x = pd.read_csv(f)
+    out = pd.DataFrame(dict(date=x.Date, home=x.Home.replace(FBREF), away=x.Away.replace(FBREF), hxg=x.Home_xG, axg=x.Away_xG))
+    m = D / "xg_manual.csv"                                       # 이번 시즌 xG: 경기 후 손으로 추가 (date,home,away,hxg,axg,source)
+    if m.exists():
+        add = pd.read_csv(m)
+        add["home"], add["away"] = add.home.map(norm), add.away.map(norm)
+        out = pd.concat([out, add[["date", "home", "away", "hxg", "axg"]]]).drop_duplicates(["date", "home", "away"], keep="last")
+    return out
+
+
 def load() -> pd.DataFrame:
     rows = []
     for s in SEASONS:
@@ -44,6 +64,8 @@ def load() -> pd.DataFrame:
             rows.append(dict(season=s, date=x["date"], home=norm(x["team1"]), away=norm(x["team2"]),
                              hg=ft[0] if ft else np.nan, ag=ft[1] if ft else np.nan, played=ft is not None))
     df = pd.DataFrame(rows).sort_values(["date"], kind="stable").reset_index(drop=True)
+    xg = load_xg()
+    df = df.merge(xg, on=["date", "home", "away"], how="left")
     df["result"] = np.select([df.hg > df.ag, df.hg == df.ag], ["H", "D"], "A")
     df.loc[~df.played, "result"] = None
     return df
@@ -66,8 +88,9 @@ BASE = np.array([0.46, 0.25, 0.29])      # 리그 평균 홈승·무·원정승 
 
 
 def run(df: pd.DataFrame, k: float = 0.05, h: float = 0.25, c: float = 0.8, p: float = -0.2, rho: float = 0.0,
-        w: float = 0.0, mu0: float = 0.3) -> pd.DataFrame:
-    """w: 확률을 리그 평균 쪽으로 당기는 비율 (과신 보정). 0이면 그대로."""
+        w: float = 0.0, g: float = 0.0, mu0: float = 0.3) -> pd.DataFrame:
+    """w: 확률을 리그 평균 쪽으로 당기는 비율 (과신 보정). 0이면 그대로.
+    g: 팀 실력 갱신에 쓰는 '득점'을 실제 골과 xG 중 얼마나 xG로 볼지 (xG가 있는 경기만). 0이면 골만."""
     """경기 순서대로 예측 → 갱신. 반환: 경기별 [pH, pD, pA] 와 기대골."""
     a, d = {}, {}
     mu = mu0
@@ -84,7 +107,10 @@ def run(df: pd.DataFrame, k: float = 0.05, h: float = 0.25, c: float = 0.8, p: f
         lh = exp(mu + h + a[r.home] - d[r.away]); la = exp(mu + a[r.away] - d[r.home])
         out[i, :3] = (1 - w) * probs(lh, la, rho) + w * BASE; out[i, 3:] = (lh, la)
         if r.played:
-            eh, ea = r.hg - lh, r.ag - la
+            th, ta = r.hg, r.ag
+            if g and not np.isnan(r.hxg):                           # 골은 운이 섞이므로 xG를 섞어 실력을 더 안정적으로 갱신
+                th, ta = (1 - g) * r.hg + g * r.hxg, (1 - g) * r.ag + g * r.axg
+            eh, ea = th - lh, ta - la
             a[r.home] += k * eh; d[r.away] -= k * eh
             a[r.away] += k * ea; d[r.home] -= k * ea
             mu += k * 0.05 * (eh + ea)
@@ -106,11 +132,30 @@ def losses(res: pd.DataFrame, kind: str = "rps") -> np.ndarray:
 
 SPLITS = {"train": SEASONS[:11], "val": ["2021-22", "2022-23", "2023-24"], "test": ["2024-25", "2025-26"], "live": ["2026-27"]}
 GRID = {"k": [0.02, 0.03, 0.04, 0.05, 0.06, 0.08, 0.1], "h": [0.1, 0.15, 0.2, 0.25, 0.3, 0.35],
-        "c": [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], "p": [0.0, -0.1, -0.2, -0.3, -0.4], "rho": [0.0, 0.05, 0.1, 0.15, 0.2, 0.25], "w": [0.0, 0.05, 0.1, 0.15, 0.2, 0.3]}
-START = dict(k=0.05, h=0.25, c=0.8, p=-0.2, rho=0.0, w=0.0)
+        "c": [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], "p": [0.0, -0.1, -0.2, -0.3, -0.4], "rho": [0.0, 0.05, 0.1, 0.15, 0.2, 0.25], "w": [0.0, 0.05, 0.1, 0.15, 0.2, 0.3], "g": [0.0, 0.25, 0.5, 0.75, 1.0]}
+START = dict(k=0.05, h=0.25, c=0.8, p=-0.2, rho=0.0, w=0.0, g=0.0)
+# 실험대가 고른 설정 (2026-10-04). 골 모드: 이번 시즌 xG 없음 → 지금 사용. xG 모드: 이번 시즌 xG가 쌓이면 사용.
+GOALS_MODE = dict(k=0.04, h=0.25, c=0.8, p=-0.2, rho=0.0, w=0.0, g=0.0)
+XG_MODE = dict(k=0.05, h=0.25, c=0.9, p=-0.2, rho=0.0, w=0.0, g=0.5)
 
 
-def make_spec(df: pd.DataFrame, kind: str = "rps"):
+def current_mode(df: pd.DataFrame, season: str = "2026-27", need: int = 30) -> tuple[str, dict]:
+    """이번 시즌 xG가 붙은 경기가 need개 이상이면 xG 모드."""
+    n = int(df[(df.season == season) & df.played].hxg.notna().sum())
+    return ("xG 모드", XG_MODE) if n >= need else ("골 모드", GOALS_MODE)
+
+
+def hide_xg(df: pd.DataFrame, seasons) -> pd.DataFrame:
+    """지정 시즌의 xG를 가림. 지금(이번 시즌 xG 없음)과 같은 조건으로 검증·시험하기 위해."""
+    out = df.copy()
+    out.loc[out.season.isin(seasons), ["hxg", "axg"]] = np.nan
+    return out
+
+
+def make_spec(df: pd.DataFrame, kind: str = "rps", deploy_like: bool = False):
+    """deploy_like=True: 검증·시험 시즌의 xG를 가리고 튜닝 (실제로 쓸 때와 같은 조건)."""
+    if deploy_like:
+        df = hide_xg(df, SPLITS["val"] + SPLITS["test"] + SPLITS["live"])
     from .tuning import Spec
     cache = {}
 

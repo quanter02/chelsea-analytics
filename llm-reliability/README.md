@@ -306,6 +306,15 @@ python tuning_demo.py    # → output/tuning/report.md, data_epl/predictions_<�
 - 최종 규칙 '가장 확실한 개선부터'(개선 95% 하한이 가장 큰 후보, 하한 > 0일 때만 채택)가 세 모델 모두 최고 또는 공동 최고.
 - 튜닝에 안 쓴 2026/27 50경기: 최종 규칙 RPS 0.2017 < 시작 0.2038 < 조금이라도 0.2073 (차이는 아직 불확실).
 
+## EPL 라운드 기록 (Opta 비교)
+
+```bash
+python epl_round.py      # 결과 갱신 → 다음 경기 예측 기록 → 채점 → output/epl_round/report.md
+```
+
+- xG: fbref 경기별 xG(worldfootballR_data 공개 사본)는 2017/18~2025/26 초반까지만 있음. 지금과 같은 조건(검증·시험 시즌 xG 가림)으로 튜닝하면 xG는 채택되지 않음 → **골 모드** 사용. 이번 시즌 xG를 `data_epl/xg_manual.csv`에 넣으면 30경기부터 **xG 모드**(xG 비중 50%, 시험 개선 +0.0032)로 자동 전환.
+- Opta 비교: `data_epl/benchmark_opta.csv`에 같은 경기의 Opta 확률을 추가하면, 결과가 나온 뒤 두 예측을 같은 경기끼리 채점.
+
 ## 실제 로그에 적용하려면
 
 1. **`predictions`에 기록하기**: LLM 호출 래퍼에서 `predictions` 행을 남깁니다. 답 형식에 `ABSTAIN`(판단 불가)을 포함시키고, 확신도와 인용 근거를 함께 요구합니다.

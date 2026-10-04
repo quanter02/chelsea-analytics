@@ -260,3 +260,14 @@ def test_epl_names_and_probabilities():
     assert epl.norm("AFC Bournemouth") == "Bournemouth"
     p = epl.probs(1.5, 1.1, 0.1)
     assert abs(p.sum() - 1) < 1e-9 and p[0] > p[2]
+
+
+def test_epl_xg_modes():
+    import numpy as np
+    from llmrel import epl
+    df = epl.load()
+    assert df.hxg.notna().sum() > 2900                      # fbref xG 2017/18~ 연결
+    h = epl.hide_xg(df, ["2024-25"])
+    assert h[h.season == "2024-25"].hxg.isna().all() and h[h.season == "2023-24"].hxg.notna().any()
+    mode, p = epl.current_mode(df)
+    assert (mode == "골 모드") == (p is epl.GOALS_MODE)
