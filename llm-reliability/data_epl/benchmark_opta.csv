@@ -1,0 +1,3 @@
+date,home,away,source,pH,pD,pA,recorded_on,note
+2026-10-10,Manchester United,Tottenham Hotspur,Opta (사용자 제공),0.559,0.226,0.215,2026-10-04,킥오프 한국시간 10/11 01:30
+2026-10-10,Manchester United,Tottenham Hotspur,우리 모델 (최종 규칙),0.667,0.192,0.141,2026-10-04,data_epl/predictions_2026-10-04.csv

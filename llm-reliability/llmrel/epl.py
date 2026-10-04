@@ -62,8 +62,12 @@ def probs(lh: float, la: float, rho: float) -> np.ndarray:
     return np.array([np.tril(m, -1).sum(), np.trace(m), np.triu(m, 1).sum()])   # 홈승, 무, 원정승
 
 
+BASE = np.array([0.46, 0.25, 0.29])      # 리그 평균 홈승·무·원정승 (2010/11~2020/21 학습 구간)
+
+
 def run(df: pd.DataFrame, k: float = 0.05, h: float = 0.25, c: float = 0.8, p: float = -0.2, rho: float = 0.0,
-        mu0: float = 0.3) -> pd.DataFrame:
+        w: float = 0.0, mu0: float = 0.3) -> pd.DataFrame:
+    """w: 확률을 리그 평균 쪽으로 당기는 비율 (과신 보정). 0이면 그대로."""
     """경기 순서대로 예측 → 갱신. 반환: 경기별 [pH, pD, pA] 와 기대골."""
     a, d = {}, {}
     mu = mu0
@@ -78,7 +82,7 @@ def run(df: pd.DataFrame, k: float = 0.05, h: float = 0.25, c: float = 0.8, p: f
                 a[t], d[t] = p, p
             season = r.season
         lh = exp(mu + h + a[r.home] - d[r.away]); la = exp(mu + a[r.away] - d[r.home])
-        out[i, :3] = probs(lh, la, rho); out[i, 3:] = (lh, la)
+        out[i, :3] = (1 - w) * probs(lh, la, rho) + w * BASE; out[i, 3:] = (lh, la)
         if r.played:
             eh, ea = r.hg - lh, r.ag - la
             a[r.home] += k * eh; d[r.away] -= k * eh
@@ -102,8 +106,8 @@ def losses(res: pd.DataFrame, kind: str = "rps") -> np.ndarray:
 
 SPLITS = {"train": SEASONS[:11], "val": ["2021-22", "2022-23", "2023-24"], "test": ["2024-25", "2025-26"], "live": ["2026-27"]}
 GRID = {"k": [0.02, 0.03, 0.04, 0.05, 0.06, 0.08, 0.1], "h": [0.1, 0.15, 0.2, 0.25, 0.3, 0.35],
-        "c": [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], "p": [0.0, -0.1, -0.2, -0.3, -0.4], "rho": [0.0, 0.05, 0.1, 0.15, 0.2, 0.25]}
-START = dict(k=0.05, h=0.25, c=0.8, p=-0.2, rho=0.0)
+        "c": [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], "p": [0.0, -0.1, -0.2, -0.3, -0.4], "rho": [0.0, 0.05, 0.1, 0.15, 0.2, 0.25], "w": [0.0, 0.05, 0.1, 0.15, 0.2, 0.3]}
+START = dict(k=0.05, h=0.25, c=0.8, p=-0.2, rho=0.0, w=0.0)
 
 
 def make_spec(df: pd.DataFrame, kind: str = "rps"):
@@ -126,3 +130,21 @@ def baseline(df: pd.DataFrame, split: str, kind: str = "rps") -> np.ndarray:
     r = df[df.season.isin(SPLITS[split])].copy()
     r[["pH", "pD", "pA"]] = f
     return losses(r, kind)
+
+
+def score_benchmark(path: str | Path, df: pd.DataFrame | None = None) -> pd.DataFrame:
+    """비교 기록(우리 모델 vs Opta 등)을 실제 결과로 채점. 결과 없는 경기는 pending."""
+    df = load() if df is None else df
+    b = pd.read_csv(path)
+    m = b.merge(df[["date", "home", "away", "result", "played"]], on=["date", "home", "away"], how="left")
+    y = m.result.map({"H": 0, "D": 1, "A": 2})
+    P = m[["pH", "pD", "pA"]].to_numpy()
+    rps = []
+    for i in range(len(m)):
+        if pd.isna(y.iloc[i]):
+            rps.append(np.nan); continue
+        o = np.zeros(3); o[int(y.iloc[i])] = 1
+        rps.append(((np.cumsum(P[i])[:2] - np.cumsum(o)[:2]) ** 2).sum() / 2)
+    m["rps"] = rps
+    m["status"] = np.where(m.rps.isna(), "pending", "scored")
+    return m
