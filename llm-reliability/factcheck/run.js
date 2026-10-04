@@ -3,7 +3,7 @@ const fs = require("fs"), path = require("path");
 const FC = require("./engine.js");
 const ref = JSON.parse(fs.readFileSync(path.join(__dirname, "reference.json"), "utf8"));
 const text = fs.readFileSync(process.argv[2], "utf8");
-const out = FC.run(text, ref);
+const tol = process.argv.find((a) => a.startsWith("--tol=")); const out = FC.run(text, ref, tol ? { tol: parseFloat(tol.slice(6)) / 100 } : undefined);
 if (process.argv.includes("--json")) { console.log(JSON.stringify(out.claims)); process.exit(0); }
 for (const c of out.claims) console.log(`[${c.verdict}] ${c.country || "?"} ${c.year || "?"} ${c.name} "${c.raw}" → ${c.detail}`);
 console.log(out.summary);

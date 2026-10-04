@@ -3,7 +3,8 @@
  * 1) 문장 나누기 → 나라·연도는 앞 문장에서 이어받음
  * 2) 숫자 + 단위를 찾고, 그 앞의 가장 가까운 지표 단어에 붙임
  * 3) 정답 저장소와 대조해 판정
- *      일치 / 기준 다름(잠정·확정 등) / 연도 혼동 / 나라 혼동 / 틀림 / 확인 불가(공표 전) / 대상 아님
+ *      일치 / 근사 일치(허용 오차 이내) / 기준 다름(잠정·확정 등) / 연도 혼동 / 나라 혼동 / 틀림 / 확인 불가(공표 전) / 대상 아님
+ *    허용 오차(기본 수준 값 1%, 증감률 0.5%p) 안이면 오류로 표시하지 않는다
  * 4) 제어기: 대조할 가치가 없는 문장(나라·지표를 모름)은 조회하지 않고 '대상 아님'으로 기권
  */
 (function (root, factory) {
@@ -142,7 +143,7 @@
     return xs.find((r) => r.basis.startsWith(basisPref)) || xs[0];
   }
 
-  function check(claims, ref) {
+  function check(claims, ref, opt = { tol: 0.01, tolPp: 0.5 }) {
     const ix = index(ref);
     return claims.map((c) => {
       const res = { ...c, name: NAME[c.indicator], verdict: "", detail: "", correct: null, source: "" };
@@ -181,17 +182,29 @@
       }
       const hit = near(here);
       const main = here.find((x) => x.r.basis.startsWith("확정")) || here[0];
+      // 허용 오차: 수준 값은 상대 오차(기본 1%), 증감률은 %p (기본 0.5%p)
+      const gap = c.kind === "yoy" ? Math.abs(c.value - main.v) : Math.abs(c.value / main.v - 1);
+      const within = c.kind === "yoy" ? gap <= opt.tolPp : gap <= opt.tol;
+      const gapTxt = c.kind === "yoy" ? `${gap.toFixed(1)}%p` : `${(gap * 100).toFixed(gap < 0.01 ? 2 : 1)}%`;
+      const tolTxt = c.kind === "yoy" ? `${opt.tolPp}%p` : `${(opt.tol * 100).toFixed(1).replace(/\.0$/, "")}%`;
       if (hit) {
         const hasFinal = here.some((x) => x.r.basis.startsWith("확정"));
-        const ok = hit.r.basis.startsWith("확정") || !hasFinal;
-        return { ...res, verdict: ok ? "일치" : "기준 다름", correct: main.v, source: hit.r.source,
-                 detail: res.detail + (ok ? `${y}년 ${fmt(hit.v, c.indicator, c.kind)} (${hit.r.basis}${hasFinal ? "" : ", 확정치 나오면 다시 확인"})`
-                   : `${hit.r.basis} 값과 일치. ${main.r.basis.startsWith("확정") ? `확정치는 ${fmt(main.v, c.indicator, c.kind)}` : "확정치는 아직 없음"}`) };
+        if (hit.r.basis.startsWith("확정") || !hasFinal)
+          return { ...res, verdict: "일치", correct: main.v, source: hit.r.source,
+                   detail: res.detail + `${y}년 ${fmt(hit.v, c.indicator, c.kind)} (${hit.r.basis}${hasFinal ? "" : ", 확정치 나오면 다시 확인"})` };
+        return { ...res, verdict: within ? "일치" : "기준 다름", correct: main.v, source: hit.r.source,
+                 detail: res.detail + `${hit.r.basis} 값과 같음. 확정치 ${fmt(main.v, c.indicator, c.kind)} 대비 ${gapTxt} 차이` + (within ? ` (허용 ${tolTxt} 이내)` : "") };
+      }
+      if (within) {                                              // 반올림·대략적 표현: 오류로 보지 않음
+        const sameOther = [-1, 1].map((dy) => ({ dy, o: near(candidates(y + dy)) })).find((x) => x.o);
+        return { ...res, verdict: "근사 일치", correct: main.v, source: main.r.source,
+                 detail: res.detail + `공식 ${y}년 ${fmt(main.v, c.indicator, c.kind)} 대비 ${gapTxt} 차이 (허용 ${tolTxt} 이내)` +
+                   (sameOther ? `. 참고: ${y + sameOther.dy}년 값과 정확히 같음` : "") };
       }
       for (const dy of [-1, 1, -2]) {                            // 다른 해의 값을 말했나
         const o = near(candidates(y + dy));
         if (o) return { ...res, verdict: "연도 혼동", correct: main.v, source: main.r.source,
-                        detail: res.detail + `${y + dy}년 값(${fmt(o.v, c.indicator, c.kind)})과 같음. ${y}년은 ${fmt(main.v, c.indicator, c.kind)}` };
+                        detail: res.detail + `${y + dy}년 값(${fmt(o.v, c.indicator, c.kind)})과 같음. ${y}년은 ${fmt(main.v, c.indicator, c.kind)} (${gapTxt} 차이)` };
       }
       const other = ix[`${c.country === "KR" ? "JP" : "KR"}|${c.indicator}`];
       if (other) {
@@ -199,20 +212,17 @@
         if (o) return { ...res, verdict: "나라 혼동", correct: main.v, source: main.r.source,
                         detail: res.detail + `${o.country === "KR" ? "한국" : "일본"} 값과 같음. ${c.country === "KR" ? "한국" : "일본"} ${y}년은 ${fmt(main.v, c.indicator, c.kind)}` };
       }
-      const rel = Math.abs(c.value / main.v - 1);
-      if (c.kind === "level" && rel < 0.002) return { ...res, verdict: "거의 일치", correct: main.v, source: main.r.source,
-        detail: res.detail + `공식 ${y}년 ${fmt(main.v, c.indicator, c.kind)} (${main.r.basis})와 ${(rel * 100).toFixed(2)}% 차이. 잠정치·반올림 값일 수 있음` };
-      const diff = c.kind === "yoy" ? `${(c.value - main.v).toFixed(1)}%p` : `${((c.value / main.v - 1) * 100).toFixed(1)}%`;
       return { ...res, verdict: "틀림", correct: main.v, source: main.r.source,
-               detail: res.detail + `공식 ${y}년 ${fmt(main.v, c.indicator, c.kind)} (${main.r.basis}), 차이 ${diff}` };
+               detail: res.detail + `공식 ${y}년 ${fmt(main.v, c.indicator, c.kind)} (${main.r.basis}), 차이 ${gapTxt} (허용 ${tolTxt} 초과)` };
     });
   }
 
-  function run(text, ref) {
-    const r = check(extract(text), ref);
+  const DEFAULT = { tol: 0.01, tolPp: 0.5 };
+  function run(text, ref, opt) {
+    const r = check(extract(text), ref, { ...DEFAULT, ...(opt || {}) });
     const count = (v) => r.filter((x) => x.verdict === v).length;
-    return { claims: r, summary: { total: r.length, ok: count("일치"), basis: count("기준 다름"), year: count("연도 혼동"),
-             country: count("나라 혼동"), near: count("거의 일치"), wrong: count("틀림"), unknown: count("확인 불가"), skipped: count("대상 아님") }, fmt };
+    return { claims: r, summary: { total: r.length, ok: count("일치"), near: count("근사 일치"), basis: count("기준 다름"), year: count("연도 혼동"),
+             country: count("나라 혼동"), wrong: count("틀림"), unknown: count("확인 불가"), skipped: count("대상 아님") }, fmt };
   }
 
   return { extract, check, run, fmt, NAME };
