@@ -196,8 +196,8 @@ python collect_demo.py     # 출처 점검 + 저장된 검색 결과 처리 → 
 
 | 출처 | 환경 변수 | 2026-10-04 상태 |
 |---|---|---|
-| KOSIS OpenAPI | `KOSIS_API_KEY` | 서버 연결됨 · **키 인증 실패** ("유효하지 않은 인증KEY") |
-| e-Stat API | `ESTAT_APP_ID` | 서버 연결됨 · **키 인증 실패** (값 45자, 보통 앱 ID는 40자) |
+| KOSIS OpenAPI | `KOSIS_API_KEY` | **정상** (환경 변수 값 앞에 불필요한 글자 5자 → `clean_key`가 걸러서 사용) |
+| e-Stat API | `ESTAT_APP_ID` | **정상** (같은 원인, 걸러서 사용 · 혼인 관련 통계표 269개 검색됨) |
 | YouTube Data API | `YOUTUBE_API_KEY` | 서버 연결됨 · 키 없음 |
 | 웹 검색 (세션 도구) | 없음 | 작동 · 결과를 `data_collect/*.json`으로 저장 |
 

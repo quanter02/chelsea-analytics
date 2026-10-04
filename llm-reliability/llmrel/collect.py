@@ -31,6 +31,31 @@ def _curl_json(url: str, params: dict, timeout: int = 30) -> tuple[int, str]:
     return int(code or 0), body
 
 
+def clean_key(name: str) -> str | None:
+    """환경 변수의 키에서 앞뒤에 잘못 붙은 글자를 걸러낸다 (예: 붙여넣을 때 섞인 접두어).
+    KOSIS 키는 base64 44자, e-Stat 앱 ID는 16진수 40자 형식을 찾아 그 부분만 쓴다. 형식을 못 찾으면 원래 값."""
+    import base64
+    v = (os.environ.get(name) or "").strip().strip("\"'")
+    if not v:
+        return None
+    if name == "ESTAT_APP_ID":
+        m = re.search(r"[0-9a-f]{40}", v)
+        return m[0] if m else v
+    if name == "KOSIS_API_KEY" and len(v) % 4:
+        for i in range(len(v) - 43):
+            try:
+                if re.fullmatch(rb"[0-9a-fA-F]{32}", base64.b64decode(v[i:i + 44], validate=True)):
+                    return v[i:i + 44]
+            except Exception:
+                pass
+    return v
+
+
+def key_note(name: str) -> str:
+    raw = (os.environ.get(name) or "").strip()
+    return "" if clean_key(name) == raw else f" · 환경 변수 값에 불필요한 글자 {len(raw) - len(clean_key(name) or '')}자가 있어 걸러서 사용"
+
+
 @dataclass
 class Health:
     source: str
@@ -40,7 +65,7 @@ class Health:
 
 
 def check_kosis() -> Health:
-    key = os.environ.get("KOSIS_API_KEY")
+    key = clean_key("KOSIS_API_KEY")
     if not key:
         return Health("KOSIS", False, "키 없음", "환경 변수 KOSIS_API_KEY 필요")
     for _ in range(2):                                         # 이 환경에서 간헐적으로 연결이 끊김
@@ -52,11 +77,11 @@ def check_kosis() -> Health:
         return Health("KOSIS", False, "연결 실패", "응답 없음")
     if '"err"' in body:
         return Health("KOSIS", False, "인증 실패", json.loads(body).get("errMsg", body)[:80])
-    return Health("KOSIS", True, "정상", f"HTTP {code}")
+    return Health("KOSIS", True, "정상", f"HTTP {code}" + key_note("KOSIS_API_KEY"))
 
 
 def check_estat() -> Health:
-    app = os.environ.get("ESTAT_APP_ID")
+    app = clean_key("ESTAT_APP_ID")
     if not app:
         return Health("e-Stat", False, "키 없음", "환경 변수 ESTAT_APP_ID 필요")
     code, body = _curl_json("https://api.e-stat.go.jp/rest/3.0/app/json/getStatsList",
@@ -66,7 +91,7 @@ def check_estat() -> Health:
     res = json.loads(body).get("GET_STATS_LIST", {}).get("RESULT", {})
     if res.get("STATUS") != 0:
         return Health("e-Stat", False, "인증 실패", res.get("ERROR_MSG", "")[:80])
-    return Health("e-Stat", True, "정상", f"HTTP {code}")
+    return Health("e-Stat", True, "정상", f"HTTP {code}" + key_note("ESTAT_APP_ID"))
 
 
 def check_youtube() -> Health:
