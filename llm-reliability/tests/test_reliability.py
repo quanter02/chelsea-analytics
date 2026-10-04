@@ -168,3 +168,19 @@ def test_forecast_no_lookahead_and_scoring():
                        dict(country="KR", indicator="marriage_rate", sex="F", age_band="25-29", year=2031, forecast=10.0, lo=9.0, hi=11.0)])
     s = F.score_forecasts(fc, d)
     assert list(s.status) == ["resolved", "pending"]
+
+
+def test_regional_ratio_decomposes():
+    import numpy as np
+    import pandas as pd
+    from llmrel import regional as R
+    rows = []
+    for code, (m, f, um, uf) in {"00": (300, 250, 200, 140), "11010": (100, 110, 70, 75), "32510": (200, 140, 130, 65)}.items():
+        for sex, tot, un in (("M", m, um), ("F", f, uf)):
+            rows += [dict(year=2025, code=code, name=code, sex=sex, kind="total", age_band="30-34", value=tot),
+                     dict(year=2025, code=code, name=code, sex=sex, kind="unmarried", age_band="30-34", value=un)]
+    t = R.region_table(pd.DataFrame(rows), 2025, ["30-34"])
+    assert np.allclose(t.unmarried_ratio, t.pop_ratio * t.mrate_ratio)
+    d = R.decompose(t)
+    assert abs(d["인구 성비 몫"] + d["미혼율 비 몫"] - 1) < 1e-9
+    assert R.analysis_regions({"31010", "31011", "31003", "11010", "31"}) == ["11010", "31010"]
