@@ -145,3 +145,26 @@ def test_official_age_bands_and_ratio():
     df = pd.DataFrame(dict(year=[2020] * 2, sex=["F"] * 2, kind=["t", "u"], age="30~34세", value=[200.0, 90.0]))
     r = _ratio(df, "age", "T", "b")
     assert r.value.iloc[0] == 45.0 and r.age_band.iloc[0] == "30-34"
+
+
+def test_forecast_no_lookahead_and_scoring():
+    import numpy as np
+    import pandas as pd
+    from llmrel import forecast as F
+    years = np.arange(2000, 2021)
+    rows = [dict(country=c, indicator="marriage_rate", sex="F", age_band=b, year=y, value=50 * (0.97 ** (y - 2000)) * (1 + i / 10))
+            for c in ("KR", "JP") for i, b in enumerate(F.BANDS) for y in years]
+    d = pd.DataFrame(rows)
+    L = np.log(F.series_table(d))
+    # 원점 이후 자료를 바꿔도 원점 예측은 같아야 한다 (미래 누설 없음)
+    a = F.predict_all(L, 2012, 2)
+    L2 = L.copy(); L2.loc[2013:] += 1.0
+    b = F.predict_all(L2, 2012, 2)
+    assert all(abs(a[k][m] - b[k][m]) < 1e-12 for k in a for m in a[k])
+    # 매끈한 지수 감소는 추세 모델이 거의 정확히 맞힌다
+    bt = F.backtest(L, range(2008, 2018), horizons=(1,))
+    assert bt[bt.model == "drift"].ape.max() < 1e-6
+    fc = pd.DataFrame([dict(country="KR", indicator="marriage_rate", sex="F", age_band="25-29", year=2020, forecast=10.0, lo=9.0, hi=11.0),
+                       dict(country="KR", indicator="marriage_rate", sex="F", age_band="25-29", year=2031, forecast=10.0, lo=9.0, hi=11.0)])
+    s = F.score_forecasts(fc, d)
+    assert list(s.status) == ["resolved", "pending"]
