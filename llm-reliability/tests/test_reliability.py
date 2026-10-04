@@ -271,3 +271,17 @@ def test_epl_xg_modes():
     assert h[h.season == "2024-25"].hxg.isna().all() and h[h.season == "2023-24"].hxg.notna().any()
     mode, p = epl.current_mode(df)
     assert (mode == "골 모드") == (p is epl.GOALS_MODE)
+
+
+def test_understat_parsing():
+    import json
+    from llmrel import understat
+    items = [{"id": "1", "isResult": True, "h": {"title": "Manchester United"}, "a": {"title": "Tottenham"},
+              "goals": {"h": "2", "a": "1"}, "xG": {"h": "1.83", "a": "0.71"}, "datetime": "2026-10-10 19:30:00"},
+             {"id": "2", "isResult": False, "h": {"title": "Leeds"}, "a": {"title": "Manchester United"},
+              "goals": {"h": None, "a": None}, "xG": {"h": None, "a": None}, "datetime": "2026-10-18 14:00:00"}]
+    esc = json.dumps(items).encode("unicode_escape").decode().replace('"', "\\x22")
+    html = f"<script>var datesData = JSON.parse('{esc}');</script>"
+    df = understat.parse_dates(understat.parse_html(html))
+    assert len(df) == 1 and df.home[0] == "Manchester United" and df.away[0] == "Tottenham Hotspur"
+    assert abs(df.hxg[0] - 1.83) < 1e-9 and df.date[0] == "2026-10-10"

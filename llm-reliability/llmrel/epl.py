@@ -44,9 +44,12 @@ def load_xg() -> pd.DataFrame:
         return pd.DataFrame(columns=["date", "home", "away", "hxg", "axg"])
     x = pd.read_csv(f)
     out = pd.DataFrame(dict(date=x.Date, home=x.Home.replace(FBREF), away=x.Away.replace(FBREF), hxg=x.Home_xG, axg=x.Away_xG))
-    m = D / "xg_manual.csv"                                       # 이번 시즌 xG: 경기 후 손으로 추가 (date,home,away,hxg,axg,source)
-    if m.exists():
+    for m in sorted(D.glob("xg_understat_*.csv")) + [D / "xg_manual.csv"]:   # understat 자동 수집 → 손으로 넣은 값이 마지막에 우선
+        if not m.exists():
+            continue
         add = pd.read_csv(m)
+        if add.empty:
+            continue
         add["home"], add["away"] = add.home.map(norm), add.away.map(norm)
         out = pd.concat([out, add[["date", "home", "away", "hxg", "axg"]]]).drop_duplicates(["date", "home", "away"], keep="last")
     return out

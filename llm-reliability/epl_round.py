@@ -17,7 +17,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from llmrel import epl
+from llmrel import epl, understat
 
 ROOT = Path(__file__).parent
 BENCH = ROOT / "data_epl" / "benchmark_opta.csv"
@@ -31,9 +31,20 @@ def fetch() -> None:
 
 
 def main() -> None:
+    xg_note = "understat 수집 안 함 (--no-fetch)"
     if "--no-fetch" not in sys.argv:
         fetch()
+        try:                                                     # 이번 시즌 xG 자동 수집
+            n = understat.update(int(SEASON[:4]), ROOT / "data_epl" / f"xg_understat_{SEASON}.csv")
+            xg_note = f"understat xG {n}경기 받음"
+        except Exception as e:
+            xg_note = f"understat 수집 실패: {e}"
+    print(xg_note)
     df = epl.load()
+    chk = df[(df.season == SEASON) & df.played & df.hxg.notna()]
+    if len(chk):                                                 # 이름 연결 점검: understat 경기 수와 연결된 경기 수
+        xs = pd.read_csv(ROOT / "data_epl" / f"xg_understat_{SEASON}.csv") if (ROOT / "data_epl" / f"xg_understat_{SEASON}.csv").exists() else chk
+        xg_note += f", 결과 자료와 연결 {len(chk)}/{len(xs)}"
     mode, params = epl.current_mode(df)
     res = epl.run(df, **params)
     today = dt.date.today()
@@ -60,7 +71,7 @@ def main() -> None:
     summ = paired.groupby("who").rps.agg(["mean", "count"]) if len(paired) else pd.DataFrame()
 
     OUT.mkdir(parents=True, exist_ok=True)
-    L = [f"# EPL 라운드 기록 ({today})", "", f"- 모드: **{mode}** (이번 시즌 xG 붙은 경기 {int(df[(df.season == SEASON) & df.played].hxg.notna().sum())}개)",
+    L = [f"# EPL 라운드 기록 ({today})", "", f"- xG: {xg_note}", f"- 모드: **{mode}** (이번 시즌 xG 붙은 경기 {int(df[(df.season == SEASON) & df.played].hxg.notna().sum())}개)",
          f"- 결과 반영: {last_played}까지, 이번 시즌 {int(df[(df.season == SEASON) & df.played].shape[0])}경기", "",
          "## Opta와 같은 경기 비교 (채점 끝난 것만, RPS 낮을수록 좋음)", "",
          (summ.round(4).to_markdown() if len(summ) else "아직 채점된 비교 경기가 없습니다."), "",
