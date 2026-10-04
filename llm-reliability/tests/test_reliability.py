@@ -184,3 +184,23 @@ def test_regional_ratio_decomposes():
     d = R.decompose(t)
     assert abs(d["인구 성비 몫"] + d["미혼율 비 몫"] - 1) < 1e-9
     assert R.analysis_regions({"31010", "31011", "31003", "11010", "31"}) == ["11010", "31010"]
+
+
+def test_preference_logit_recovers_known_effects():
+    import itertools
+    import numpy as np
+    import pandas as pd
+    from llmrel import preference as P
+    true = {"income=800+": 2.0, "income=~199": -1.5, "emp=비정규직": -1.0}
+    rows = []
+    for age, emp, edu, inc in itertools.product(*P.LEVELS.values()):
+        z = -0.2 + sum(true.get(f"{k}={v}", 0) for k, v in (("age", age), ("emp", emp), ("edu", edu), ("income", inc)))
+        n = 10000
+        rows.append(dict(age=age, emp=emp, edu=edu, income=inc, total=n, married=n / (1 + np.exp(-z))))
+    c = pd.DataFrame(rows)
+    b = P.fit_logit(c)
+    for k, v in true.items():
+        assert abs(b[k] - v) < 1e-3
+    assert abs(b["const"] + 0.2) < 1e-3
+    me = P.marginal_effects(c, b).set_index(["factor", "level"]).vs_ref_pp
+    assert me["income", "800+"] > 0 > me["emp", "비정규직"]

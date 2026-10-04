@@ -32,11 +32,11 @@ def _band(label: str) -> str | None:
 
 
 # ── KOSIS ──────────────────────────────────────────────────────────────
-def kosis(tbl: str, start: str, end: str, itm: str = "ALL", prd: str = "Y", **objs) -> pd.DataFrame:
+def kosis(tbl: str, start: str, end: str, itm: str = "ALL", prd: str = "Y", org: str = "101", **objs) -> pd.DataFrame:
     key = clean_key("KOSIS_API_KEY")
     if not key:
         raise RuntimeError("환경 변수 KOSIS_API_KEY 필요")
-    p = dict(method="getList", apiKey=key, orgId="101", tblId=tbl, itmId=itm, format="json", jsonVD="Y",
+    p = dict(method="getList", apiKey=key, orgId=org, tblId=tbl, itmId=itm, format="json", jsonVD="Y",
              prdSe=prd, startPrdDe=start, endPrdDe=end, **objs)
     for attempt in range(4):                                   # 이 환경에서 간헐적으로 연결이 끊김
         code, body = _curl_json("https://kosis.kr/openapi/Param/statisticsParameterData.do", p, timeout=90)
