@@ -134,3 +134,14 @@ def test_collect_normalizes_urls_and_extracts_numbers():
     assert ("births", 342068) in {(c["indicator"], c["value"]) for c in ja}
     neg = C.extract_claims("The number of marriages fell 6.4 per cent year-on-year to 20,368 in May.", "en")
     assert ("marriages_yoy", -6.4) in {(c["indicator"], c["value"]) for c in neg}
+
+
+def test_official_age_bands_and_ratio():
+    import pandas as pd
+    from llmrel.official import _band, _ratio
+    assert _band("25~29세") == _band("25 - 29세") == _band("25～29歳") == "25-29"
+    assert _band("19歳以下") == _band("15 - 19세") == "~19"
+    assert _band("합계") is None and _band("85세이상") is None
+    df = pd.DataFrame(dict(year=[2020] * 2, sex=["F"] * 2, kind=["t", "u"], age="30~34세", value=[200.0, 90.0]))
+    r = _ratio(df, "age", "T", "b")
+    assert r.value.iloc[0] == 45.0 and r.age_band.iloc[0] == "30-34"
