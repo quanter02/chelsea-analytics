@@ -296,3 +296,17 @@ def test_epl_cap_and_early_rules_default_off():
     capped = epl.run(df, **{**epl.XG_MODE, "cap": 2.0})
     t = capped[(capped.date == "2026-10-10") & (capped.home == "Manchester United")].iloc[0]
     assert t.pH < same[(same.date == "2026-10-10") & (same.home == "Manchester United")].iloc[0].pH
+
+
+def test_annual_cap_rules_default_off():
+    import pandas as pd
+    from pathlib import Path
+    from llmrel import forecast_tune as FT, regional_tune as RT
+    root = Path(__file__).parent.parent
+    d = pd.read_csv(root / "data_official" / "kr_jp_marriage_official.csv"); d["age_band"] = d.age_band.astype(str)
+    sp = FT.make_spec(d)
+    old = {k: v for k, v in FT.FINAL.items() if k not in ("cap", "robust")}
+    assert abs(sp.evaluate(old, "val").mean() - sp.evaluate(FT.FINAL, "val").mean()) < 1e-12
+    assert sp.evaluate({**FT.FINAL, "cap": 0.03}, "live").mean() < sp.evaluate(FT.FINAL, "live").mean()   # 2025 반등에서 급변 제한이 덜 틀림
+    sgg, sido = RT.load(); rs = RT.make_spec(sgg, sido)
+    assert len(rs.evaluate(RT.FINAL, "live")) == sgg.shape[1]
