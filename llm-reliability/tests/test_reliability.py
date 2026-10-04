@@ -237,3 +237,26 @@ def test_factcheck_engine_verdicts():
         else:
             cnt = Counter(got)
             assert all(cnt.get(k, 0) == v for k, v in want.items()), (name, cnt)
+
+
+def test_tuning_accepts_real_gain_and_rejects_noise():
+    import numpy as np
+    from llmrel import tuning
+    rng = np.random.default_rng(0)
+    noise = {s: rng.normal(0, 1, 400) for s in ("val", "test")}
+
+    def evaluate(p, split):
+        # x 는 진짜 효과(0.3 → 손실 감소), y 는 효과 없음
+        return 1.0 + noise[split] + 0.3 * (p["x"] == 1) * -1 + rng.normal(0, 0.01, 400) * p["y"]
+    spec = tuning.Spec("test", {"x": [0, 1], "y": [0, 1, 2]}, {"x": 0, "y": 0}, evaluate)
+    r = tuning.hill_climb(spec, mode="certain")
+    assert r["final"]["x"] == 1 and r["final"]["y"] == 0
+    assert r["test_gain"] > 0.2
+
+
+def test_epl_names_and_probabilities():
+    from llmrel import epl
+    assert epl.norm("Aston Villa FC") == epl.norm("Aston Villa") == "Aston Villa"
+    assert epl.norm("AFC Bournemouth") == "Bournemouth"
+    p = epl.probs(1.5, 1.1, 0.1)
+    assert abs(p.sum() - 1) < 1e-9 and p[0] > p[2]
