@@ -4,7 +4,7 @@ claim_id,country,indicator,period,value,unit,source,source_url,source_type,verif
 3,KR,여성 평균 초혼연령,2025,31.6,세,국가데이터처 2025년 혼인·이혼 통계,https://mods.go.kr/board.es?mid=a10301010000&bid=204&list_no=444103&act=view&mainXml=Y,공식 발표,보도 일치,채택,전년 대비 +0.1세 · 남성 33.9세
 4,KR,여성 30~34세 혼인건수,2025,95000,건,위즈경제 (국가데이터처 인용),https://wikyung.com/news/article?news=5779,공식 수치 인용 보도,단일 보도,채택,전년 대비 +13.2% (+11000건) · 증가를 이끈 연령대
 5,KR,합계출산율,2025,0.80,명,Japan Times / Nikkei Asia (국가데이터처 인용),https://www.japantimes.co.jp/news/2026/02/25/asia-pacific/society/south-korea-babies-second-year/,공식 수치 인용 보도,보도 일치,채택,2024년 0.75 → 2025년 0.80 · 2년 연속 상승
-6,KR,출생아 수,2025,254500,명,Japan Times / AsiaNews,https://www.asianews.it/news-en/In-2025%2C-births-in-Japan-continued-to-decline%2C-while-in-South-Korea%2C-they-rose-for-a-second-year-64929.html,공식 수치 인용 보도,증가율 불일치,보류,증가율이 매체마다 6.4% / 6.8%로 다름 → 원문 확인 전까지 증가율은 쓰지 않음
+6,KR,출생아 수,2025,254300,명,국가데이터처 2025년 출생통계 확정 (2026.8.26) · KDI 경제정보센터,https://eiec.kdi.re.kr/policy/materialView.do?num=285815,공식 발표 요약,확정치로 해소,채택,"잠정치 254,500명(증가율 6.4%/6.8% 불일치) → 확정치 254,300명 +6.7% (2026-10-04 수집에서 갱신)"
 7,KR,서울 혼인건수 증가율,2026 상반기,10.9,%,Korea Times (서울시 자료),https://www.koreatimes.co.kr/southkorea/20260827/seouls-birthrate-rebounds-as-births-and-marriages-surge,지자체 자료 인용 보도,단일 보도,채택(가중치 낮춤),서울만·반기 자료 · 출생 +18.7%
 8,KR,미혼 여성 결혼 의향 (20대),2026.3,65.2,%,저출산고령사회위원회 제5차 인식조사 (서울신문 등),https://www.seoul.co.kr/news/society/2026/05/08/20260508500236,공식 조사 인용 보도,보도 일치,채택,25~49세 2800명 대상
 9,KR,미혼 여성 결혼 의향 (30대),2026.3,55.4,%,저출산고령사회위원회 제5차 인식조사,https://www.seoul.co.kr/news/society/2026/05/08/20260508500236,공식 조사 인용 보도,보도 일치,채택,
@@ -18,3 +18,12 @@ claim_id,country,indicator,period,value,unit,source,source_url,source_type,verif
 17,JP,AI 매칭으로 결혼한 사례,2026,,,Philstar,https://www.philstar.com/sports/2026/07/29/2545573/appy-marriages-ai-helps-hundreds-japanese-wed,일화,확인 불가,제외,개별 사례 · 판단을 바꾸지 못함
 18,KR,2025 혼인·이혼 통계 요약,2025,,,개인 블로그 (datanow 등),https://www.datanow.kr/2026/03/2025-24.html,2차 정리,중복,제외,공식 발표와 같은 내용 · 새 정보 없음 → 한계효용 0
 19,KR,출산율 반등은 막대한 예산 덕분이라는 해석,2025,,,SpaceDaily,https://spacedaily.com/m-south-korea-fertility-rate-2025-recovered-0-80-from-record-low/,해석·의견,확인 불가,제외,인과 주장 · 검증 경로 없음
+20,KR,출생아 증가율,2025,6.7,%,국가데이터처 2025년 출생통계 확정,https://eiec.kdi.re.kr/policy/materialView.do?num=285815,공식 발표 요약,단일 보도,채택,확정치 기준
+21,KR,30~34세 여성 출산율,2025,73.1,여성 1천 명당,국가데이터처 2025년 출생통계 확정,https://eiec.kdi.re.kr/policy/materialView.do?num=285815,공식 발표 요약,단일 보도,채택,연령대 중 가장 높음 · 35세 이상 산모 비중 37.3%(+1.4%p)
+22,KR,혼인건수,2026-Q2,62065,건,국가데이터처 인구동향 (KDI 요약),https://eiec.kdi.re.kr/policy/materialView.do?num=278446,공식 발표 요약,단일 보도,채택,전년 동기 대비 +4.9% · 2분기 기준 2018년 이후 최대
+23,KR,혼인건수,2026-05,20368,건,세계일보 (국가데이터처 인구동향),https://www.segye.com/newsView/20260729516289,공식 수치 인용 보도,보도 일치,채택,전년 동월 대비 −6.4% · 반등 중 감소한 달
+24,KR,혼인건수,2026-07,22282,건,Korea Times (국가데이터처 인구동향),https://koreatimes.co.kr/southkorea/society/20260923/births-up-11-in-july-extending-gains-to-25th-consecutive-month,공식 수치 인용 보도,단일 보도,채택,전년 동월 대비 +9.3%
+25,KR,출생아 수,2026-07,24275,명,Korea Times / 국가데이터처 인구동향,https://koreatimes.co.kr/southkorea/society/20260923/births-up-11-in-july-extending-gains-to-25th-consecutive-month,공식 수치 인용 보도,보도 일치,채택,+11.1% · 1~7월 누적 17만 79명(+14.7%)
+26,JP,출생아 수,2026-H1,342068,명,후생노동성 인구동태통계 속보 (nippon.com 등),https://www.nippon.com/ja/japan-data/h02872/,공식 수치 인용 보도,보도 일치,채택,+0.8% · 상반기 기준 11년 만의 증가 · 외국인 포함 속보치라 2025년 연간(일본인·개수)과 기준이 다름
+27,JP,혼인건수,2026-H1,238979,건,후생노동성 인구동태통계 속보 (nippon.com 등),https://english.adnkronos.com/2026/08/28/1st-half-births-in-japan-rise-for-1st-time-in-11-years/,공식 수치 인용 보도,보도 일치,채택,+0.2% (+418건) · 사실상 정체 · 외국인 포함 속보치
+28,JP,사망자 수·자연감소·이혼,2026-H1,,,후생노동성 인구동태통계 속보,https://www.nippon.com/ja/japan-data/h02872/,공식 수치 인용 보도,보도 일치,제외,"관련성 낮음 · 결혼 질문의 판단을 바꾸지 않음 (사망 778,982 · 자연감소 436,914 · 이혼 90,177)"

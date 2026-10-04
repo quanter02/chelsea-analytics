@@ -120,3 +120,17 @@ def test_football_predictions_use_only_past_results():
     alt = F.predict(m2)
     early = lambda d: d[d.input_hash != "11"].reset_index(drop=True)
     pd.testing.assert_frame_equal(early(base), early(alt))                       # 앞선 예측은 그대로
+
+
+def test_collect_normalizes_urls_and_extracts_numbers():
+    from llmrel import collect as C
+    assert C.canonical_url("https://mobile.newsis.com/view/NISX1") == C.canonical_url("https://www.newsis.com/view/NISX1")
+    assert C.canonical_url("https://soranews24.com/2026/09/01/x/amp/") == C.canonical_url("https://soranews24.com/2026/09/01/x/")
+    assert C.classify("https://www.mhlw.go.jp/a.pdf") == "공식" and C.classify("https://www.datanow.kr/x") == "2차 정리·블로그"
+    ko = C.extract_claims("7월 출생아 수는 2만4275명으로 지난해 같은 달보다 2421명(11.1%) 증가했습니다.", "ko")
+    got = {(c["indicator"], c["value"]) for c in ko}
+    assert ("births", 24275) in got and ("births_yoy", 11.1) in got and ("births", 2421) not in got   # 증감분은 제외
+    ja = C.extract_claims("2026年1~6月の出生数は、前年同期比0.8%増の34万2068人だった。", "ja")
+    assert ("births", 342068) in {(c["indicator"], c["value"]) for c in ja}
+    neg = C.extract_claims("The number of marriages fell 6.4 per cent year-on-year to 20,368 in May.", "en")
+    assert ("marriages_yoy", -6.4) in {(c["indicator"], c["value"]) for c in neg}
