@@ -28,7 +28,7 @@ NAMES = {"Brighton": "Brighton & Hove Albion", "Tottenham": "Tottenham Hotspur",
 
 
 def _curl(url: str, headers: dict | None = None, timeout: int = 40) -> tuple[int, str]:
-    args = ["curl", "-s", "-L", "-m", str(timeout), "-w", "\n%{http_code}", "-A", "Mozilla/5.0"]
+    args = ["curl", "-s", "-L", "--compressed", "-m", str(timeout), "-w", "\n%{http_code}", "-A", "Mozilla/5.0"]
     for k, v in (headers or {}).items():
         args += ["-H", f"{k}: {v}"]
     out = subprocess.run(args + [url], capture_output=True, text=True).stdout
