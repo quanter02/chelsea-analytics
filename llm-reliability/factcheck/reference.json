@@ -1,0 +1,3202 @@
+[
+{
+"country": "KR",
+"indicator": "births",
+"year": 2000,
+"value": 640089.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2001,
+"value": 559934.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2002,
+"value": 496911.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2003,
+"value": 495036.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2004,
+"value": 476958.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2005,
+"value": 438707.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2006,
+"value": 451759.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2007,
+"value": 496822.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2008,
+"value": 465892.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2009,
+"value": 444849.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2010,
+"value": 470171.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2011,
+"value": 471265.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2012,
+"value": 484550.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2013,
+"value": 436455.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2014,
+"value": 435435.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2015,
+"value": 438420.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2016,
+"value": 406243.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2017,
+"value": 357771.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2018,
+"value": 326822.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2019,
+"value": 302676.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2020,
+"value": 272337.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2021,
+"value": 260562.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2022,
+"value": 249186.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2023,
+"value": 230028.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2024,
+"value": 238317.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2025,
+"value": 254341.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2000,
+"value": 248740.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2001,
+"value": 243813.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2002,
+"value": 247524.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2003,
+"value": 246463.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2004,
+"value": 246220.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2005,
+"value": 245874.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2006,
+"value": 244162.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2007,
+"value": 246482.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2008,
+"value": 246113.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2009,
+"value": 246942.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2010,
+"value": 255405.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2011,
+"value": 257396.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2012,
+"value": 267221.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2013,
+"value": 266257.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2014,
+"value": 267692.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2015,
+"value": 275895.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2016,
+"value": 280827.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2017,
+"value": 285534.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2018,
+"value": 298820.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2019,
+"value": 295110.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2020,
+"value": 304948.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2021,
+"value": 317680.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2022,
+"value": 372939.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2023,
+"value": 352511.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2024,
+"value": 358569.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "deaths",
+"year": 2025,
+"value": 362968.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2000,
+"value": 1.48,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2001,
+"value": 1.309,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2002,
+"value": 1.178,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2003,
+"value": 1.191,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2004,
+"value": 1.164,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2005,
+"value": 1.085,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2006,
+"value": 1.132,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2007,
+"value": 1.259,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2008,
+"value": 1.192,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2009,
+"value": 1.149,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2010,
+"value": 1.226,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2011,
+"value": 1.244,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2012,
+"value": 1.297,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2013,
+"value": 1.187,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2014,
+"value": 1.205,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2015,
+"value": 1.239,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2016,
+"value": 1.172,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2017,
+"value": 1.052,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2018,
+"value": 0.977,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2019,
+"value": 0.918,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2020,
+"value": 0.837,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2021,
+"value": 0.808,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2022,
+"value": 0.778,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2023,
+"value": 0.721,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2024,
+"value": 0.748,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "tfr",
+"year": 2025,
+"value": 0.799,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2000,
+"value": 332090.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2001,
+"value": 318407.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2002,
+"value": 304877.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2003,
+"value": 302503.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2004,
+"value": 308598.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2005,
+"value": 314304.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2006,
+"value": 330634.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2007,
+"value": 343559.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2008,
+"value": 327715.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2009,
+"value": 309759.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2010,
+"value": 326104.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2011,
+"value": 329087.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2012,
+"value": 327073.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2013,
+"value": 322807.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2014,
+"value": 305507.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2015,
+"value": 302828.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2016,
+"value": 281635.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2017,
+"value": 264455.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2018,
+"value": 257622.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2019,
+"value": 239159.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2020,
+"value": 213502.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2021,
+"value": 192507.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2022,
+"value": 191690.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2023,
+"value": 193657.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2024,
+"value": 222412.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "marriages",
+"year": 2025,
+"value": 240326.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2000,
+"value": 7.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2001,
+"value": 6.7,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2002,
+"value": 6.3,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2003,
+"value": 6.3,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2004,
+"value": 6.4,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2005,
+"value": 6.5,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2006,
+"value": 6.8,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2007,
+"value": 7.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2008,
+"value": 6.6,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2009,
+"value": 6.2,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2010,
+"value": 6.5,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2011,
+"value": 6.6,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2012,
+"value": 6.5,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2013,
+"value": 6.4,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2014,
+"value": 6.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2015,
+"value": 5.9,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2016,
+"value": 5.5,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2017,
+"value": 5.2,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2018,
+"value": 5.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2019,
+"value": 4.7,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2020,
+"value": 4.2,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2021,
+"value": 3.8,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2022,
+"value": 3.7,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2023,
+"value": 3.8,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2024,
+"value": 4.4,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "cmr",
+"year": 2025,
+"value": 4.7,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2000,
+"value": 119455.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2001,
+"value": 134608.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2002,
+"value": 144910.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2003,
+"value": 166617.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2004,
+"value": 138932.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2005,
+"value": 128035.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2006,
+"value": 124524.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2007,
+"value": 124072.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2008,
+"value": 116535.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2009,
+"value": 123999.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2010,
+"value": 116858.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2011,
+"value": 114284.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2012,
+"value": 114316.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2013,
+"value": 115292.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2014,
+"value": 115510.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2015,
+"value": 109153.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2016,
+"value": 107328.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2017,
+"value": 106032.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2018,
+"value": 108684.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2019,
+"value": 110831.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2020,
+"value": 106500.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2021,
+"value": 101673.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2022,
+"value": 93232.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2023,
+"value": 92394.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2024,
+"value": 91151.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "KR",
+"indicator": "divorces",
+"year": 2025,
+"value": 88130.0,
+"basis": "확정",
+"source": "KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2024,
+"value": 686173.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2023,
+"value": 727288.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2022,
+"value": 770759.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2021,
+"value": 811622.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2020,
+"value": 840835.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2019,
+"value": 865239.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2018,
+"value": 918400.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2017,
+"value": 946146.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2016,
+"value": 977242.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2015,
+"value": 1005721.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2014,
+"value": 1003609.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2013,
+"value": 1029817.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2012,
+"value": 1037232.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2011,
+"value": 1050807.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2010,
+"value": 1071305.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2009,
+"value": 1070036.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2008,
+"value": 1091156.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2007,
+"value": 1089818.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2006,
+"value": 1092674.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2005,
+"value": 1062530.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2004,
+"value": 1110721.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2003,
+"value": 1123610.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2002,
+"value": 1153855.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2001,
+"value": 1170662.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2000,
+"value": 1190547.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2024,
+"value": 1605378.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2023,
+"value": 1576016.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2022,
+"value": 1569050.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2021,
+"value": 1439856.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2020,
+"value": 1372755.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2019,
+"value": 1381093.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2018,
+"value": 1362470.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2017,
+"value": 1340567.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2016,
+"value": 1308158.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2015,
+"value": 1290510.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2014,
+"value": 1273025.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2013,
+"value": 1268438.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2012,
+"value": 1256359.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2011,
+"value": 1253068.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2010,
+"value": 1197014.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2009,
+"value": 1141865.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2008,
+"value": 1142407.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2007,
+"value": 1108334.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2006,
+"value": 1084451.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2005,
+"value": 1083796.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2004,
+"value": 1028602.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2003,
+"value": 1014951.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2002,
+"value": 982379.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2001,
+"value": 970331.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "deaths",
+"year": 2000,
+"value": 961653.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2024,
+"value": 485092.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2023,
+"value": 474741.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2022,
+"value": 504930.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2021,
+"value": 501138.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2020,
+"value": 525507.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2019,
+"value": 599007.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2018,
+"value": 586481.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2017,
+"value": 606952.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2016,
+"value": 620707.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2015,
+"value": 635225.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2014,
+"value": 643783.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2013,
+"value": 660622.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2012,
+"value": 668870.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2011,
+"value": 661898.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2010,
+"value": 700222.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2009,
+"value": 707740.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2008,
+"value": 726106.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2007,
+"value": 719822.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2006,
+"value": 730973.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2005,
+"value": 714265.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2004,
+"value": 720418.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2003,
+"value": 740191.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2002,
+"value": 757331.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2001,
+"value": 799999.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2000,
+"value": 798138.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2024,
+"value": 185904.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2023,
+"value": 183814.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2022,
+"value": 179099.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2021,
+"value": 184384.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2020,
+"value": 193253.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2019,
+"value": 208496.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2018,
+"value": 208333.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2017,
+"value": 212296.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2016,
+"value": 216856.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2015,
+"value": 226238.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2014,
+"value": 222115.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2013,
+"value": 231385.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2012,
+"value": 235407.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2011,
+"value": 235720.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2010,
+"value": 251379.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2009,
+"value": 253354.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2008,
+"value": 251136.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2007,
+"value": 254832.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2006,
+"value": 257475.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2005,
+"value": 261917.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2004,
+"value": 270804.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2003,
+"value": 283854.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2002,
+"value": 289836.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2001,
+"value": 285911.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "divorces",
+"year": 2000,
+"value": 264246.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2024,
+"value": 1.15,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2023,
+"value": 1.2,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2022,
+"value": 1.26,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2021,
+"value": 1.3,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2020,
+"value": 1.33,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2019,
+"value": 1.36,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2018,
+"value": 1.42,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2017,
+"value": 1.43,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2016,
+"value": 1.44,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2015,
+"value": 1.45,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2014,
+"value": 1.42,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2013,
+"value": 1.43,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2012,
+"value": 1.41,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2011,
+"value": 1.39,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2010,
+"value": 1.39,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2009,
+"value": 1.37,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2008,
+"value": 1.37,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2007,
+"value": 1.34,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2006,
+"value": 1.32,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2005,
+"value": 1.26,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2004,
+"value": 1.29,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2003,
+"value": 1.29,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2002,
+"value": 1.32,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2001,
+"value": 1.33,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2000,
+"value": 1.36,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2024,
+"value": 4.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2023,
+"value": 3.9,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2022,
+"value": 4.1,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2021,
+"value": 4.1,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2020,
+"value": 4.3,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2019,
+"value": 4.8,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2018,
+"value": 4.7,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2017,
+"value": 4.9,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2016,
+"value": 5.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2015,
+"value": 5.1,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2014,
+"value": 5.1,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2013,
+"value": 5.3,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2012,
+"value": 5.3,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2011,
+"value": 5.2,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2010,
+"value": 5.5,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2009,
+"value": 5.6,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2008,
+"value": 5.8,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2007,
+"value": 5.7,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2006,
+"value": 5.8,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2005,
+"value": 5.7,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2004,
+"value": 5.7,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2003,
+"value": 5.9,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2002,
+"value": 6.0,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2001,
+"value": 6.4,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "cmr",
+"year": 2000,
+"value": 6.4,
+"basis": "확정·일본인만",
+"source": "e-Stat 0003411561 人口動態総覧"
+},
+{
+"country": "JP",
+"indicator": "fm_age_F",
+"year": 2000,
+"value": 27.0,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_F",
+"year": 2005,
+"value": 28.0,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_F",
+"year": 2008,
+"value": 28.5,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_F",
+"year": 2009,
+"value": 28.6,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_F",
+"year": 2010,
+"value": 28.8,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_F",
+"year": 2011,
+"value": 29.0,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_F",
+"year": 2012,
+"value": 29.2,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_F",
+"year": 2013,
+"value": 29.3,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_F",
+"year": 2014,
+"value": 29.4,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_F",
+"year": 2015,
+"value": 29.4,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_F",
+"year": 2016,
+"value": 29.4,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_F",
+"year": 2017,
+"value": 29.4,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_F",
+"year": 2018,
+"value": 29.4,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_F",
+"year": 2019,
+"value": 29.6,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_F",
+"year": 2020,
+"value": 29.4,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_F",
+"year": 2021,
+"value": 29.5,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_F",
+"year": 2022,
+"value": 29.7,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_F",
+"year": 2023,
+"value": 29.7,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_F",
+"year": 2024,
+"value": 29.8,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_M",
+"year": 2000,
+"value": 28.8,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_M",
+"year": 2005,
+"value": 29.8,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_M",
+"year": 2008,
+"value": 30.2,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_M",
+"year": 2009,
+"value": 30.4,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_M",
+"year": 2010,
+"value": 30.5,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_M",
+"year": 2011,
+"value": 30.7,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_M",
+"year": 2012,
+"value": 30.8,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_M",
+"year": 2013,
+"value": 30.9,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_M",
+"year": 2014,
+"value": 31.1,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_M",
+"year": 2015,
+"value": 31.1,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_M",
+"year": 2016,
+"value": 31.1,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_M",
+"year": 2017,
+"value": 31.1,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_M",
+"year": 2018,
+"value": 31.1,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_M",
+"year": 2019,
+"value": 31.2,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_M",
+"year": 2020,
+"value": 31.0,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_M",
+"year": 2021,
+"value": 31.0,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_M",
+"year": 2022,
+"value": 31.1,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_M",
+"year": 2023,
+"value": 31.1,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "JP",
+"indicator": "fm_age_M",
+"year": 2024,
+"value": 31.1,
+"basis": "확정",
+"source": "e-Stat 0003411845"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2000,
+"value": 26.49,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2001,
+"value": 26.78,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2002,
+"value": 27.01,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2003,
+"value": 27.27,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2004,
+"value": 27.52,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2005,
+"value": 27.72,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2006,
+"value": 27.79,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2007,
+"value": 28.09,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2008,
+"value": 28.32,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2009,
+"value": 28.71,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2010,
+"value": 28.91,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2011,
+"value": 29.14,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2012,
+"value": 29.41,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2013,
+"value": 29.59,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2014,
+"value": 29.81,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2015,
+"value": 29.96,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2016,
+"value": 30.11,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2017,
+"value": 30.24,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2018,
+"value": 30.4,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2019,
+"value": 30.59,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2020,
+"value": 30.78,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2021,
+"value": 31.08,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2022,
+"value": 31.26,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2023,
+"value": 31.45,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2024,
+"value": 31.55,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_F",
+"year": 2025,
+"value": 31.62,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2000,
+"value": 29.28,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2001,
+"value": 29.55,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2002,
+"value": 29.77,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2003,
+"value": 30.14,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2004,
+"value": 30.53,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2005,
+"value": 30.87,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2006,
+"value": 30.96,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2007,
+"value": 31.11,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2008,
+"value": 31.38,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2009,
+"value": 31.61,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2010,
+"value": 31.84,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2011,
+"value": 31.9,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2012,
+"value": 32.13,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2013,
+"value": 32.21,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2014,
+"value": 32.42,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2015,
+"value": 32.57,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2016,
+"value": 32.79,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2017,
+"value": 32.94,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2018,
+"value": 33.15,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2019,
+"value": 33.37,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2020,
+"value": 33.23,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2021,
+"value": 33.35,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2022,
+"value": 33.72,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2023,
+"value": 33.97,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2024,
+"value": 33.86,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "KR",
+"indicator": "fm_age_M",
+"year": 2025,
+"value": 33.85,
+"basis": "확정",
+"source": "KOSIS DT_1B83A05"
+},
+{
+"country": "JP",
+"indicator": "births",
+"year": 2025,
+"value": 671236,
+"basis": "개수(잠정)·일본인만",
+"source": "후생노동성 2025 개수 (보도 인용, 원문 접근 차단)"
+},
+{
+"country": "JP",
+"indicator": "marriages",
+"year": 2025,
+"value": 489119,
+"basis": "개수(잠정)",
+"source": "후생노동성 2025 개수 (보도 인용)"
+},
+{
+"country": "JP",
+"indicator": "tfr",
+"year": 2025,
+"value": 1.14,
+"basis": "개수(잠정)",
+"source": "후생노동성 2025 개수 (보도 인용)"
+},
+{
+"country": "KR",
+"indicator": "births",
+"year": 2025,
+"value": 254500,
+"basis": "잠정",
+"source": "통계청 2025 출생 잠정 (2026.2)"
+}
+]

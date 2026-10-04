@@ -1,0 +1,364 @@
+<title>통계 숫자 검증기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@600;700&display=swap">
+<style>
+/* 교정지 데스크: 왼쪽 원고, 오른쪽 판정. 판정 색은 교정 표시처럼 원문 위에 바로 얹는다 */
+:root {
+  --paper: #f6f7f4; --sheet: #ffffff; --ink: #1b2430; --muted: #5d6874; --line: #dde2e0; --soft: #eef1ee;
+  --accent: #1f5f8b;
+  --ok: #1d7a55; --ok-bg: #e2f2ea; --warn: #9a6400; --warn-bg: #fbefd6; --bad: #b3361f; --bad-bg: #f8e1db;
+  --info: #3b5bab; --info-bg: #e3e9f7; --skip: #7b8590; --skip-bg: #eceeef;
+  --f-display: "Noto Serif KR", "Apple SD Gothic Neo", serif;
+  --f-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --f-data: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #11161b; --sheet: #182027; --ink: #e6ebef; --muted: #9aa6b1; --line: #2a343d; --soft: #1f2932; --accent: #6aa8d6;
+  --ok: #5cc89a; --ok-bg: #173327; --warn: #e2b04a; --warn-bg: #3a2d12; --bad: #f08a72; --bad-bg: #3d1f18;
+  --info: #8ea9ef; --info-bg: #1d2840; --skip: #8f99a3; --skip-bg: #232c34; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --paper: #11161b; --sheet: #182027; --ink: #e6ebef; --muted: #9aa6b1; --line: #2a343d; --soft: #1f2932; --accent: #6aa8d6;
+  --ok: #5cc89a; --ok-bg: #173327; --warn: #e2b04a; --warn-bg: #3a2d12; --bad: #f08a72; --bad-bg: #3d1f18;
+  --info: #8ea9ef; --info-bg: #1d2840; --skip: #8f99a3; --skip-bg: #232c34; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--paper); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.6; margin: 0 }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 48px; display: grid; gap: 22px }
+header { display: grid; gap: 6px }
+h1 { font-family: var(--f-display); font-size: clamp(24px, 3.4vw, 32px); margin: 0; text-wrap: balance; letter-spacing: -0.01em }
+.lede { color: var(--muted); margin: 0; max-width: 68ch }
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 20px; align-items: start }
+@media (max-width: 860px) { .grid { grid-template-columns: 1fr } }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 12px; min-width: 0 }
+.label { font-size: 12px; letter-spacing: 0.06em; color: var(--muted); font-weight: 500 }
+textarea { width: 100%; min-height: 300px; resize: vertical; font: 15px/1.7 var(--f-body); color: var(--ink); background: var(--paper);
+  border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px }
+textarea:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+button { font: 500 14px var(--f-body); border-radius: 8px; padding: 8px 14px; cursor: pointer; border: 1px solid var(--line); background: var(--sheet); color: var(--ink); min-height: 38px }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--sheet) }
+button[aria-pressed="true"] { border-color: var(--ink) }
+.hint { font-size: 12.5px; color: var(--muted) }
+.summary { display: flex; flex-wrap: wrap; gap: 8px }
+.chip { display: inline-flex; align-items: baseline; gap: 6px; border-radius: 999px; padding: 4px 11px; font-size: 13px; font-weight: 500 }
+.chip b { font-family: var(--f-data); font-weight: 500 }
+.v-ok { color: var(--ok); background: var(--ok-bg) } .v-warn { color: var(--warn); background: var(--warn-bg) }
+.v-bad { color: var(--bad); background: var(--bad-bg) } .v-info { color: var(--info); background: var(--info-bg) } .v-skip { color: var(--skip); background: var(--skip-bg) }
+.proof { white-space: pre-wrap; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; line-height: 1.95; overflow-wrap: anywhere }
+.proof mark { border-radius: 4px; padding: 1px 3px; font-family: var(--f-data); font-size: 0.95em; cursor: help }
+.tablewrap { overflow-x: auto }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px }
+th, td { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--line); vertical-align: top }
+th { font-size: 12px; color: var(--muted); font-weight: 500; letter-spacing: 0.03em }
+td.num { font-family: var(--f-data); font-variant-numeric: tabular-nums; white-space: nowrap }
+td .pill { display: inline-block; border-radius: 6px; padding: 2px 8px; font-size: 12.5px; font-weight: 600; white-space: nowrap }
+td small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px }
+.legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 8px 16px; font-size: 13px; color: var(--muted) }
+.legend span.pill { margin-right: 6px }
+.foot { font-size: 12.5px; color: var(--muted); display: grid; gap: 4px }
+@media (prefers-reduced-motion: no-preference) { mark { transition: outline-color .15s } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="label">공식 통계 대조 · 한국 KOSIS · 일본 e-Stat</div>
+    <h1>통계 숫자 검증기</h1>
+    <p class="lede">대본이나 기사를 붙여 넣으면 출생·사망·혼인·이혼·합계출산율·조혼인율·평균 초혼연령 수치를 찾아 공식 값과 대조합니다. 확신할 수 없는 수치(월·분기 값, 나라를 알 수 없는 값)는 틀렸다고 단정하지 않고 판정을 보류합니다.</p>
+  </header>
+
+  <div class="grid">
+    <section class="sheet" aria-labelledby="in-h">
+      <div class="label" id="in-h">원고</div>
+      <div class="row" id="samples" role="group" aria-label="예시 원고"></div>
+      <textarea id="text" aria-label="검증할 원고" spellcheck="false"></textarea>
+      <div class="row"><button class="primary" id="run">검증하기</button><span class="hint">빈 줄은 문단 경계입니다. 문단이 바뀌면 나라·연도를 새로 읽습니다.</span></div>
+    </section>
+
+    <section class="sheet" aria-labelledby="out-h" aria-live="polite">
+      <div class="label" id="out-h">판정</div>
+      <div class="summary" id="summary"></div>
+      <div class="proof" id="proof"></div>
+    </section>
+  </div>
+
+  <section class="sheet" aria-labelledby="tbl-h">
+    <div class="label" id="tbl-h">수치별 판정</div>
+    <div class="tablewrap"><table id="table"></table></div>
+  </section>
+
+  <section class="sheet">
+    <div class="label">판정 기준</div>
+    <div class="legend" id="legend"></div>
+    <div class="foot">
+      <span>정답 저장소: KOSIS DT_1B8000F(한국 인구동태 2000~2025), e-Stat 0003411561(일본 人口動態総覧 2000~2024), 평균 초혼연령(KOSIS DT_1B83A05 · e-Stat 0003411845), 일본 2025 개수(잠정)와 한국 2025 잠정치는 기준을 따로 표시. 기준일 2026-10-04.</span>
+      <span>시제품입니다. 규칙 기반 추출이라 표현이 낯선 문장은 놓칠 수 있고, 연간 값만 판정합니다.</span>
+    </div>
+  </section>
+</div>
+
+<script>/* 숫자 검증기 엔진 (브라우저·node 공용).
+ *
+ * 1) 문장 나누기 → 나라·연도는 앞 문장에서 이어받음
+ * 2) 숫자 + 단위를 찾고, 그 앞의 가장 가까운 지표 단어에 붙임
+ * 3) 정답 저장소와 대조해 판정
+ *      일치 / 기준 다름(잠정·확정 등) / 연도 혼동 / 나라 혼동 / 틀림 / 확인 불가(공표 전) / 대상 아님
+ * 4) 제어기: 대조할 가치가 없는 문장(나라·지표를 모름)은 조회하지 않고 '대상 아님'으로 기권
+ */
+(function (root, factory) {
+  if (typeof module === "object" && module.exports) module.exports = factory();
+  else root.FactCheck = factory();
+})(typeof self !== "undefined" ? self : this, function () {
+  const IND = [ // [지표, 정규식] — 앞에 있을수록 우선 (긴 표현 먼저)
+    ["fm_age", /평균\s*초혼\s*연령|초혼\s*연령|결혼\s*연령|혼인\s*연령|first[- ]marriage age/gi],
+    ["cmr", /조혼인율|인구\s*천\s*명당\s*혼인|crude marriage rate/gi],
+    ["tfr", /합계\s*출산율|total fertility rate|fertility rate|TFR|合計特殊出生率/gi],
+    ["births", /출생아\s*수|출생아|출생\s*건수|신생아|태어난\s*아이|출생|births?/gi],
+    ["deaths", /사망자\s*수|사망자|사망|deaths?/gi],
+    ["divorces", /이혼\s*건수|이혼|divorces?/gi],
+    ["marriages", /혼인\s*건수|결혼\s*건수|혼인|결혼|marriages?/gi],
+  ];
+  const NAME = { births: "출생아 수", deaths: "사망자 수", marriages: "혼인 건수", divorces: "이혼 건수", tfr: "합계출산율",
+                 cmr: "조혼인율", fm_age_F: "여성 평균 초혼연령", fm_age_M: "남성 평균 초혼연령" };
+  const UNIT = { births: "명", deaths: "명", marriages: "건", divorces: "건", tfr: "명", cmr: "건(천 명당)", fm_age_F: "세", fm_age_M: "세" };
+  const KR = /한국|국내|우리나라|대한민국|통계청|Korea/i, JP = /일본|日本|Japan|후생노동성/i;
+
+  // "24만 326", "24만", "25만 4천", "240,326", "0.72", "1,234.5"
+  const NUM = /(\d+(?:\.\d+)?)\s*만\s*(?:(\d+)\s*천\s*(\d+)?|(\d,\d{3}|\d{1,4}))?|(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)\s*천?/g;
+
+  function parseNum(m) {
+    if (m[1] !== undefined) {                                   // 만 단위
+      const man = parseFloat(m[1]) * 10000;
+      if (m[2] !== undefined) {                                 // 25만 4천 (300)
+        const v = man + parseInt(m[2]) * 1000 + (m[3] ? parseInt(m[3]) : 0);
+        return { v, step: m[3] ? 1 : 1000 };
+      }
+      if (m[4] !== undefined) return { v: man + parseInt(m[4].replace(",", "")), step: 1 };
+      const dec = (m[1].split(".")[1] || "").length;
+      return { v: man, step: 10000 / Math.pow(10, dec) };
+    }
+    const s = m[5].replace(/,/g, "");
+    let v = parseFloat(s), dec = (s.split(".")[1] || "").length;
+    let step = Math.pow(10, -dec);
+    if (!dec && s.length >= 4) { const z = s.match(/0+$/); if (z) step = Math.pow(10, Math.min(z[0].length, s.length - 1)); }
+    if (/천\s*$/.test(m[0])) { v *= 1000; step *= 1000; }
+    return { v, step };
+  }
+
+  function sentences(para) {
+    return para.split(/(?<=[.!?。])\s+|\n/).map((s) => s.trim()).filter(Boolean);
+  }
+
+  function extract(text) {
+    const out = [];
+    let country = null, year = null, paraPeriod = false;
+    var PERIOD = new RegExp([
+      "\\d{1,2}\\s*월(?!\\s*\\d{1,2}\\s*일)", "분기", "상반기", "하반기", "반기", "월간", "누적", "올해\\s*들어",
+      "January|February|March|April|May|June|July|August|September|October|November|December", "first half|first six months|quarter|monthly",
+      "\\d+\\s*月(?!\\s*\\d+\\s*日)", "上半期|下半期|四半期"].join("|"), "i");
+    const BLOCK = /비중|비율|구성비|점유율|share|proportion|割合/i;
+    const units = [];
+    for (const para of text.replace(/\r/g, "").split(/\n\s*\n/)) {  // 빈 줄 = 문단 경계: 나라·연도를 새로 읽는다
+      units.push({ reset: true, para });
+      for (const s of sentences(para)) units.push({ sent: s });
+    }
+    for (const u of units) {
+      if (u.reset) { country = null; year = null; paraPeriod = PERIOD.test(u.para); continue; }
+      const sent = u.sent;
+      if (/[?？]\s*$/.test(sent)) continue;                    // 질문은 주장이 아님
+      const kr = KR.test(sent), jp = JP.test(sent);
+      if (kr && !jp) country = "KR"; else if (jp && !kr) country = "JP";
+      const ys = [...sent.matchAll(/(19[5-9]\d|20[0-4]\d)\s*년(?!\s*(이후|이래|대비|만에|보다|에\s*비해|부터|과\s*비교|래|\d{1,2}\s*월\s*\d{1,2}\s*일))/g)];
+      const yearAt = (pos) => { const b = ys.filter((y) => y.index < pos).pop(); return b ? parseInt(b[1]) : (ys.length && ys[0].index > pos ? null : undefined); };
+      const carried = year;
+      if (ys.length) year = parseInt(ys[ys.length - 1][1]);
+      const sentHangul = /[가-힣]/.test(sent);
+      // 지표 위치
+      const hits = [];
+      for (const [ind, rx] of IND) for (const m of sent.matchAll(rx)) {
+        if (!hits.some((h) => m.index >= h.at && m.index < h.end)) hits.push({ ind, at: m.index, end: m.index + m[0].length });
+      }
+      hits.sort((a, b) => a.at - b.at);
+      for (const m of sent.matchAll(NUM)) {
+        const at = m.index, raw = m[0].trim(), after = sent.slice(at + m[0].length, at + m[0].length + 8);
+        const before = sent.slice(Math.max(0, at - 12), at);
+        if (/^\s*년/.test(after) || /^\d{4}$/.test(raw) && /^\s*(년|\))/.test(after)) continue;   // 연도
+        if (/^\s*(월|분기|일|위|개|곳|배|시|호|만에|년)/.test(after)) continue;
+        if (/^(19|20)\d{2}$/.test(raw)) continue;                // 단위 없는 연도형 숫자
+        const tail = sent.slice(at + m[0].length, at + m[0].length + 14);
+        const prev = hits.filter((h) => h.end <= at).pop();
+        if (!prev) continue;
+        if (BLOCK.test(sent.slice(prev.end, at))) continue;          // '산모 비중 37%' 같은 비율은 지표 값이 아님
+        const win = sent.slice(Math.max(0, prev.at - 25), Math.min(sent.length, at + m[0].length + 30));
+        const ownYear = ys.length > 0;
+        const subannual = (PERIOD.test(win) || (paraPeriod && !ownYear)) && !/연간|한\s*해\s*전체|annual/i.test(win);
+        const { v, step } = parseNum(m);
+        const isPct = /^\s*(%|퍼센트|％|percent|per\s*cent)/i.test(after);
+        const isPp = /^\s*%p|^\s*%포인트|^\s*퍼센트포인트/.test(after);
+        if (isPp) continue;
+        const changeWord = /증가|감소|늘|줄|상승|하락|올랐|떨어|급증|급감|↑|↓|rose|fell|up|down|increase|decrease|増|減/i;
+        if (!isPct && /^\s*(명|건|쌍)?\s*(이|가)?\s*(늘|증가|감소|줄|많|적|↑|↓|더)/.test(tail)) continue;  // 증감폭
+        if (!isPct && /(보다|대비|전년|에\s*비해|\bby)\s*$/i.test(before)) continue;
+        if (isPct && !changeWord.test(tail) && !/[+−-]\s*$/.test(before)) continue;            // 비율(구성비 등)은 증감률이 아님
+        const neg = /감소|줄|하락|떨어|fell|declin|減|−|-\s*$/.test(sent.slice(at, at + m[0].length + 16)) || /[−-]\s*$/.test(before);
+        let ind = prev.ind;
+        if (ind === "fm_age") {
+          const sx = [...sent.slice(0, at).matchAll(/(여성|아내|여자|女)|(남성|남편|남자|男)/g)].pop();
+          ind = sx && sx[2] ? "fm_age_M" : "fm_age_F";
+        }
+        const th = /^\s*(명|건|쌍)?\s*(을|를|이|가)?\s*(넘|초과|웃돌|돌파|이상)/.test(tail) ? ">"
+                 : /^\s*(명|건|쌍)?\s*(을|를|이|가)?\s*(아래|미만|이하|밑|밑돌)/.test(tail) ? "<" : null;
+        const kind = isPct ? "yoy" : th ? "threshold" : "level";
+        let yr = yearAt(at); if (yr === undefined) yr = carried; if (yr === null) yr = ys.length ? parseInt(ys[0][1]) : carried;
+        // 단위 상식 검사 (단위가 안 맞는 숫자는 그 지표의 값이 아님)
+        if (kind !== "yoy") {
+          if ((ind === "tfr") && !(v > 0.3 && v < 3)) continue;
+          if ((ind === "cmr") && !(v > 0.5 && v < 20)) continue;
+          if (ind.startsWith("fm_age") && !(v >= 18 && v <= 45)) continue;
+          if (["births", "deaths", "marriages", "divorces"].includes(ind) && v < 1000) continue;
+        } else if (Math.abs(v) > 60) continue;
+        let ctry = country, assumed = false;
+        if (!ctry && sentHangul) { ctry = "KR"; assumed = true; }
+        out.push({ sentence: sent, raw: raw + (isPct ? "%" : ""), country: ctry, assumed, subannual, year: yr, indicator: ind, kind, op: th,
+                   value: kind === "yoy" && neg ? -v : v, step: kind === "yoy" ? Math.max(step, 0.1) : step });
+      }
+    }
+    return out;
+  }
+
+  function index(ref) {
+    const ix = {};
+    for (const r of ref) (ix[`${r.country}|${r.indicator}`] ||= []).push(r);
+    return ix;
+  }
+
+  const fmt = (v, ind, kind) => kind === "yoy" ? `${v > 0 ? "+" : ""}${v.toFixed(1)}%`
+    : ind === "tfr" ? v.toFixed(v < 1 ? 3 : 2) + "명" : ind === "cmr" ? v.toFixed(1) + "건" : ind.startsWith("fm_age") ? v.toFixed(1) + "세"
+    : Math.round(v).toLocaleString("ko-KR") + UNIT[ind];
+
+  function valueAt(rows, year, basisPref) {
+    const xs = rows.filter((r) => r.year === year);
+    return xs.find((r) => r.basis.startsWith(basisPref)) || xs[0];
+  }
+
+  function check(claims, ref) {
+    const ix = index(ref);
+    return claims.map((c) => {
+      const res = { ...c, name: NAME[c.indicator], verdict: "", detail: "", correct: null, source: "" };
+      if (!c.country) return { ...res, verdict: "대상 아님", detail: "어느 나라 수치인지 문장에서 알 수 없어 조회하지 않음" };
+      if (c.subannual) return { ...res, verdict: "대상 아님", detail: "월·분기·누적 값으로 보임. 저장소는 연간 값이라 판정하지 않음 (틀렸다고 단정하지 않기)" };
+      const rows = ix[`${c.country}|${c.indicator}`];
+      if (!rows) return { ...res, verdict: "대상 아님", detail: "정답 저장소에 없는 지표" };
+      const years = [...new Set(rows.map((r) => r.year))].sort((a, b) => a - b);
+      const latest = years[years.length - 1];
+      const y = c.year ?? latest;
+      const tol = (truth) => c.step / 2 + Math.abs(truth) * 1e-9;
+      const levelOf = (yr) => rows.filter((r) => r.year === yr);
+      const yoyOf = (yr, basis) => {
+        const a = valueAt(rows, yr, basis), b = valueAt(rows, yr - 1, "확정");
+        return a && b ? { v: (a.value / b.value - 1) * 100, r: a } : null;
+      };
+      const candidates = (yr) => c.kind !== "yoy" ? levelOf(yr).map((r) => ({ v: r.value, r }))
+        : [...new Set(levelOf(yr).map((r) => r.basis))].map((bs) => yoyOf(yr, bs)).filter(Boolean);
+      const near = (xs) => xs.find((x) => Math.abs(x.v - c.value) <= tol(x.v));
+      if (!c.year) res.detail = `연도가 없어 최신(${latest}년)으로 봄. `;
+      if (c.assumed) res.detail = "나라 언급이 없어 한국으로 봄. " + res.detail;
+      const here = candidates(y);
+      if (!here.length) {
+        const other = near(candidates(latest));
+        const lv = candidates(latest)[0];
+        return { ...res, verdict: "확인 불가",
+                 detail: res.detail + (other ? `${y}년 값은 아직 공표 전. 이 숫자는 ${latest}년 값(${fmt(other.v, c.indicator, c.kind)})과 같아, 최신 값을 ${y}년으로 쓴 것일 수 있음`
+                   : `${y}년 값은 아직 공표 전. 최신 ${latest}년 = ${lv ? fmt(lv.v, c.indicator, c.kind) : "—"}`),
+                 correct: lv ? lv.v : null, source: lv ? lv.r.source : "" };
+      }
+      if (c.kind === "threshold") {
+        const m0 = here.find((x) => x.r.basis.startsWith("확정")) || here[0];
+        const ok = c.op === ">" ? m0.v > c.value : m0.v < c.value;
+        return { ...res, verdict: ok ? "일치" : "틀림", correct: m0.v, source: m0.r.source,
+                 detail: res.detail + `기준선 주장 (${c.op === ">" ? "넘음" : "아래"}): 공식 ${y}년 ${fmt(m0.v, c.indicator, "level")} → ${ok ? "맞음" : "아님"}` };
+      }
+      const hit = near(here);
+      const main = here.find((x) => x.r.basis.startsWith("확정")) || here[0];
+      if (hit) {
+        const hasFinal = here.some((x) => x.r.basis.startsWith("확정"));
+        const ok = hit.r.basis.startsWith("확정") || !hasFinal;
+        return { ...res, verdict: ok ? "일치" : "기준 다름", correct: main.v, source: hit.r.source,
+                 detail: res.detail + (ok ? `${y}년 ${fmt(hit.v, c.indicator, c.kind)} (${hit.r.basis}${hasFinal ? "" : ", 확정치 나오면 다시 확인"})`
+                   : `${hit.r.basis} 값과 일치. ${main.r.basis.startsWith("확정") ? `확정치는 ${fmt(main.v, c.indicator, c.kind)}` : "확정치는 아직 없음"}`) };
+      }
+      for (const dy of [-1, 1, -2]) {                            // 다른 해의 값을 말했나
+        const o = near(candidates(y + dy));
+        if (o) return { ...res, verdict: "연도 혼동", correct: main.v, source: main.r.source,
+                        detail: res.detail + `${y + dy}년 값(${fmt(o.v, c.indicator, c.kind)})과 같음. ${y}년은 ${fmt(main.v, c.indicator, c.kind)}` };
+      }
+      const other = ix[`${c.country === "KR" ? "JP" : "KR"}|${c.indicator}`];
+      if (other) {
+        const o = other.filter((r) => r.year === y).find((r) => c.kind === "level" && Math.abs(r.value - c.value) <= tol(r.value));
+        if (o) return { ...res, verdict: "나라 혼동", correct: main.v, source: main.r.source,
+                        detail: res.detail + `${o.country === "KR" ? "한국" : "일본"} 값과 같음. ${c.country === "KR" ? "한국" : "일본"} ${y}년은 ${fmt(main.v, c.indicator, c.kind)}` };
+      }
+      const rel = Math.abs(c.value / main.v - 1);
+      if (c.kind === "level" && rel < 0.002) return { ...res, verdict: "거의 일치", correct: main.v, source: main.r.source,
+        detail: res.detail + `공식 ${y}년 ${fmt(main.v, c.indicator, c.kind)} (${main.r.basis})와 ${(rel * 100).toFixed(2)}% 차이. 잠정치·반올림 값일 수 있음` };
+      const diff = c.kind === "yoy" ? `${(c.value - main.v).toFixed(1)}%p` : `${((c.value / main.v - 1) * 100).toFixed(1)}%`;
+      return { ...res, verdict: "틀림", correct: main.v, source: main.r.source,
+               detail: res.detail + `공식 ${y}년 ${fmt(main.v, c.indicator, c.kind)} (${main.r.basis}), 차이 ${diff}` };
+    });
+  }
+
+  function run(text, ref) {
+    const r = check(extract(text), ref);
+    const count = (v) => r.filter((x) => x.verdict === v).length;
+    return { claims: r, summary: { total: r.length, ok: count("일치"), basis: count("기준 다름"), year: count("연도 혼동"),
+             country: count("나라 혼동"), near: count("거의 일치"), wrong: count("틀림"), unknown: count("확인 불가"), skipped: count("대상 아님") }, fmt };
+  }
+
+  return { extract, check, run, fmt, NAME };
+});
+</script>
+<script>
+const REF = [{"country":"KR","indicator":"births","year":2000,"value":640089.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2001,"value":559934.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2002,"value":496911.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2003,"value":495036.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2004,"value":476958.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2005,"value":438707.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2006,"value":451759.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2007,"value":496822.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2008,"value":465892.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2009,"value":444849.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2010,"value":470171.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2011,"value":471265.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2012,"value":484550.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2013,"value":436455.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2014,"value":435435.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2015,"value":438420.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2016,"value":406243.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2017,"value":357771.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2018,"value":326822.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2019,"value":302676.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2020,"value":272337.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2021,"value":260562.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2022,"value":249186.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2023,"value":230028.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2024,"value":238317.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"births","year":2025,"value":254341.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2000,"value":248740.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2001,"value":243813.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2002,"value":247524.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2003,"value":246463.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2004,"value":246220.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2005,"value":245874.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2006,"value":244162.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2007,"value":246482.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2008,"value":246113.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2009,"value":246942.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2010,"value":255405.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2011,"value":257396.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2012,"value":267221.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2013,"value":266257.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2014,"value":267692.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2015,"value":275895.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2016,"value":280827.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2017,"value":285534.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2018,"value":298820.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2019,"value":295110.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2020,"value":304948.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2021,"value":317680.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2022,"value":372939.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2023,"value":352511.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2024,"value":358569.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"deaths","year":2025,"value":362968.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2000,"value":1.48,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2001,"value":1.309,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2002,"value":1.178,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2003,"value":1.191,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2004,"value":1.164,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2005,"value":1.085,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2006,"value":1.132,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2007,"value":1.259,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2008,"value":1.192,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2009,"value":1.149,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2010,"value":1.226,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2011,"value":1.244,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2012,"value":1.297,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2013,"value":1.187,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2014,"value":1.205,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2015,"value":1.239,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2016,"value":1.172,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2017,"value":1.052,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2018,"value":0.977,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2019,"value":0.918,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2020,"value":0.837,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2021,"value":0.808,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2022,"value":0.778,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2023,"value":0.721,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2024,"value":0.748,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"tfr","year":2025,"value":0.799,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2000,"value":332090.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2001,"value":318407.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2002,"value":304877.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2003,"value":302503.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2004,"value":308598.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2005,"value":314304.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2006,"value":330634.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2007,"value":343559.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2008,"value":327715.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2009,"value":309759.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2010,"value":326104.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2011,"value":329087.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2012,"value":327073.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2013,"value":322807.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2014,"value":305507.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2015,"value":302828.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2016,"value":281635.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2017,"value":264455.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2018,"value":257622.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2019,"value":239159.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2020,"value":213502.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2021,"value":192507.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2022,"value":191690.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2023,"value":193657.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2024,"value":222412.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"marriages","year":2025,"value":240326.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2000,"value":7.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2001,"value":6.7,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2002,"value":6.3,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2003,"value":6.3,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2004,"value":6.4,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2005,"value":6.5,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2006,"value":6.8,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2007,"value":7.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2008,"value":6.6,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2009,"value":6.2,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2010,"value":6.5,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2011,"value":6.6,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2012,"value":6.5,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2013,"value":6.4,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2014,"value":6.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2015,"value":5.9,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2016,"value":5.5,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2017,"value":5.2,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2018,"value":5.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2019,"value":4.7,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2020,"value":4.2,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2021,"value":3.8,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2022,"value":3.7,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2023,"value":3.8,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2024,"value":4.4,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"cmr","year":2025,"value":4.7,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2000,"value":119455.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2001,"value":134608.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2002,"value":144910.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2003,"value":166617.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2004,"value":138932.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2005,"value":128035.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2006,"value":124524.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2007,"value":124072.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2008,"value":116535.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2009,"value":123999.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2010,"value":116858.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2011,"value":114284.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2012,"value":114316.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2013,"value":115292.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2014,"value":115510.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2015,"value":109153.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2016,"value":107328.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2017,"value":106032.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2018,"value":108684.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2019,"value":110831.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2020,"value":106500.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2021,"value":101673.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2022,"value":93232.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2023,"value":92394.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2024,"value":91151.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"KR","indicator":"divorces","year":2025,"value":88130.0,"basis":"확정","source":"KOSIS DT_1B8000F 인구동태건수 및 동태율 추이"},{"country":"JP","indicator":"births","year":2024,"value":686173.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2023,"value":727288.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2022,"value":770759.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2021,"value":811622.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2020,"value":840835.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2019,"value":865239.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2018,"value":918400.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2017,"value":946146.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2016,"value":977242.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2015,"value":1005721.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2014,"value":1003609.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2013,"value":1029817.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2012,"value":1037232.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2011,"value":1050807.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2010,"value":1071305.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2009,"value":1070036.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2008,"value":1091156.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2007,"value":1089818.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2006,"value":1092674.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2005,"value":1062530.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2004,"value":1110721.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2003,"value":1123610.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2002,"value":1153855.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2001,"value":1170662.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"births","year":2000,"value":1190547.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2024,"value":1605378.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2023,"value":1576016.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2022,"value":1569050.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2021,"value":1439856.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2020,"value":1372755.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2019,"value":1381093.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2018,"value":1362470.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2017,"value":1340567.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2016,"value":1308158.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2015,"value":1290510.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2014,"value":1273025.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2013,"value":1268438.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2012,"value":1256359.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2011,"value":1253068.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2010,"value":1197014.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2009,"value":1141865.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2008,"value":1142407.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2007,"value":1108334.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2006,"value":1084451.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2005,"value":1083796.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2004,"value":1028602.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2003,"value":1014951.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2002,"value":982379.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2001,"value":970331.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"deaths","year":2000,"value":961653.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2024,"value":485092.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2023,"value":474741.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2022,"value":504930.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2021,"value":501138.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2020,"value":525507.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2019,"value":599007.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2018,"value":586481.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2017,"value":606952.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2016,"value":620707.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2015,"value":635225.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2014,"value":643783.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2013,"value":660622.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2012,"value":668870.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2011,"value":661898.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2010,"value":700222.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2009,"value":707740.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2008,"value":726106.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2007,"value":719822.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2006,"value":730973.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2005,"value":714265.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2004,"value":720418.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2003,"value":740191.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2002,"value":757331.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2001,"value":799999.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"marriages","year":2000,"value":798138.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2024,"value":185904.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2023,"value":183814.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2022,"value":179099.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2021,"value":184384.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2020,"value":193253.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2019,"value":208496.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2018,"value":208333.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2017,"value":212296.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2016,"value":216856.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2015,"value":226238.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2014,"value":222115.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2013,"value":231385.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2012,"value":235407.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2011,"value":235720.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2010,"value":251379.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2009,"value":253354.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2008,"value":251136.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2007,"value":254832.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2006,"value":257475.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2005,"value":261917.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2004,"value":270804.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2003,"value":283854.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2002,"value":289836.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2001,"value":285911.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"divorces","year":2000,"value":264246.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2024,"value":1.15,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2023,"value":1.2,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2022,"value":1.26,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2021,"value":1.3,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2020,"value":1.33,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2019,"value":1.36,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2018,"value":1.42,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2017,"value":1.43,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2016,"value":1.44,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2015,"value":1.45,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2014,"value":1.42,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2013,"value":1.43,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2012,"value":1.41,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2011,"value":1.39,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2010,"value":1.39,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2009,"value":1.37,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2008,"value":1.37,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2007,"value":1.34,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2006,"value":1.32,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2005,"value":1.26,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2004,"value":1.29,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2003,"value":1.29,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2002,"value":1.32,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2001,"value":1.33,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"tfr","year":2000,"value":1.36,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2024,"value":4.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2023,"value":3.9,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2022,"value":4.1,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2021,"value":4.1,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2020,"value":4.3,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2019,"value":4.8,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2018,"value":4.7,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2017,"value":4.9,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2016,"value":5.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2015,"value":5.1,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2014,"value":5.1,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2013,"value":5.3,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2012,"value":5.3,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2011,"value":5.2,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2010,"value":5.5,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2009,"value":5.6,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2008,"value":5.8,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2007,"value":5.7,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2006,"value":5.8,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2005,"value":5.7,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2004,"value":5.7,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2003,"value":5.9,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2002,"value":6.0,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2001,"value":6.4,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"cmr","year":2000,"value":6.4,"basis":"확정·일본인만","source":"e-Stat 0003411561 人口動態総覧"},{"country":"JP","indicator":"fm_age_F","year":2000,"value":27.0,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_F","year":2005,"value":28.0,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_F","year":2008,"value":28.5,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_F","year":2009,"value":28.6,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_F","year":2010,"value":28.8,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_F","year":2011,"value":29.0,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_F","year":2012,"value":29.2,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_F","year":2013,"value":29.3,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_F","year":2014,"value":29.4,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_F","year":2015,"value":29.4,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_F","year":2016,"value":29.4,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_F","year":2017,"value":29.4,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_F","year":2018,"value":29.4,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_F","year":2019,"value":29.6,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_F","year":2020,"value":29.4,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_F","year":2021,"value":29.5,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_F","year":2022,"value":29.7,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_F","year":2023,"value":29.7,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_F","year":2024,"value":29.8,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_M","year":2000,"value":28.8,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_M","year":2005,"value":29.8,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_M","year":2008,"value":30.2,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_M","year":2009,"value":30.4,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_M","year":2010,"value":30.5,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_M","year":2011,"value":30.7,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_M","year":2012,"value":30.8,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_M","year":2013,"value":30.9,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_M","year":2014,"value":31.1,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_M","year":2015,"value":31.1,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_M","year":2016,"value":31.1,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_M","year":2017,"value":31.1,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_M","year":2018,"value":31.1,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_M","year":2019,"value":31.2,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_M","year":2020,"value":31.0,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_M","year":2021,"value":31.0,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_M","year":2022,"value":31.1,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_M","year":2023,"value":31.1,"basis":"확정","source":"e-Stat 0003411845"},{"country":"JP","indicator":"fm_age_M","year":2024,"value":31.1,"basis":"확정","source":"e-Stat 0003411845"},{"country":"KR","indicator":"fm_age_F","year":2000,"value":26.49,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2001,"value":26.78,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2002,"value":27.01,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2003,"value":27.27,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2004,"value":27.52,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2005,"value":27.72,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2006,"value":27.79,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2007,"value":28.09,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2008,"value":28.32,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2009,"value":28.71,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2010,"value":28.91,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2011,"value":29.14,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2012,"value":29.41,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2013,"value":29.59,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2014,"value":29.81,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2015,"value":29.96,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2016,"value":30.11,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2017,"value":30.24,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2018,"value":30.4,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2019,"value":30.59,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2020,"value":30.78,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2021,"value":31.08,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2022,"value":31.26,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2023,"value":31.45,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2024,"value":31.55,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_F","year":2025,"value":31.62,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2000,"value":29.28,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2001,"value":29.55,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2002,"value":29.77,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2003,"value":30.14,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2004,"value":30.53,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2005,"value":30.87,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2006,"value":30.96,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2007,"value":31.11,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2008,"value":31.38,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2009,"value":31.61,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2010,"value":31.84,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2011,"value":31.9,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2012,"value":32.13,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2013,"value":32.21,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2014,"value":32.42,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2015,"value":32.57,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2016,"value":32.79,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2017,"value":32.94,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2018,"value":33.15,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2019,"value":33.37,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2020,"value":33.23,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2021,"value":33.35,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2022,"value":33.72,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2023,"value":33.97,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2024,"value":33.86,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"KR","indicator":"fm_age_M","year":2025,"value":33.85,"basis":"확정","source":"KOSIS DT_1B83A05"},{"country":"JP","indicator":"births","year":2025,"value":671236,"basis":"개수(잠정)·일본인만","source":"후생노동성 2025 개수 (보도 인용, 원문 접근 차단)"},{"country":"JP","indicator":"marriages","year":2025,"value":489119,"basis":"개수(잠정)","source":"후생노동성 2025 개수 (보도 인용)"},{"country":"JP","indicator":"tfr","year":2025,"value":1.14,"basis":"개수(잠정)","source":"후생노동성 2025 개수 (보도 인용)"},{"country":"KR","indicator":"births","year":2025,"value":254500,"basis":"잠정","source":"통계청 2025 출생 잠정 (2026.2)"}];
+const SAMPLES = [{"name": "예시 대본 (오류 섞음)", "text": "2025년 한국의 혼인 건수는 24만 326건으로 전년보다 8.1% 늘었습니다.\n같은 해 출생아 수는 25만 4,500명, 합계출산율은 0.80명이었습니다.\n한국 여성의 평균 초혼연령은 31.6세로 남성 33.9세보다 2살 이상 적습니다.\n조혼인율은 인구 천 명당 4.4건입니다.\n반면 일본의 2025년 출생아 수는 68만 6천명으로 역대 최저를 기록했습니다.\n일본의 혼인 건수는 48만 9,119건, 합계출산율은 1.15명이었습니다.\n2025년 일본 여성의 평균 초혼연령은 29.8세입니다.\n한국의 2024년 사망자 수는 40만 명을 넘었습니다.\n요즘 결혼하는 사람이 늘었다는 말이 많은데 정말 30% 증가했을까요?\n"}, {"name": "처음 보는 문장", "text": "통계청에 따르면 지난해(2024년) 혼인은 22만 2천 건으로 1년 전보다 14.8% 급증했다.\n2024년 우리나라 합계출산율은 0.75명으로 9년 만에 반등했다.\n같은 해 이혼 건수는 9만 1151건이었다.\n2023년 출생아는 23만명 수준으로 사상 최저였다.\n2022년 한국 남성의 평균 초혼연령은 33.7세, 여성은 31.3세였다.\n\n일본은 2024년 출생아가 68만 6,061명으로 처음 70만명 아래로 떨어졌다.\n일본의 2024년 혼인 건수는 48만 5천 건 정도다.\n일본 합계출산율은 2023년 1.20명에서 2024년 1.15명으로 낮아졌다.\n2024년 일본의 사망자 수는 160만 명을 넘었다.\n"}, {"name": "2026 실제 기사 요약", "text": "7월 출생아 수는 2만4275명으로 지난해 같은 달보다 2421명(11.1%) 증가했습니다. 7월 기준 출생아 수가 2만4000명을 넘어선 것은 2019년 2만5222명 이후 처음입니다. 7월 출생아 증가율은 11.1%로 2007년 12.4% 이후 가장 높은 수준을 기록했습니다. 1∼7월 누적 출생아는 17만79명으로 지난해 같은 기간보다 14.7% 증가했습니다. 2분기 기준으로 혼인 건수는 6만 2065건에 달해 2904건(4.9%) 증가했으며, 이는 2018년 이후 최대 혼인 건수입니다.\n\n2025년 출생통계(2026년 8월 26일 발표): 출생아 수는 254,300명으로 전년보다 16,000명(6.7%) 증가했고, 합계출산율은 0.80명으로 전년보다 0.05명 증가했다. 30대 초반 여성의 출산율이 1,000명당 73.1명으로 가장 높았고, 35세 이상 산모 비중은 37.3%로 1.4%p 상승했다. 출생 증가 요인은 코로나 이후 혼인 증가, 30대 초반 여성 인구 증가, 출산에 대한 긍정적 인식 변화.\n\n2026年1~6月の出生数（外国人を含む）は、前年同期比0.8%増（2788人増）の34万2068人だった。上半期の出生数がプラスとなるのは15年以来、11年ぶり。26年上半期の婚姻数は0.2%増の23万8979組。死亡数は6.9%減の77万8982人で、自然減は43万6914人。婚姻数が24、25年に2年連続で回復したことが影響したとみられる。\n\nBirths have increased for 23 consecutive months since July 2024; births rose 11.1 percent in July from a year earlier, marking the 25th consecutive month of increases. The number of births in May reached 23,160, up 2,781, or 13.6%. A total of 24,275 babies were born in July, up from 21,854 a year earlier. A total of 122,694 babies were born from January through May, up 15.2%. April saw 20,622 registered marriages, up 9.0 percent year on year. The number of marriages fell 6.4 per cent year-on-year to 20,368 in May, though marriages in July rose 9.3 percent to 22,282. The echo boom generation born 1991-1995 is entering peak marrying years.\n\nThe number of births in Japan rose in the first half of the year for the first time in 11 years. The preliminary data showed that the number of births in the January-June period edged up by 2,788, or 0.8 percent, to 342,068. The number of marriages grew by 418 to 238,979 in the first six months of the year, while divorces fell by 3,578 to 90,177. Deaths totaled 778,982.\n\n2025年国勢調査の速報結果は見つからなかった。検索結果は過去の国勢調査（平成22年～令和2年）の資料のみ。"}];
+const CLS = { "일치": "v-ok", "거의 일치": "v-ok", "기준 다름": "v-warn", "연도 혼동": "v-warn", "나라 혼동": "v-warn", "틀림": "v-bad", "확인 불가": "v-info", "대상 아님": "v-skip" };
+const MEANING = {
+  "일치": "공식 확정치와 같음 (반올림 단위 안)", "거의 일치": "0.2% 미만 차이. 잠정치나 반올림 값일 수 있음",
+  "기준 다름": "잠정치·속보치와 같음. 확정치는 다름", "연도 혼동": "다른 해의 값을 말함", "나라 혼동": "다른 나라 값을 말함",
+  "틀림": "공식 값과 다름", "확인 불가": "그 해 값이 아직 공표 전", "대상 아님": "월·분기 값이거나 나라를 알 수 없어 판정 보류" };
+const $ = (s) => document.querySelector(s);
+const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function render() {
+  const text = $("#text").value;
+  const out = FactCheck.run(text, REF);
+  const cs = out.claims;
+  const order = ["틀림", "연도 혼동", "기준 다름", "나라 혼동", "확인 불가", "거의 일치", "일치", "대상 아님"];
+  const cnt = {}; cs.forEach((c) => (cnt[c.verdict] = (cnt[c.verdict] || 0) + 1));
+  $("#summary").innerHTML = cs.length ? order.filter((v) => cnt[v]).map((v) => `<span class="chip ${CLS[v]}">${v} <b>${cnt[v]}</b></span>`).join("")
+    : `<span class="chip v-skip">찾은 수치 없음</span>`;
+  // 원문 위에 판정 표시
+  let html = "", pos = 0;
+  for (const c of cs) {
+    const needle = c.raw.replace(/%$/, "");
+    const i = text.indexOf(needle, pos);
+    if (i < 0) continue;
+    html += esc(text.slice(pos, i)) + `<mark class="${CLS[c.verdict]}" title="${esc(c.verdict + ": " + c.detail)}">${esc(needle)}</mark>`;
+    pos = i + needle.length;
+  }
+  $("#proof").innerHTML = html + esc(text.slice(pos));
+  const C = { KR: "한국", JP: "일본" };
+  $("#table").innerHTML = `<thead><tr><th>판정</th><th>원문 수치</th><th>무엇</th><th>공식 값</th><th>설명</th></tr></thead><tbody>` +
+    cs.map((c) => `<tr><td><span class="pill ${CLS[c.verdict]}">${c.verdict}</span></td>
+      <td class="num">${esc(c.raw)}</td>
+      <td>${C[c.country] || "?"} ${c.year || ""} ${c.name}${c.kind === "yoy" ? " 증감률" : c.kind === "threshold" ? " 기준선" : ""}</td>
+      <td class="num">${c.correct == null ? "—" : esc(out.fmt(c.correct, c.indicator, c.kind === "threshold" ? "level" : c.kind))}</td>
+      <td>${esc(c.detail)}${c.source ? `<small>${esc(c.source)}</small>` : ""}</td></tr>`).join("") + "</tbody>";
+}
+$("#legend").innerHTML = Object.entries(MEANING).map(([k, v]) => `<div><span class="pill chip ${CLS[k]}">${k}</span>${v}</div>`).join("");
+$("#samples").innerHTML = SAMPLES.map((s, i) => `<button data-i="${i}" aria-pressed="${i === 0}">${esc(s.name)}</button>`).join("");
+document.querySelectorAll("#samples button").forEach((b) => (b.onclick = () => {
+  document.querySelectorAll("#samples button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+  $("#text").value = SAMPLES[+b.dataset.i].text; render();
+}));
+$("#run").onclick = render;
+$("#text").value = SAMPLES[0].text;
+render();
+</script>

@@ -1,0 +1,145 @@
+<title>통계 숫자 검증기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@600;700&display=swap">
+<style>
+/* 교정지 데스크: 왼쪽 원고, 오른쪽 판정. 판정 색은 교정 표시처럼 원문 위에 바로 얹는다 */
+:root {
+  --paper: #f6f7f4; --sheet: #ffffff; --ink: #1b2430; --muted: #5d6874; --line: #dde2e0; --soft: #eef1ee;
+  --accent: #1f5f8b;
+  --ok: #1d7a55; --ok-bg: #e2f2ea; --warn: #9a6400; --warn-bg: #fbefd6; --bad: #b3361f; --bad-bg: #f8e1db;
+  --info: #3b5bab; --info-bg: #e3e9f7; --skip: #7b8590; --skip-bg: #eceeef;
+  --f-display: "Noto Serif KR", "Apple SD Gothic Neo", serif;
+  --f-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --f-data: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #11161b; --sheet: #182027; --ink: #e6ebef; --muted: #9aa6b1; --line: #2a343d; --soft: #1f2932; --accent: #6aa8d6;
+  --ok: #5cc89a; --ok-bg: #173327; --warn: #e2b04a; --warn-bg: #3a2d12; --bad: #f08a72; --bad-bg: #3d1f18;
+  --info: #8ea9ef; --info-bg: #1d2840; --skip: #8f99a3; --skip-bg: #232c34; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --paper: #11161b; --sheet: #182027; --ink: #e6ebef; --muted: #9aa6b1; --line: #2a343d; --soft: #1f2932; --accent: #6aa8d6;
+  --ok: #5cc89a; --ok-bg: #173327; --warn: #e2b04a; --warn-bg: #3a2d12; --bad: #f08a72; --bad-bg: #3d1f18;
+  --info: #8ea9ef; --info-bg: #1d2840; --skip: #8f99a3; --skip-bg: #232c34; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--paper); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.6; margin: 0 }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 48px; display: grid; gap: 22px }
+header { display: grid; gap: 6px }
+h1 { font-family: var(--f-display); font-size: clamp(24px, 3.4vw, 32px); margin: 0; text-wrap: balance; letter-spacing: -0.01em }
+.lede { color: var(--muted); margin: 0; max-width: 68ch }
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 20px; align-items: start }
+@media (max-width: 860px) { .grid { grid-template-columns: 1fr } }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 12px; min-width: 0 }
+.label { font-size: 12px; letter-spacing: 0.06em; color: var(--muted); font-weight: 500 }
+textarea { width: 100%; min-height: 300px; resize: vertical; font: 15px/1.7 var(--f-body); color: var(--ink); background: var(--paper);
+  border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px }
+textarea:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+button { font: 500 14px var(--f-body); border-radius: 8px; padding: 8px 14px; cursor: pointer; border: 1px solid var(--line); background: var(--sheet); color: var(--ink); min-height: 38px }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--sheet) }
+button[aria-pressed="true"] { border-color: var(--ink) }
+.hint { font-size: 12.5px; color: var(--muted) }
+.summary { display: flex; flex-wrap: wrap; gap: 8px }
+.chip { display: inline-flex; align-items: baseline; gap: 6px; border-radius: 999px; padding: 4px 11px; font-size: 13px; font-weight: 500 }
+.chip b { font-family: var(--f-data); font-weight: 500 }
+.v-ok { color: var(--ok); background: var(--ok-bg) } .v-warn { color: var(--warn); background: var(--warn-bg) }
+.v-bad { color: var(--bad); background: var(--bad-bg) } .v-info { color: var(--info); background: var(--info-bg) } .v-skip { color: var(--skip); background: var(--skip-bg) }
+.proof { white-space: pre-wrap; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; line-height: 1.95; overflow-wrap: anywhere }
+.proof mark { border-radius: 4px; padding: 1px 3px; font-family: var(--f-data); font-size: 0.95em; cursor: help }
+.tablewrap { overflow-x: auto }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px }
+th, td { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--line); vertical-align: top }
+th { font-size: 12px; color: var(--muted); font-weight: 500; letter-spacing: 0.03em }
+td.num { font-family: var(--f-data); font-variant-numeric: tabular-nums; white-space: nowrap }
+td .pill { display: inline-block; border-radius: 6px; padding: 2px 8px; font-size: 12.5px; font-weight: 600; white-space: nowrap }
+td small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px }
+.legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 8px 16px; font-size: 13px; color: var(--muted) }
+.legend span.pill { margin-right: 6px }
+.foot { font-size: 12.5px; color: var(--muted); display: grid; gap: 4px }
+@media (prefers-reduced-motion: no-preference) { mark { transition: outline-color .15s } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="label">공식 통계 대조 · 한국 KOSIS · 일본 e-Stat</div>
+    <h1>통계 숫자 검증기</h1>
+    <p class="lede">대본이나 기사를 붙여 넣으면 출생·사망·혼인·이혼·합계출산율·조혼인율·평균 초혼연령 수치를 찾아 공식 값과 대조합니다. 확신할 수 없는 수치(월·분기 값, 나라를 알 수 없는 값)는 틀렸다고 단정하지 않고 판정을 보류합니다.</p>
+  </header>
+
+  <div class="grid">
+    <section class="sheet" aria-labelledby="in-h">
+      <div class="label" id="in-h">원고</div>
+      <div class="row" id="samples" role="group" aria-label="예시 원고"></div>
+      <textarea id="text" aria-label="검증할 원고" spellcheck="false"></textarea>
+      <div class="row"><button class="primary" id="run">검증하기</button><span class="hint">빈 줄은 문단 경계입니다. 문단이 바뀌면 나라·연도를 새로 읽습니다.</span></div>
+    </section>
+
+    <section class="sheet" aria-labelledby="out-h" aria-live="polite">
+      <div class="label" id="out-h">판정</div>
+      <div class="summary" id="summary"></div>
+      <div class="proof" id="proof"></div>
+    </section>
+  </div>
+
+  <section class="sheet" aria-labelledby="tbl-h">
+    <div class="label" id="tbl-h">수치별 판정</div>
+    <div class="tablewrap"><table id="table"></table></div>
+  </section>
+
+  <section class="sheet">
+    <div class="label">판정 기준</div>
+    <div class="legend" id="legend"></div>
+    <div class="foot">
+      <span>정답 저장소: KOSIS DT_1B8000F(한국 인구동태 2000~2025), e-Stat 0003411561(일본 人口動態総覧 2000~2024), 평균 초혼연령(KOSIS DT_1B83A05 · e-Stat 0003411845), 일본 2025 개수(잠정)와 한국 2025 잠정치는 기준을 따로 표시. 기준일 /*ASOF*/.</span>
+      <span>시제품입니다. 규칙 기반 추출이라 표현이 낯선 문장은 놓칠 수 있고, 연간 값만 판정합니다.</span>
+    </div>
+  </section>
+</div>
+
+<script>/*ENGINE*/</script>
+<script>
+const REF = /*REF*/null;
+const SAMPLES = /*SAMPLES*/null;
+const CLS = { "일치": "v-ok", "거의 일치": "v-ok", "기준 다름": "v-warn", "연도 혼동": "v-warn", "나라 혼동": "v-warn", "틀림": "v-bad", "확인 불가": "v-info", "대상 아님": "v-skip" };
+const MEANING = {
+  "일치": "공식 확정치와 같음 (반올림 단위 안)", "거의 일치": "0.2% 미만 차이. 잠정치나 반올림 값일 수 있음",
+  "기준 다름": "잠정치·속보치와 같음. 확정치는 다름", "연도 혼동": "다른 해의 값을 말함", "나라 혼동": "다른 나라 값을 말함",
+  "틀림": "공식 값과 다름", "확인 불가": "그 해 값이 아직 공표 전", "대상 아님": "월·분기 값이거나 나라를 알 수 없어 판정 보류" };
+const $ = (s) => document.querySelector(s);
+const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function render() {
+  const text = $("#text").value;
+  const out = FactCheck.run(text, REF);
+  const cs = out.claims;
+  const order = ["틀림", "연도 혼동", "기준 다름", "나라 혼동", "확인 불가", "거의 일치", "일치", "대상 아님"];
+  const cnt = {}; cs.forEach((c) => (cnt[c.verdict] = (cnt[c.verdict] || 0) + 1));
+  $("#summary").innerHTML = cs.length ? order.filter((v) => cnt[v]).map((v) => `<span class="chip ${CLS[v]}">${v} <b>${cnt[v]}</b></span>`).join("")
+    : `<span class="chip v-skip">찾은 수치 없음</span>`;
+  // 원문 위에 판정 표시
+  let html = "", pos = 0;
+  for (const c of cs) {
+    const needle = c.raw.replace(/%$/, "");
+    const i = text.indexOf(needle, pos);
+    if (i < 0) continue;
+    html += esc(text.slice(pos, i)) + `<mark class="${CLS[c.verdict]}" title="${esc(c.verdict + ": " + c.detail)}">${esc(needle)}</mark>`;
+    pos = i + needle.length;
+  }
+  $("#proof").innerHTML = html + esc(text.slice(pos));
+  const C = { KR: "한국", JP: "일본" };
+  $("#table").innerHTML = `<thead><tr><th>판정</th><th>원문 수치</th><th>무엇</th><th>공식 값</th><th>설명</th></tr></thead><tbody>` +
+    cs.map((c) => `<tr><td><span class="pill ${CLS[c.verdict]}">${c.verdict}</span></td>
+      <td class="num">${esc(c.raw)}</td>
+      <td>${C[c.country] || "?"} ${c.year || ""} ${c.name}${c.kind === "yoy" ? " 증감률" : c.kind === "threshold" ? " 기준선" : ""}</td>
+      <td class="num">${c.correct == null ? "—" : esc(out.fmt(c.correct, c.indicator, c.kind === "threshold" ? "level" : c.kind))}</td>
+      <td>${esc(c.detail)}${c.source ? `<small>${esc(c.source)}</small>` : ""}</td></tr>`).join("") + "</tbody>";
+}
+$("#legend").innerHTML = Object.entries(MEANING).map(([k, v]) => `<div><span class="pill chip ${CLS[k]}">${k}</span>${v}</div>`).join("");
+$("#samples").innerHTML = SAMPLES.map((s, i) => `<button data-i="${i}" aria-pressed="${i === 0}">${esc(s.name)}</button>`).join("");
+document.querySelectorAll("#samples button").forEach((b) => (b.onclick = () => {
+  document.querySelectorAll("#samples button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+  $("#text").value = SAMPLES[+b.dataset.i].text; render();
+}));
+$("#run").onclick = render;
+$("#text").value = SAMPLES[0].text;
+render();
+</script>

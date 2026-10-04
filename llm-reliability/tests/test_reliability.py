@@ -215,3 +215,25 @@ def test_rules_floor_tradeoff_with_known_values():
     assert s.avg["O1"] < s.avg["O2"] < s.avg["O4"]
     assert s.net["O1"] > s.net["O2"] > s.net["O4"]
     assert R._units(2.0, 1.0) == 4 and R._units(0.5, 1.0) == 0
+
+
+def test_factcheck_engine_verdicts():
+    """숫자 검증기: 정답을 아는 세 글에서 판정이 기대와 같아야 하고, 실제 기사 요약에서 '틀림' 오판이 없어야 한다."""
+    import json
+    import shutil
+    import subprocess
+    from collections import Counter
+    from pathlib import Path
+    import pytest
+    if not shutil.which("node"):
+        pytest.skip("node 없음")
+    d = Path(__file__).parent.parent / "factcheck"
+    exp = json.loads((d / "expected.json").read_text(encoding="utf-8"))
+    for name, want in exp.items():
+        out = subprocess.run(["node", str(d / "run.js"), str(d / name), "--json"], capture_output=True, text=True, check=True).stdout
+        got = [c["verdict"] for c in json.loads(out) if c["verdict"] != "대상 아님"]
+        if isinstance(want, list):
+            assert got == want, (name, got)
+        else:
+            cnt = Counter(got)
+            assert all(cnt.get(k, 0) == v for k, v in want.items()), (name, cnt)
