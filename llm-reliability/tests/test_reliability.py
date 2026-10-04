@@ -204,3 +204,14 @@ def test_preference_logit_recovers_known_effects():
     assert abs(b["const"] + 0.2) < 1e-3
     me = P.marginal_effects(c, b).set_index(["factor", "level"]).vs_ref_pp
     assert me["income", "800+"] > 0 > me["emp", "비정규직"]
+
+
+def test_rules_floor_tradeoff_with_known_values():
+    import pandas as pd
+    from llmrel import rules as R
+    d = R.compare(range(3), periods=36, rules=("O1", "O2", "O4"))
+    s = d.groupby("rule").agg(net=("net", "mean"), avg=("avg", "mean"))
+    # 기준선을 올리면 평균은 오르고 순가치는 줄어든다; 기준선 = 비용일 때 순가치 최대
+    assert s.avg["O1"] < s.avg["O2"] < s.avg["O4"]
+    assert s.net["O1"] > s.net["O2"] > s.net["O4"]
+    assert R._units(2.0, 1.0) == 4 and R._units(0.5, 1.0) == 0
