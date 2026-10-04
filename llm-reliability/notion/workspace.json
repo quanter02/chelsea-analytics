@@ -1,0 +1,23 @@
+{
+  "note": "노션에 실제로 만들어진 페이지와 데이터베이스. 다음 동기화 때 새로 만들지 말고 이 ID로 찾아 갱신합니다.",
+  "created": "2026-10-04",
+  "home": {"title": "한계효용 신뢰도 엔진", "page_id": "3efae285-d069-817d-9301-e1b3ee464625"},
+  "pages": {
+    "설계 원칙": "3efae285-d069-8122-9660-d66c233c26a0",
+    "결과 리포트": "3efae285-d069-8115-975f-f75f176b8cb4",
+    "결과 리포트/모델 신뢰도와 라우터 (가상)": "3efae285-d069-8179-8a41-deb83bf08bcc",
+    "결과 리포트/온라인 갱신 (가상)": "3efae285-d069-81fe-b507-d9c62aa9cec2",
+    "결과 리포트/한계효용 기반 추출 (가상)": "3efae285-d069-816b-95cc-dadad64adf3d",
+    "결과 리포트/실제 데이터 검증 (실제 경기 1,517개)": "3efae285-d069-815d-92f5-ecc8139a1fd1",
+    "결과 리포트/한·일 결혼 지표 (2026 최신 보도)": "3efae285-d069-8177-b5ce-eab9ad4123aa",
+    "초기 시뮬레이션": "3efae285-d069-8126-bde2-ec5458c74bea",
+    "DB 스키마와 코드 구조": "3efae285-d069-81db-a391-f6bbd318040f"
+  },
+  "databases": {
+    "실험 기록": {"database_id": "0fe917bb60aa4cc685518099378a76cd", "data_source": "collection://71cee96f-9b6b-47c5-a8d3-49787e8e3e5a", "key": ["이름"]},
+    "주장": {"database_id": "4dcb9f39dae14107bf370b4de3db377f", "data_source": "collection://12fe0a7c-294d-4211-b632-d4ee518a1621", "key": ["링크", "지표", "기간"]},
+    "데이터 출처": {"database_id": "5ee56d7ceeaa4cfdadf0ecf14061ecfa", "data_source": "collection://c81bd635-a448-443c-aef7-f1769adb5210", "key": ["출처"]},
+    "다음 할 일": {"database_id": "d33a3c631e464190a9d28043d83fb8c1", "data_source": "collection://fee46f05-0dfb-42b7-9a93-38bee3e22cca", "key": ["할 일"]}
+  },
+  "images": "노션 업로드 API는 수집 환경에서 막혀 있어 GitHub raw 주소(공개 레포)로 표시합니다."
+}
