@@ -326,6 +326,12 @@ python season_sim.py     # → output/season_sim/report.md, seasons.csv
 - 핵심(현재 규칙)만으로 18시즌 중 13시즌. 빈 시즌은 2008~2011, 2024 (국면 전환기).
 - 새 유망주 '1~6월 신호'(KOSIS 월별 시도 혼인, 8월 말 예측)가 빈 시즌을 모두 메움 → 18/18. 다른 대회(시점)라 연초 예측과 따로 운영. 2026년 예측은 `data_monthly/nowcast_2026.csv`에 기록.
 
+## 예측 장부와 소유
+
+- [`ledger/`](ledger/README.md): 결과 전에 낸 예측을 해시 체인으로 남김 (`python -m llmrel.ledger verify`). `epl_round.py`와 `trophy_cabinet.py`가 자동으로 추가.
+- [`DATA_SOURCES.md`](DATA_SOURCES.md): 출처별 상업 이용 가능 여부와 유료 상품에서 빼야 할 데이터.
+- [`OWNERSHIP.md`](OWNERSHIP.md): 지금 공개·MIT 상태와 공개/비공개 분리 안 (결정 필요).
+
 ## EPL 라운드 기록 (Opta 비교)
 
 ```bash

@@ -319,3 +319,17 @@ def test_nowcast_uses_only_same_months():
     assert g.loc[2025].notna().all() and g.loc[2026].notna().all()      # 2026년 1~6월 공표됨
     bt = NC.backtest(sgg, [2024], 6)
     assert len(bt) == sgg.shape[1] and bt.model.mean() < bt.base.mean()   # 2024 반등을 1~6월 신호로 잡음
+
+
+def test_ledger_chain_detects_tampering(tmp_path):
+    import json
+    from llmrel import ledger
+    p = tmp_path / "l.jsonl"
+    assert ledger.append([dict(kind="t", key="a", payload={"p": 0.5}), dict(kind="t", key="b", payload={"p": 0.2})], p, now="2026-01-01T00:00:00+00:00") == 2
+    assert ledger.append([dict(kind="t", key="a", payload={"p": 0.5})], p) == 0          # 같은 예측은 다시 안 남김
+    assert ledger.append([dict(kind="t", key="a", payload={"p": 0.6})], p) == 1          # 바뀐 예측은 새 줄
+    assert ledger.verify(p)[0]
+    rows = p.read_text().splitlines(); r = json.loads(rows[0]); r["payload"]["p"] = 0.9; rows[0] = json.dumps(r)
+    p.write_text("\n".join(rows) + "\n")
+    ok, i, _ = ledger.verify(p)
+    assert not ok and i == 0

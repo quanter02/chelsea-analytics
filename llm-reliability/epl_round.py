@@ -17,7 +17,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from llmrel import epl, understat
+from llmrel import epl, ledger, understat
 
 ROOT = Path(__file__).parent
 BENCH = ROOT / "data_epl" / "benchmark_opta.csv"
@@ -60,6 +60,9 @@ def main() -> None:
         b = b[~(b.source.str.startswith("우리 모델") & b.set_index(["date", "home", "away"]).index.isin(new.set_index(["date", "home", "away"]).index))]
     b = pd.concat([b, new], ignore_index=True).sort_values(["date", "home", "source"])
     b.to_csv(BENCH, index=False)
+    n_led = ledger.append([dict(kind="epl", key=f"{r.date}|{r.home}|{r.away}", payload={"pH": r.pH, "pD": r.pD, "pA": r.pA},
+                                model=f"{mode} {params}", evidence=f"결과 반영 {last_played}까지") for r in new.itertuples()])
+    ok, n_rows, last_hash = ledger.verify()
 
     # 채점
     sc = epl.score_benchmark(BENCH, df)
@@ -72,7 +75,8 @@ def main() -> None:
 
     OUT.mkdir(parents=True, exist_ok=True)
     L = [f"# EPL 라운드 기록 ({today})", "", f"- xG: {xg_note}", f"- 모드: **{mode}** (이번 시즌 xG 붙은 경기 {int(df[(df.season == SEASON) & df.played].hxg.notna().sum())}개)",
-         f"- 결과 반영: {last_played}까지, 이번 시즌 {int(df[(df.season == SEASON) & df.played].shape[0])}경기", "",
+         f"- 결과 반영: {last_played}까지, 이번 시즌 {int(df[(df.season == SEASON) & df.played].shape[0])}경기",
+         f"- 예측 장부: 이번에 {n_led}줄 추가, 전체 {n_rows}줄, 체인 {'정상' if ok else '어긋남'}, 마지막 hash `{last_hash[:16]}`", "",
          "## Opta와 같은 경기 비교 (채점 끝난 것만, RPS 낮을수록 좋음)", "",
          (summ.round(4).to_markdown() if len(summ) else "아직 채점된 비교 경기가 없습니다."), "",
          "## 기록된 예측", "", sc[["date", "home", "away", "source", "pH", "pD", "pA", "status", "rps"]].round(3).to_markdown(index=False)]

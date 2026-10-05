@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 
 import season_sim as S
-from llmrel import forecast_tune as FT, nowcast as NC, regional_tune as RT
+from llmrel import forecast_tune as FT, ledger, nowcast as NC, regional_tune as RT
 from llmrel.report import md_table
 
 ROOT = Path(__file__).parent
@@ -100,6 +100,10 @@ def main() -> None:
     nc = NC.predict(sgg, 2026, 6)
     pd.DataFrame({"made_on": "2026-10-05", "code": sgg.columns, "last_2025": np.exp(sgg.loc[2025]).round().astype(int).to_numpy(),
                   "pred_2026": np.exp(nc).round().astype(int).to_numpy()}).to_csv(ROOT / "data_monthly" / "nowcast_2026.csv", index=False)
+    names = pd.read_csv(ROOT / "data_regional" / "kr_marriages_by_region.csv", dtype={"code": str}).drop_duplicates("code").set_index("code").name
+    ledger.append([dict(kind="nowcast_2026", key=c, payload={"region": names.get(c, ""), "pred_2026": int(round(float(np.exp(v))))},
+                        model="1~6월 신호 (KOSIS DT_1B8000G, 2026년 1~6월)", evidence="2025 연간 건수 × 소속 시도 1~6월 증가율")
+                   for c, v in nc.items()])
     (OUT / "trophies.md").write_text("\n".join(L), encoding="utf-8")
     print("\n".join(L))
 
