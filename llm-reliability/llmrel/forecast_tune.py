@@ -51,11 +51,10 @@ def make_spec(d: pd.DataFrame):
             out.append((key, y[-1], dr, F._damped(y, h), F._features(L, key, origin), L.at[origin + h, key]))
         return tuple(out)
 
-    def evaluate(params, split):
-        errs = []
-        for o in ORIGINS[split]:
+    def rows(params, origins, live=False):
+        for o in origins:
             for h in (1, 2, 3):
-                if split == "live" and o + h != LIVE_YEAR:
+                if live and o + h != LIVE_YEAR:
                     continue
                 w = pooled(o, h, params["lam"])
                 for key, last, dr, dm, f, truth in base(o, h, params["drift_k"], params.get("robust", 0)):
@@ -63,7 +62,15 @@ def make_spec(d: pd.DataFrame):
                     ens = (1 - params["wp"]) * (dr + dm) / 2 + params["wp"] * pp
                     cap = params.get("cap", 99.0) * h
                     pred = last + float(np.clip(params["s"] * (ens - last), -cap, cap))
-                    errs.append(abs(truth - pred))
-        return np.array(errs)
+                    yield o, h, key, abs(truth - pred)
 
-    return Spec(name="연령별 혼인율 예측", grid=GRID, start=START, evaluate=evaluate, metric="|로그 오차|")
+    def evaluate(params, split):
+        return np.array([r[3] for r in rows(params, ORIGINS[split], split == "live")])
+
+    def detail(params, origins):
+        """항목별 오차 표 (원점, 거리, 계열, 오차) — 구간별 진단용."""
+        return pd.DataFrame(list(rows(params, origins)), columns=["origin", "h", "key", "err"])
+
+    spec = Spec(name="연령별 혼인율 예측", grid=GRID, start=START, evaluate=evaluate, metric="|로그 오차|")
+    spec.detail = detail
+    return spec

@@ -44,16 +44,23 @@ def make_spec(sgg: pd.DataFrame, sido: pd.DataFrame):
         par = sido.loc[origin - k:origin].diff().iloc[1:].median() if robust else (sido.loc[origin] - sido.loc[origin - k]) / k
         return own, own.index.map(lambda c: par.get(parent[c], np.nan)).to_numpy()
 
-    def evaluate(p, split):
-        errs = []
-        for o in ORIGINS[split]:
+    def errors(p, origins, horizons=(1, 2)):
+        for o in origins:
             own, par = trends(o, p["k"], p.get("robust", 0))
             par = np.where(np.isnan(par), own.to_numpy(), par)
             tr = np.clip((1 - p["alpha"]) * own.to_numpy() + p["alpha"] * par, -p.get("cap", 99.0), p.get("cap", 99.0))
             lvl = (1 - p["beta"]) * sgg.loc[o].to_numpy() + p["beta"] * sgg.loc[o - 2:o].mean().to_numpy()
-            for h in ((1,) if split == "live" else (1, 2)):
+            for h in horizons:
                 if o + h in sgg.index:
-                    errs.append(np.abs(sgg.loc[o + h].to_numpy() - (lvl + p["s"] * h * tr)))
-        return np.concatenate(errs)
+                    yield o, h, np.abs(sgg.loc[o + h].to_numpy() - (lvl + p["s"] * h * tr))
 
-    return Spec(name="시군구 혼인 건수 예측", grid=GRID, start=START, evaluate=evaluate, metric="|로그 오차|")
+    def evaluate(p, split):
+        return np.concatenate([e for _, _, e in errors(p, ORIGINS[split], (1,) if split == "live" else (1, 2))])
+
+    def detail(p, origins):
+        """항목별 오차 표 (원점, 거리, 시군구 코드, 오차) — 구간별 진단용."""
+        return pd.concat([pd.DataFrame({"origin": o, "h": h, "code": sgg.columns, "err": e}) for o, h, e in errors(p, origins)], ignore_index=True)
+
+    spec = Spec(name="시군구 혼인 건수 예측", grid=GRID, start=START, evaluate=evaluate, metric="|로그 오차|")
+    spec.detail = detail
+    return spec
