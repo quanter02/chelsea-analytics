@@ -306,6 +306,11 @@ python tuning_demo.py    # → output/tuning/report.md, data_epl/predictions_<�
 - 최종 규칙 '가장 확실한 개선부터'(개선 95% 하한이 가장 큰 후보, 하한 > 0일 때만 채택)가 세 모델 모두 최고 또는 공동 최고.
 - 튜닝에 안 쓴 2026/27 50경기: 최종 규칙 RPS 0.2017 < 시작 0.2038 < 조금이라도 0.2073 (차이는 아직 불확실).
 
+새 규칙 점검 (`python rule_check.py` → [rule_check.md](output/tuning/rule_check.md), EPL은 [epl_cap_early.md](output/tuning/epl_cap_early.md)): '한 번의 급변에 덜 흔들리기'
+- EPL 한 경기 득점·xG 상한: Opta 쪽으로 가깝게 만들지만 지난 시즌 검증에서 나빠짐 → 채택 안 함.
+- 혼인율·시군구 한 해 추세 상한 7%: 검증은 차이 없음, 시험·2025 최신에서 개선 → 채택 안 하고 **사전 등록 가설**로 2026년 통계에서 판정.
+- 중앙값 추세, 시즌 초반 갱신 속도: 폐기.
+
 ## EPL 라운드 기록 (Opta 비교)
 
 ```bash
