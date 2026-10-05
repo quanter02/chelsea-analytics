@@ -52,6 +52,13 @@
       "key": [
         "할 일"
       ]
+    },
+    "스쿼드": {
+      "database_id": "0582a44fe44046aaaa8b539f96a40e2a",
+      "data_source": "collection://f88b8363-3fd7-4612-950a-e715d34c8a8b",
+      "key": [
+        "선수"
+      ]
     }
   },
   "images": "노션 업로드 API는 수집 환경에서 막혀 있어 GitHub raw 주소(공개 레포)로 표시합니다."
