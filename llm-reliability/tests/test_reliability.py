@@ -314,8 +314,8 @@ def test_annual_cap_rules_default_off():
 
 def test_nowcast_uses_only_same_months():
     from llmrel import nowcast as NC, regional_tune as RT
-    g = NC.ytd_growth(6)
-    assert g.loc[2025].notna().all() and g.loc[2026].notna().all()      # 2026년 1~6월 공표됨
     sgg, _ = RT.load()
+    g = NC.ytd_growth(6)[sorted({c[:2] for c in sgg.columns})]           # 시군구가 속한 시도만 (통합 시도 신설 코드는 제외)
+    assert g.loc[2025].notna().all() and g.loc[2026].notna().all()      # 2026년 1~6월 공표됨
     bt = NC.backtest(sgg, [2024], 6)
     assert len(bt) == sgg.shape[1] and bt.model.mean() < bt.base.mean()   # 2024 반등을 1~6월 신호로 잡음
