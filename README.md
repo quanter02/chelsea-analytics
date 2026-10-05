@@ -95,7 +95,7 @@ These analyses use event and shot data only, with no tracking data and no video.
 
 ## Data & licence
 
-- Code: MIT (see [LICENSE](LICENSE)).
+- Code: MIT (see [LICENSE](LICENSE)), except the `llm-reliability/` folder, which from 2026-10-05 is all rights reserved (see [llm-reliability/LICENSE](llm-reliability/LICENSE)); earlier versions of that folder remain MIT.
 - [StatsBomb Open Data](https://github.com/statsbomb/open-data): free for non-commercial use with attribution.
 - [Understat](https://understat.com): personal / research use. Understat data is not redistributed here.
 

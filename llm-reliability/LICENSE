@@ -1,0 +1,20 @@
+llm-reliability/ — All rights reserved
+
+Copyright (c) 2026 jw_football_data
+
+This licence applies to every file in the llm-reliability/ folder in
+versions committed after 2026-10-05 (commit 25644f2 and earlier versions
+remain available under the MIT licence in the repository root LICENSE).
+It replaces the root MIT licence for this folder only.
+
+You may view these files on GitHub, and you may run the ledger
+verification (python -m llmrel.ledger verify) and the published reports
+to check our recorded predictions and results.
+
+Any other use — copying, modifying, redistributing, or using the code,
+models, rules, processed data or reports in a product or service,
+commercial or not — requires prior written permission from the copyright
+holder.
+
+Third-party data in this folder stays under its own terms; see
+DATA_SOURCES.md. Nothing here grants rights in third-party data.
