@@ -322,6 +322,10 @@ python season_sim.py     # → output/season_sim/report.md, seasons.csv
 - 연령별 혼인율 🏆7 ➖9 ❌2 — 반등기(2024~2025) 2연패, 한국 계열은 기준선과 비슷.
 - 시군구 혼인 건수 🏆9 ❌9 — 전 기간으론 '마지막 값 그대로'보다 2.6% 나쁨. 검증 구간이 한 국면에만 걸쳐 있었던 탓.
 
+트로피 진열장 (`python trophy_cabinet.py` → [trophies.md](output/season_sim/trophies.md)): 목표는 매 시즌 1등이 아니라 **매 시즌 메이저 1개 이상**.
+- 핵심(현재 규칙)만으로 18시즌 중 13시즌. 빈 시즌은 2008~2011, 2024 (국면 전환기).
+- 새 유망주 '1~6월 신호'(KOSIS 월별 시도 혼인, 8월 말 예측)가 빈 시즌을 모두 메움 → 18/18. 다른 대회(시점)라 연초 예측과 따로 운영. 2026년 예측은 `data_monthly/nowcast_2026.csv`에 기록.
+
 ## EPL 라운드 기록 (Opta 비교)
 
 ```bash

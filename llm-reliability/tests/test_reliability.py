@@ -310,3 +310,12 @@ def test_annual_cap_rules_default_off():
     assert sp.evaluate({**FT.FINAL, "cap": 0.03}, "live").mean() < sp.evaluate(FT.FINAL, "live").mean()   # 2025 반등에서 급변 제한이 덜 틀림
     sgg, sido = RT.load(); rs = RT.make_spec(sgg, sido)
     assert len(rs.evaluate(RT.FINAL, "live")) == sgg.shape[1]
+
+
+def test_nowcast_uses_only_same_months():
+    from llmrel import nowcast as NC, regional_tune as RT
+    g = NC.ytd_growth(6)
+    assert g.loc[2025].notna().all() and g.loc[2026].notna().all()      # 2026년 1~6월 공표됨
+    sgg, _ = RT.load()
+    bt = NC.backtest(sgg, [2024], 6)
+    assert len(bt) == sgg.shape[1] and bt.model.mean() < bt.base.mean()   # 2024 반등을 1~6월 신호로 잡음
