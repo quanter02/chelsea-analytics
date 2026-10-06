@@ -341,3 +341,22 @@ def test_district_selection_uses_only_past_for_choice():
     s = D.select(p)
     assert len(s) == p.code.nunique() and set(s.chosen) <= set(D.CANDS)
     assert (s.n == len(D.TEST)).all()                          # 시험 구간은 선택에 쓰지 않은 해만
+
+
+def test_intervals_use_only_past_errors():
+    """범위는 그해 이전 오차로만 만든다: 미래 오차를 바꿔도 과거 해의 범위는 그대로."""
+    import numpy as np
+    import pandas as pd
+    from llmrel import intervals as I
+    rng = np.random.default_rng(0)
+    r = pd.DataFrame({"year": np.repeat(range(2006, 2016), 50), "code": np.tile([f"{i:05d}" for i in range(50)], 10),
+                      "n": np.tile(rng.integers(40, 5000, 50), 10).astype(float)})
+    r["res"] = rng.normal(0, np.sqrt(0.05 ** 2 + 2 / r.n))
+    a = I.evaluate(r, years=[2012])
+    r2 = r.copy(); r2.loc[r2.year >= 2012, "res"] *= 10
+    b = I.evaluate(r2, years=[2012])
+    for rule in I.RULES:
+        wa, wb = a[a.rule == rule].width.to_numpy(), b[b.rule == rule].width.to_numpy()
+        assert np.allclose(wa, wb)
+    c, phi = I._cphi(r[r.year < 2012])
+    assert 0.02 < c < 0.08 and 1.0 < phi < 3.0           # 오차² = c² + φ/n 구조를 되찾음

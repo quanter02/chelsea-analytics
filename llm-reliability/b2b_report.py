@@ -16,7 +16,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from llmrel import district_select as D, ledger, nowcast as NC, regional_tune as RT
+from llmrel import district_select as D, intervals as I, ledger, nowcast as NC, regional_tune as RT
 
 ROOT = Path(__file__).parent
 OUT = ROOT / "content" / "b2b"
@@ -48,6 +48,23 @@ def cand_table(code: str):
     return rows
 
 
+_COV = None
+
+
+def coverage():
+    """채택 범위 규칙의 과거 적중률 (2010~2018, 2019~2025)."""
+    global _COV
+    if _COV is None:
+        s = I.summary(I.evaluate())
+        _COV = (float(s.loc[I.CHOSEN, ("cover", "pick")]), float(s.loc[I.CHOSEN, ("cover", "test")]))
+    return _COV
+
+
+def rng(code: str) -> tuple[int, int]:
+    t = pd.read_csv(ROOT / "data_monthly" / "nowcast_2026_range.csv", dtype={"code": str}).set_index("code")
+    return int(t.lo80[code]), int(t.hi80[code])
+
+
 def build(code: str) -> Path:
     OUT.mkdir(parents=True, exist_ok=True)
     web = json.load(open(ROOT / "data_regional" / "regions_web.json", encoding="utf-8"))
@@ -75,6 +92,8 @@ def build(code: str) -> Path:
     wins = int((bt.model < bt.base).sum())
     led = [x for x in ledger.read() if x["kind"] == "nowcast_2026" and x["key"] == code]
     h = led[-1]["hash"][:16] if led else "(미기록)"
+    lo, hi = rng(code)
+    cov_pick, cov_test = coverage()
     ct = cand_table(code)
     cand_rows = "".join(f'<tr><td>{D.LABEL[k]}{" (사용)" if k == "monthly" else ""}</td><td class="r">{a:.1f}%</td><td class="r">{b:.1f}%</td><td class="r">{c:.1f}%</td></tr>' for k, (a, b, c) in ct.items())
     m_ok = ct["monthly"][1] < ct["naive"][1] and ct["monthly"][0] < ct["naive"][0]
@@ -103,7 +122,7 @@ td.r {{ text-align:right; font-family:monospace }}
 <div class="kpis">
 <div class="kpi"><small>미혼 남 ÷ 미혼 여 (25~39세)</small><b>{ratio:.2f}</b><small>전국 {nat['unmarried_ratio']:.2f}</small></div>
 <div class="kpi"><small>2025년 혼인 건수</small><b>{last:,.0f}</b><small>2005년 대비 {idx[-1]-100:+.0f}%</small></div>
-<div class="kpi"><small>2026년 예측 (1~6월 신호)</small><b>{nc:,.0f}</b><small>{(nc/last-1)*100:+.1f}% · 장부 {h}</small></div>
+<div class="kpi"><small>2026년 예측 (1~6월 신호)</small><b>{nc:,.0f}</b><small>80% 범위 {lo:,}~{hi:,} · 장부 {h}</small></div>
 <div class="kpi"><small>20~34세 순이동 (연, 2015~24)</small><b>{mig_f:+.1f}% / {mig_m:+.1f}%</b><small>여성 / 남성</small></div>
 </div>
 <h2>1. 결혼 시장 성비</h2>{scope}
@@ -119,7 +138,8 @@ td.r {{ text-align:right; font-family:monospace }}
 {svg_line(years, idx, sidx)}
 <p class="note">파란 선 {name}, 회색 점선 소속 시도. 2005년 {ts.iloc[0]:,.0f}건 → 2025년 {last:,.0f}건.</p>
 <h2>3. 2026년 혼인 건수 예측</h2>
-<p>2026년 1~6월 소속 시도의 혼인 건수가 전년 같은 기간보다 늘어난 비율을 {name}의 2025년 건수에 곱했습니다. 예측값 <b>{nc:,.0f}건</b>(전년 대비 {(nc/last-1)*100:+.1f}%)은 공개 예측 장부에 hash <code>{h}</code>로 기록돼 있고, 2027년 통계 공표 후 채점합니다.</p>
+<p>2026년 1~6월 소속 시도의 혼인 건수가 전년 같은 기간보다 늘어난 비율을 {name}의 2025년 건수에 곱했습니다. 예측값 <b>{nc:,.0f}건</b>(전년 대비 {(nc/last-1)*100:+.1f}%), <b>80% 범위 {lo:,}~{hi:,}건</b>은 공개 예측 장부에 hash <code>{h}</code>로 기록돼 있고, 2027년 통계 공표 후 채점합니다.</p>
+<p class="note">80% 범위: 같은 방식으로 과거에 범위를 만들었을 때 실제 값이 그 안에 들어온 비율은 2010~2018년 {cov_pick*100:.0f}%, 2019~2025년 {cov_test*100:.0f}%였습니다(전국 시군구 기준). 최근처럼 결혼 흐름이 크게 바뀌는 해에는 범위를 벗어날 수 있습니다. 범위의 폭은 지역 규모로 정해지며, 작은 지역일수록 넓습니다.</p>
 <table><tr><th>같은 방식의 과거 성적 (2008~2025, 8월 말 시점 예측)</th><th class="r">값</th></tr>
 <tr><td>평균 오차 — 이 방식</td><td class="r">{err_model:.1f}%</td></tr>
 <tr><td>평균 오차 — '작년 값 그대로'</td><td class="r">{err_base:.1f}%</td></tr>
@@ -154,7 +174,7 @@ def build_all() -> pd.DataFrame:
         build(c)
         w = web.get(c) or web.get(c[:4] + "0")
         rows.append({"code": c, "지역": (w[0] if c in web else f"{w[0]} {m[m.code == c].name.iloc[0]}") if w else c, "미혼 성비": round(w[4] / w[5], 2) if w else None,
-                     "2025 혼인": int(last[c]), "2026 예측": int(round(nc[c])), "앞 구간 개선(%)": round(g.loc[c].iloc[0], 1),
+                     "2025 혼인": int(last[c]), "2026 예측": int(round(nc[c])), "80% 하한": rng(c)[0], "80% 상한": rng(c)[1], "앞 구간 개선(%)": round(g.loc[c].iloc[0], 1),
                      "뒤 구간 개선(%)": round(g.loc[c].iloc[1], 1)})
     t = pd.DataFrame(rows)
     t["강함"] = (t["앞 구간 개선(%)"] >= 10) & (t["뒤 구간 개선(%)"] >= 10)
