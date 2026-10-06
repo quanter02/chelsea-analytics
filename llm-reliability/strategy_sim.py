@@ -101,7 +101,7 @@ def run(strat: str, w: dict, n: int = 4000, seed: int = 0) -> dict:
             inc = np.where(live, clients * 100.0, 0.0)
             cost = LIVING + np.where(live & (ef > 0), BIZ, 0) + np.where(live & (eb > 0) & ~growing, TOOLS, 0)
             sal = np.where(live & growing, 300.0, 0.0)          # 투자받은 회사에서 대표 급여
-            job = np.where(live & employed, LIVING + JOB_SAVE, 0.0)
+            job = np.where(live & employed, LIVING + w.get("save", JOB_SAVE), 0.0)
             cost = cost - np.where(live & employed, BIZ, 0)     # 부업 단계는 사업비 최소
             W += np.where(live, inc + sal + job - cost, JOB_SAVE)
             year_inc += np.where(live, inc + sal + job, LIVING + JOB_SAVE)
