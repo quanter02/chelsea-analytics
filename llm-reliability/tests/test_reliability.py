@@ -333,3 +333,11 @@ def test_ledger_chain_detects_tampering(tmp_path):
     p.write_text("\n".join(rows) + "\n")
     ok, i, _ = ledger.verify(p)
     assert not ok and i == 0
+
+
+def test_district_selection_uses_only_past_for_choice():
+    from llmrel import district_select as D
+    p = D.predictions(range(2008, 2026))
+    s = D.select(p)
+    assert len(s) == p.code.nunique() and set(s.chosen) <= set(D.CANDS)
+    assert (s.n == len(D.TEST)).all()                          # 시험 구간은 선택에 쓰지 않은 해만

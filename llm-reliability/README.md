@@ -326,6 +326,16 @@ python season_sim.py     # → output/season_sim/report.md, seasons.csv
 - 핵심(현재 규칙)만으로 18시즌 중 13시즌. 빈 시즌은 2008~2011, 2024 (국면 전환기).
 - 새 유망주 '1~6월 신호'(KOSIS 월별 시도 혼인, 8월 말 예측)가 빈 시즌을 모두 메움 → 18/18. 다른 대회(시점)라 연초 예측과 따로 운영. 2026년 예측은 `data_monthly/nowcast_2026.csv`에 기록.
 
+## 지자체 리포트 (B2B)
+
+```bash
+python b2b_report.py 31070      # 시군구 하나 → content/b2b/report_31070.html
+python b2b_report.py all        # 243곳 전체 + 영업 우선순위 districts_all.csv
+```
+
+- 성비·원인 분해·순이동·혼인 추이·2026 예측(장부 hash)·예측 방식 비교·한계를 A4 한 장에.
+- 지역마다 방식을 고르면 이후 오차 9.0%, 모든 곳에 1~6월 신호 하나면 8.6% → 하나로 통일 ([영업 우선순위](content/b2b/README.md)).
+
 ## 예측 장부와 소유
 
 - [`ledger/`](ledger/README.md): 결과 전에 낸 예측을 해시 체인으로 남김 (`python -m llmrel.ledger verify`). `epl_round.py`와 `trophy_cabinet.py`가 자동으로 추가.
