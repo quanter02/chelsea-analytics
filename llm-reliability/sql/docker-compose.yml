@@ -1,0 +1,17 @@
+# 셈법 SQL 연습용 Oracle (SQLD 문법 기준)
+#   docker compose up -d        # 처음 1~2분은 DB 초기화
+#   docker compose logs -f      # "DATABASE IS READY TO USE!" 가 보이면 준비 완료
+services:
+  oracle:
+    image: gvenzl/oracle-free:23-slim
+    container_name: sembeop-oracle
+    ports:
+      - "1521:1521"
+    environment:
+      ORACLE_PASSWORD: sembeop       # SYS/SYSTEM 비밀번호 (로컬 연습용)
+      APP_USER: sembeop              # 연습할 계정
+      APP_USER_PASSWORD: sembeop
+    volumes:
+      - oradata:/opt/oracle/oradata  # 컨테이너를 지워도 데이터 유지
+volumes:
+  oradata:
