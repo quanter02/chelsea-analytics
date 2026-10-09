@@ -152,7 +152,12 @@ def _plan(topic, objs, key):
     years = (40000 // max(cm, 1)) // 12
     if years >= 1:
         return [(objs, years)]
-    big = max((k for k, v in objs.items() if v == "ALL"), key=lambda k: len(vals.get(k, [])))
+    span = int(topic.end[:4]) - int(topic.start[:4]) + 1
+    def calls(k):                      # 이 분류를 값별로 나누면 필요한 요청 수
+        pm = cm // max(len(vals.get(k, [])), 1)
+        y = max(1, (40000 // max(pm, 1)) // 12)
+        return len(vals.get(k, [])) * -(-span // y)
+    big = min((k for k, v in objs.items() if v == "ALL"), key=calls)   # 요청 수가 가장 적어지는 분류로 나눔
     out = []
     for v in vals[big]:
         out += _plan(topic, {**objs, big: v}, key) if per_month({**objs, big: v}) * 12 > 40000 else [({**objs, big: v}, (40000 // per_month({**objs, big: v})) // 12)]
