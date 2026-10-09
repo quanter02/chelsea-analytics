@@ -253,6 +253,7 @@ def units(topic: Topic, tidy: pd.DataFrame) -> dict:
     t = tidy.copy()
     t["year"] = t.ym.str[:4].astype(int); t["month"] = t.ym.str[4:].astype(int)
     names = t.drop_duplicates("unit").set_index("unit").name
+    sido = {u: str(n).strip() for u, n in names.items() if len(u) == 2}   # 필터 전에 시도 이름 확보 (자료마다 코드 체계가 다름)
     if topic.unit_filter is not None:  # 필터는 정리 전 원래 이름에 적용 (예: "서울 계" 제외)
         keep = [u for u in names.index if topic.unit_filter(u, names[u])]
         t = t[t.unit.isin(keep)]; names = names[keep]
@@ -260,7 +261,7 @@ def units(topic: Topic, tidy: pd.DataFrame) -> dict:
     def full(u):                       # 시군구 코드(5자리) 앞에 시도 이름
         n = names[u]
         if len(u) == 5 and u.isdigit():
-            sd = names.get(u[:2]) or SIDO_STD.get(u[:2])
+            sd = sido.get(u[:2]) or SIDO_STD.get(u[:2])
             if sd: return f"{SIDO_SHORT.get(sd, sd)} {n}"
         return n
     names = pd.Series({u: full(u) for u in names.index})
