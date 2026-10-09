@@ -1,0 +1,3 @@
+experiments/data_kosis/*.parts/
+experiments/report_*.md
+experiments/__pycache__/
