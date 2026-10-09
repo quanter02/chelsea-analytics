@@ -25,7 +25,7 @@ import kosis_monitor as K
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_ROOT = os.path.join(HERE, "monthly")
 MONTHLY_TOPICS = ["혼인", "청년 순이동", "미분양"]   # 월간 갱신 대상 (검증을 마친 주제만. TOPICS에 새 주제를 넣어도 자동으로 포함되지 않음)
-RULE = {"혼인": "v5", "청년 순이동": "v5", "미분양": "v5"}   # 2026-10-09 미분양 사전 등록 검증에서 5차 채택 (preregistration_unsold_v2_v5.md)
+RULE = {"혼인": "v6", "청년 순이동": "v6", "미분양": "v6"}   # 2026-10-09 출생 사전 등록 검증에서 6차 채택 (preregistration_births_v5_v6.md, births_preregistered_test.ipynb)
 
 
 def refresh(topic: K.Topic, today: dt.date, years_back: int = 2, verbose=False) -> pd.DataFrame:

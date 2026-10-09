@@ -22,3 +22,10 @@
 - `unsold_housing_monthly_sigungu_2000_2026.csv`: 사전 등록 분석 코드(`unsold_rules.py`) 형식 (`sido`, `sigungu`, `ym`, `unsold`). 시군구 '계'(시도 합계) 행은 사전 등록 문서대로 제외.
 - 재고(수준) 자료입니다. 매달 약 1개월 지연으로 공표됩니다.
 - 공공데이터로 상업 이용 가능. 출처("국토교통부·KOSIS"와 표 번호) 표기, 가공 사실 명시.
+
+# 시군구 월별 출생 (1997.01 ~ 2025.12)
+
+- 출처: 통계청 KOSIS, 인구동향조사 `DT_1B81A01` (시군구/월별 출생), 항목 T1(계). 2026-10-09 KOSIS OpenAPI로 내려받음.
+- `pipeline_births.csv`: 범용 파이프라인 형식 (`unit`, `name`, `ym`, `series` = y, `value` = 출생아 수).
+- 시군구 월별 확정치는 다음 해에 한 번에 공표됩니다(연 1회). 통일 규칙 5차 vs 6차 사전 등록 검증(`births_preregistered_test.ipynb`)에 사용.
+- 공공데이터로 상업 이용 가능. 출처("통계청 KOSIS"와 표 번호) 표기, 가공 사실 명시.
