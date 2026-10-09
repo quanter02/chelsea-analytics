@@ -314,7 +314,7 @@ def alarm(u, phi, rule, a, m):
         if rule == "v2":
             if (S - h) / Sc > m: return i + 1, 1
             if (S + h) / Sc < -m: return i + 1, -1
-        elif rule == "v5":
+        elif rule in ("v5", "v6"):        # v6: 판정은 v5와 같고 φ만 지역별 (unit_phis)
             if S - h > 0 and S / Sc > m: return i + 1, 1
             if S + h < 0 and S / Sc < -m: return i + 1, -1
         else:
@@ -331,6 +331,27 @@ class Calibration:
     alpha: float
     m: float
     cal_summary: dict
+    phi_u: dict | None = None             # v6: (unit, 연도) → 지역별 φ
+
+
+K_SHRINK = 24   # v6: 지역별 φ를 전체 φ 쪽으로 당기는 강도 (월 수)
+
+
+def unit_phis(U, phi_g, k=K_SHRINK):
+    """v6: 지역별 φ = (k·전체 φ + 그 지역의 직전 5년 월별 (e²/분산) 합) / (k + 월 수). 해당 연도 이전 자료만 씀."""
+    out = {}
+    for (unit, Y) in U:
+        r = []
+        for y in range(Y - 5, Y):
+            u = U.get((unit, y))
+            if u and u["n"] == 12:
+                r.extend(((u["e"] ** 2) / np.maximum(u["var_raw"], 1e-9)).tolist())
+        out[(unit, Y)] = (k * phi_g + float(np.sum(r))) / (k + len(r))
+    return out
+
+
+def _phi(cb, unit, y):
+    return cb.phi_u[(unit, y)] if cb.rule == "v6" and cb.phi_u is not None else cb.phi
 
 
 A_V2 = [0.9, 0.7, 0.5, 0.3, 0.2, 0.1, 0.05, 0.01]
@@ -343,7 +364,7 @@ def _evaluate(topic, U, years, cb, a, m):
     rows = []
     for (unit, y), u in U.items():
         if y not in years or u["size"] < topic.min_size or u["n"] < 12: continue
-        mo, s = alarm(u, cb.phi, cb.rule, a, m)
+        mo, s = alarm(u, _phi(cb, unit, y), cb.rule, a, m)
         rows.append(dict(unit=unit, name=u["name"], year=y, size=u["size"], dev=u["dev"], alarm_m=mo, alarm_dir=s))
     R = pd.DataFrame(rows)
     R["규모"] = pd.cut(R["size"], list(topic.size_cuts), right=False, labels=list(topic.size_labels))
@@ -374,11 +395,11 @@ def calibrate(topic: Topic, U: dict, rule="v2") -> Calibration:
     else:
         dev, clear = float(np.quantile(x, topic.thresholds[1])), float(np.quantile(x, topic.thresholds[2]))
     ms = [k * clear for k in M_MULT]
-    cb = Calibration(phi, dev, clear, rule, None, None, {})
+    cb = Calibration(phi, dev, clear, rule, None, None, {}, unit_phis(U, phi) if rule == "v6" else None)
     if rule == "v2":
         order = [(a, m) for m in ms for a in A_V2]
         ok = lambda t, g: t["잘못된경보율"] <= FA_TARGET
-    else:
+    else:                              # v5·v6: 가장 민감한 α 먼저 → 가장 작은 m, 모든 규모 구간 각각 ≤ 10%
         order = [(a, m) for a in A_V5 for m in ms]
         ok = lambda t, g: bool((g.잘못된경보율.fillna(0) <= FA_TARGET).all())
     for a, m in order:
@@ -401,7 +422,7 @@ def live(topic, U, cb, year=None):
     rows = []
     for (unit, y), u in U.items():
         if y != year or u["size"] < topic.min_size: continue
-        mo, s = alarm(u, cb.phi, cb.rule, cb.alpha, cb.m)
+        mo, s = alarm(u, _phi(cb, unit, y), cb.rule, cb.alpha, cb.m)
         if s == 0: continue
         n = u["n"]; Sc = u["scale_inc"][:n].sum(); S = u["e"][:n].sum()
         rows.append(dict(지역=u["name"], 반영=f"1~{n}월", 경보월=f"{mo}월", 방향="증가" if s > 0 else "감소",
@@ -464,6 +485,12 @@ TOPICS = {
         start="200501", end="202608", cal=range(2010, 2018), test=range(2018, 2026), live_year=2026,
         min_size=2000, thresholds=("quantile", 0.8, 0.5), size_cuts=(0, 5000, 15000, np.inf), size_labels=("2천~5천", "5천~1.5만", "1.5만 이상"),
         cache="data_kosis/pipeline_youth_migration.csv"),
+    "출생": Topic(
+        name="시군구 출생", table="DT_1B81A01", kind="flow",
+        series={"y": Series("T1", {"objL1": "ALL"})}, unit_cols=("C1",), unit_filter=_sgg_marriage,
+        start="199701", end="202512", cal=range(2003, 2013), test=range(2013, 2026), live_year=2025,
+        min_size=300, thresholds=("quantile", 0.8, 0.5), size_cuts=(0, 1000, 3000, np.inf), size_labels=("300~1천", "1천~3천", "3천 이상"),
+        cache="data_kosis/pipeline_births.csv"),
     "미분양": Topic(
         name="시군구 미분양 주택", table="DT_MLTM_2082", org="116", kind="stock",
         series={"y": Series("13103871087T1", {"objL1": "ALL", "objL2": "ALL"})}, unit_cols=("C1", "C2"),
