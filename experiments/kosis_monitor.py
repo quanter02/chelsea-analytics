@@ -253,6 +253,9 @@ def units(topic: Topic, tidy: pd.DataFrame) -> dict:
     t = tidy.copy()
     t["year"] = t.ym.str[:4].astype(int); t["month"] = t.ym.str[4:].astype(int)
     names = t.drop_duplicates("unit").set_index("unit").name
+    if topic.unit_filter is not None:  # 필터는 정리 전 원래 이름에 적용 (예: "서울 계" 제외)
+        keep = [u for u in names.index if topic.unit_filter(u, names[u])]
+        t = t[t.unit.isin(keep)]; names = names[keep]
     names = names.map(lambda x: str(x).replace(" ", "") if len(str(x).replace(" ", "")) <= 3 else str(x))   # "남  구" → "남구"
     def full(u):                       # 시군구 코드(5자리) 앞에 시도 이름
         n = names[u]
@@ -261,9 +264,6 @@ def units(topic: Topic, tidy: pd.DataFrame) -> dict:
             if sd: return f"{SIDO_SHORT.get(sd, sd)} {n}"
         return n
     names = pd.Series({u: full(u) for u in names.index})
-    if topic.unit_filter is not None:
-        keep = [u for u in names.index if topic.unit_filter(u, names[u])]
-        t = t[t.unit.isin(keep)]
     wide = {s: t[t.series == s].pivot_table(index="unit", columns=["year", "month"], values="value") for s in t.series.unique()}
     years = sorted({y for w in wide.values() for y, _ in w.columns})
     U = {}

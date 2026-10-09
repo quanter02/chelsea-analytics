@@ -24,7 +24,7 @@ import kosis_monitor as K
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_ROOT = os.path.join(HERE, "monthly")
-RULE = {"혼인": "v2", "청년 순이동": "v2", "미분양": "v2"}   # 미분양 사전 검증 결과에 따라 바뀔 수 있음
+RULE = {"혼인": "v5", "청년 순이동": "v5", "미분양": "v5"}   # 2026-10-09 미분양 사전 등록 검증에서 5차 채택 (preregistration_unsold_v2_v5.md)
 
 
 def refresh(topic: K.Topic, today: dt.date, years_back: int = 2, verbose=False) -> pd.DataFrame:
