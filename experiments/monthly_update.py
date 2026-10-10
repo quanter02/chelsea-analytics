@@ -24,8 +24,16 @@ import kosis_monitor as K
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_ROOT = os.path.join(HERE, "monthly")
-MONTHLY_TOPICS = ["혼인", "청년 순이동", "미분양"]   # 월간 갱신 대상 (검증을 마친 주제만. TOPICS에 새 주제를 넣어도 자동으로 포함되지 않음)
-RULE = {"혼인": "v6", "청년 순이동": "v6", "미분양": "v6"}   # 2026-10-09 출생 사전 등록 검증에서 6차 채택 (preregistration_births_v5_v6.md, births_preregistered_test.ipynb)
+MONTHLY_TOPICS = ["혼인", "청년 순이동", "미분양", "E 전체 순이동", "B 영유아(0~9세) 순이동"]   # 월간 갱신 대상 (검증을 마친 주제만. TOPICS에 새 주제를 넣어도 자동으로 포함되지 않음)
+RULE = {"혼인": "v6", "청년 순이동": "v6", "미분양": "v6", "E 전체 순이동": "v6", "B 영유아(0~9세) 순이동": "v6"}   # 2026-10-09 출생 사전 등록 검증에서 6차 채택 (preregistration_births_v5_v6.md, births_preregistered_test.ipynb)
+
+
+def topic_by_name(name: str) -> K.Topic:
+    """기존 주제(K.TOPICS) 또는 뉴스레터 후보(niche_candidates, 2026-10-10 사전 등록 선정)."""
+    if name in K.TOPICS:
+        return K.TOPICS[name]
+    import niche_candidates as N
+    return N.CANDIDATES[name]
 
 
 def refresh(topic: K.Topic, today: dt.date, years_back: int = 2, verbose=False) -> pd.DataFrame:
@@ -76,7 +84,8 @@ def main(topics=None, fetch=True, today=None):
              "- 판정: 통일 점진 규칙 (보정 기간에서 정한 기준 그대로, 매달 다시 고르지 않음)", "",
              "| 주제 | 최신 공표 | 채점 감지율 | 채점 잘못된 경보 | 실시간 경보 (유지) | 새 경보 | 해소 |", "|---|---|---|---|---|---|---|"]
     for name in topics or MONTHLY_TOPICS:
-        topic = dataclasses.replace(K.TOPICS[name], live_year=today.year if name != "혼인" else K.TOPICS[name].live_year)
+        base = topic_by_name(name)
+        topic = dataclasses.replace(base, live_year=base.live_year if name in ("혼인", "출생") else today.year)
         tidy = refresh(topic, today) if fetch else K.fetch(topic, verbose=False)
         latest = tidy.ym.max()
         if name != "혼인" and latest[:4] != str(today.year):           # 연초에는 아직 올해 자료가 없을 수 있음

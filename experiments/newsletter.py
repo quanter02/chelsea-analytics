@@ -25,17 +25,15 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_ROOT = os.path.join(HERE, "newsletter")
 LEDGER = os.path.join(OUT_ROOT, "ledger.csv")
 REPO = "https://github.com/quanter02/chelsea-analytics/blob/claude/great-dirac-3wwgzy/experiments/"
-MAIN = "청년 순이동"     # 주력 주제. preregistration_niche_topic.md 결정에 따라 바꿈
-SIDE: list[str] = []     # 보조 꼭지 (통과한 다른 후보)
+MAIN = "E 전체 순이동"               # 주력 주제: 2026-10-10 사전 등록 선정 결과 (preregistration_niche_topic.md, niche_topic_selection.ipynb)
+SIDE = ["B 영유아(0~9세) 순이동"]     # 보조 꼭지: 같은 선정에서 통과한 후보
 TOP_N = 10
 RATE_BASE = {"net": "예측 전입 대비", "flow": "예측 대비", "stock": "작년 말 대비"}
 
 
 def topic_by_name(name: str) -> K.Topic:
-    if name in K.TOPICS:
-        return K.TOPICS[name]
-    import niche_candidates as N
-    return N.CANDIDATES[name]
+    import monthly_update as MU
+    return MU.topic_by_name(name)
 
 
 def compute(name: str, today: dt.date) -> dict:
@@ -69,7 +67,7 @@ def _ym(s):
     return f"{s[:4]}년 {int(s[4:])}월"
 
 
-def build_issue(month: str, names: list[str], issue_no: int | None = None) -> tuple[str, str, list[dict]]:
+def build_issue(month: str, names: list[str], issue_no: int | None = None, extra_md: str | None = None) -> tuple[str, str, list[dict]]:
     today = dt.date.fromisoformat(month + "-01")
     outs = {n: compute(n, today) for n in names}
     secs = [_section(n, o) for n, o in outs.items()]
@@ -86,9 +84,15 @@ def build_issue(month: str, names: list[str], issue_no: int | None = None) -> tu
         if len(s["rows"]):
             md += [f"| 지역 | 예측 대비 누적 차이 | 이탈률({RATE_BASE[s['kind']]}) | 처음 경보가 뜬 달 |", "|---|---|---|---|"]
             md += [f"| {r.지역} | {_fmt_num(r.예측대비_누적차이)}명 | {r.이탈률} | {r.경보월} |" for r in s["rows"].itertuples()]
-            if len(s["keep"]) > TOP_N:
-                md += ["", f"나머지 {len(s['keep']) - TOP_N}곳은 전체 목록(CSV)에 있습니다."]
+            gun = s["keep"][s["keep"].지역.str.endswith("군")]
+            if len(gun):
+                md += ["", f"**군 지역 경보 {len(gun)}곳**", "", "| 지역 | 예측 대비 누적 차이 | 이탈률 | 처음 경보가 뜬 달 |", "|---|---|---|---|"]
+                md += [f"| {r.지역} | {_fmt_num(r.예측대비_누적차이)}명 | {r.이탈률} | {r.경보월} |" for r in gun.itertuples()]
+            csv = f"{REPO}monthly/{month}/live_{s['name']}.csv".replace(" ", "%20")
+            md += ["", f"전체 {len(s['keep'])}곳 목록: [CSV]({csv})"]
         md += [""]
+    if extra_md:
+        md += [extra_md.strip(), ""]
     cb, t = main["cb"], main["t"]
     import track_record as TR
     k = int(main["latest"][4:])
@@ -103,7 +107,7 @@ def build_issue(month: str, names: list[str], issue_no: int | None = None) -> tu
            "- 예측: 작년 연간 값 × 최근 5년 평균 월별 비중 (모든 지역에 같은 방식 하나).",
            "- 판정: 매달 확인해도 유효한 신뢰 구간이 0(예측과 같음)을 벗어날 때" + (f", 그리고 누적 차이가 규모의 {cb.m:.1%} 이상일 때" if cb.m > 0 else "") + f" (통일 규칙 6차, α = {cb.alpha}).",
            "- 기준은 보정 기간에서 한 번 정하고, 채점 기간 결과를 본 뒤 고치지 않았습니다. "
-           f"[사전 등록 문서]({REPO}preregistration_births_v5_v6.md) · [코드]({REPO}kosis_monitor.py)",
+           f"[주제 선정 사전 등록]({REPO}preregistration_niche_topic.md) · [규칙 사전 등록]({REPO}preregistration_births_v5_v6.md) · [코드]({REPO}kosis_monitor.py)",
            "- 이번 호의 경보는 모두 [적중 기록]({0}newsletter/ledger.csv)에 남기고, 해가 끝나 확정치가 나오면 맞았는지 공개합니다.".format(REPO),
            f"- 이번 호 경보 목록의 지문(SHA-256 앞 16자리): `{digest}`. 발행 뒤 목록을 바꾸지 않았다는 증거로, 저장소 기록과 대조할 수 있습니다.",
            "", "## 출처", "",
@@ -172,8 +176,8 @@ def region_card(month: str, name: str, region: str) -> str:
     return "\n".join(lines)
 
 
-def main(month: str, names: list[str], write_ledger=True):
-    md, page, rows = build_issue(month, names)
+def main(month: str, names: list[str], write_ledger=True, extra_md: str | None = None):
+    md, page, rows = build_issue(month, names, extra_md=extra_md)
     d = os.path.join(OUT_ROOT, month); os.makedirs(d, exist_ok=True)
     open(os.path.join(d, "issue.md"), "w", encoding="utf-8").write(md)
     open(os.path.join(d, "issue.html"), "w", encoding="utf-8").write(page)
@@ -189,10 +193,11 @@ if __name__ == "__main__":
     ap.add_argument("--month", default=dt.date.today().strftime("%Y-%m"))
     ap.add_argument("--topics", nargs="*")
     ap.add_argument("--card")
+    ap.add_argument("--extra", help="특집 꼭지 마크다운 파일")
     a = ap.parse_args()
     if a.card:
         d = os.path.join(OUT_ROOT, a.month); os.makedirs(d, exist_ok=True)
         p = os.path.join(d, f"card_{a.card.replace(' ', '_')}.md")
         open(p, "w", encoding="utf-8").write(region_card(a.month, (a.topics or [MAIN])[0], a.card)); print(p)
     else:
-        print(main(a.month, a.topics or [MAIN] + SIDE))
+        print(main(a.month, a.topics or [MAIN] + SIDE, extra_md=open(a.extra, encoding='utf-8').read() if a.extra else None))
