@@ -152,6 +152,15 @@ def _inline(s: str) -> str:
     return re.sub(r"\[(.+?)\]\((.+?)\)", r"<a href='\2'>\1</a>", s)
 
 
+def for_service(md: str) -> str:
+    """뉴스레터 서비스(메일리) 편집기에 붙여 넣을 본문: 제목(H1)은 서비스의 제목 칸에 따로 넣고, 끝인사는 구독 안내로 바꿈."""
+    lines = md.splitlines()
+    body = lines[1:] if lines and lines[0].startswith("# ") else lines
+    if "---" in body:
+        body = body[:body.index("---")]
+    return "\n".join(body).strip() + "\n\n---\n이 뉴스레터는 구독을 신청하신 분께만 보냅니다. 메일 아래 '구독 취소'로 언제든 그만 받을 수 있습니다. 기준에 대한 질문은 답장으로 보내 주세요.\n"
+
+
 def _ledger() -> pd.DataFrame:
     return pd.read_csv(LEDGER) if os.path.exists(LEDGER) else pd.DataFrame(columns=["호"])
 
@@ -182,6 +191,7 @@ def main(month: str, names: list[str], write_ledger=True, extra_md: str | None =
     d = os.path.join(OUT_ROOT, month); os.makedirs(d, exist_ok=True)
     open(os.path.join(d, "issue.md"), "w", encoding="utf-8").write(md)
     open(os.path.join(d, "issue.html"), "w", encoding="utf-8").write(page)
+    open(os.path.join(d, "issue_maily.md"), "w", encoding="utf-8").write(for_service(md))
     if write_ledger and rows:
         old = _ledger()
         old = old[old.get("발행월", pd.Series(dtype=str)) != month] if len(old) else old
