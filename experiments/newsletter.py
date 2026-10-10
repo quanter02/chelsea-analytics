@@ -25,6 +25,7 @@ import kosis_monitor as K
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_ROOT = os.path.join(HERE, "newsletter")
 LEDGER = os.path.join(OUT_ROOT, "ledger.csv")
+SUBSCRIBE = "https://maily.so/ingu.alert"   # 메일리 구독·지난 호 페이지
 REPO = "https://github.com/quanter02/chelsea-analytics/blob/claude/great-dirac-3wwgzy/experiments/"
 MAIN = "E 전체 순이동"               # 주력 주제: 2026-10-10 사전 등록 선정 결과 (preregistration_niche_topic.md, niche_topic_selection.ipynb)
 SIDE = ["B 영유아(0~9세) 순이동"]     # 보조 꼭지: 같은 선정에서 통과한 후보
@@ -114,7 +115,7 @@ def build_issue(month: str, names: list[str], issue_no: int | None = None, extra
            "", "## 출처", "",
            f"통계청 KOSIS 국내인구이동통계 `{main['table']}`" + "".join(f", `{s['table']}`" for s in secs[1:] if s['table'] != main['table'])
            + " (공공데이터, 가공함). 경보는 예측 대비 차이만 알려 주며, 원인은 확인 전까지 추정입니다.",
-           "", "---", "우리 지역만 따로 받아 보기, 기준에 대한 질문은 이 메일에 답장해 주세요."]
+           "", "---", f"구독·지난 호: {SUBSCRIBE} · 우리 지역만 따로 받아 보기, 기준에 대한 질문은 이 메일에 답장해 주세요."]
     ledger_rows = [dict(호=no, 발행월=month, 주제=s["name"], 공표기준=s["latest"], 지역=r.지역, 방향=r.방향, 경보월=r.경보월,
                         누적차이=r.예측대비_누적차이, 이탈률=r.이탈률, 지문=digest) for s in secs for r in s["keep"].itertuples()]
     return "\n".join(md), _html(title, secs, md), ledger_rows
@@ -158,7 +159,7 @@ def for_service(md: str) -> str:
     body = lines[1:] if lines and lines[0].startswith("# ") else lines
     if "---" in body:
         body = body[:body.index("---")]
-    return "\n".join(body).strip() + "\n\n---\n이 뉴스레터는 구독을 신청하신 분께만 보냅니다. 메일 아래 '구독 취소'로 언제든 그만 받을 수 있습니다. 기준에 대한 질문은 답장으로 보내 주세요.\n"
+    return "\n".join(body).strip() + "\n\n---\n이 뉴스레터는 구독을 신청하신 분께만 보냅니다. 메일 아래 '구독 취소'로 언제든 그만 받을 수 있습니다. 기준에 대한 질문은 답장으로 보내 주세요. 지난 호: " + SUBSCRIBE + "\n"
 
 
 def _ledger() -> pd.DataFrame:
