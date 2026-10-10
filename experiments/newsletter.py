@@ -15,6 +15,7 @@ import datetime as dt
 import hashlib
 import html
 import os
+import urllib.parse
 
 import numpy as np
 import pandas as pd
@@ -88,7 +89,7 @@ def build_issue(month: str, names: list[str], issue_no: int | None = None, extra
             if len(gun):
                 md += ["", f"**군 지역 경보 {len(gun)}곳**", "", "| 지역 | 예측 대비 누적 차이 | 이탈률 | 처음 경보가 뜬 달 |", "|---|---|---|---|"]
                 md += [f"| {r.지역} | {_fmt_num(r.예측대비_누적차이)}명 | {r.이탈률} | {r.경보월} |" for r in gun.itertuples()]
-            csv = f"{REPO}monthly/{month}/live_{s['name']}.csv".replace(" ", "%20")
+            csv = f"{REPO}monthly/{month}/" + urllib.parse.quote(f"live_{s['name']}.csv")
             md += ["", f"전체 {len(s['keep'])}곳 목록: [CSV]({csv})"]
         md += [""]
     if extra_md:

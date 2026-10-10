@@ -38,7 +38,7 @@
 | 전북 진안군 | +518명 | +33.7% | 7월 |
 | 전남 함평군 | +427명 | +29.8% | 6월 |
 
-전체 44곳 목록: [CSV](https://github.com/quanter02/chelsea-analytics/blob/claude/great-dirac-3wwgzy/experiments/monthly/2026-10/live_E%20전체%20순이동.csv)
+전체 44곳 목록: [CSV](https://github.com/quanter02/chelsea-analytics/blob/claude/great-dirac-3wwgzy/experiments/monthly/2026-10/live_E%20%EC%A0%84%EC%B2%B4%20%EC%88%9C%EC%9D%B4%EB%8F%99.csv)
 
 ## 시군구 영유아(0~9세) 순이동
 
@@ -64,7 +64,7 @@
 | 전남 무안군 | -311명 | -32.9% | 7월 |
 | 충북 괴산군 | -146명 | -82.4% | 2월 |
 
-전체 29곳 목록: [CSV](https://github.com/quanter02/chelsea-analytics/blob/claude/great-dirac-3wwgzy/experiments/monthly/2026-10/live_B%20영유아(0~9세)%20순이동.csv)
+전체 29곳 목록: [CSV](https://github.com/quanter02/chelsea-analytics/blob/claude/great-dirac-3wwgzy/experiments/monthly/2026-10/live_B%20%EC%98%81%EC%9C%A0%EC%95%84%280~9%EC%84%B8%29%20%EC%88%9C%EC%9D%B4%EB%8F%99.csv)
 
 ## 특집: 농어촌 기본소득 시범 군, 사람이 정말 늘었나
 
