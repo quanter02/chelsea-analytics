@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import dataclasses
 import datetime as dt
+import hashlib
 import html
 import os
 
@@ -70,7 +71,8 @@ def _ym(s):
 
 def build_issue(month: str, names: list[str], issue_no: int | None = None) -> tuple[str, str, list[dict]]:
     today = dt.date.fromisoformat(month + "-01")
-    secs = [_section(n, compute(n, today)) for n in names]
+    outs = {n: compute(n, today) for n in names}
+    secs = [_section(n, o) for n, o in outs.items()]
     no = issue_no or (len(_ledger().호.unique()) + 1 if os.path.exists(LEDGER) else 1)
     main = secs[0]
     title = f"지역 인구 이동 월간 경보 제{no}호 ({month[:4]}년 {int(month[5:])}월)"
@@ -88,20 +90,28 @@ def build_issue(month: str, names: list[str], issue_no: int | None = None) -> tu
                 md += ["", f"나머지 {len(s['keep']) - TOP_N}곳은 전체 목록(CSV)에 있습니다."]
         md += [""]
     cb, t = main["cb"], main["t"]
+    import track_record as TR
+    k = int(main["latest"][4:])
+    pr = TR.precision(outs[names[0]], months=(k,)).iloc[0] if k < 12 else None
+    alerts = sorted(f"{s['name']}|{r.지역}|{r.방향}|{r.경보월}" for s in secs for r in s["keep"].itertuples())
+    digest = hashlib.sha256("\n".join(alerts).encode()).hexdigest()[:16]
     md += ["## 이 경보를 얼마나 믿을 수 있나", "",
            f"- 과거 채점({main['test_years']}): 실제로 크게 벗어난 해의 **{t['감지율']:.0%}**를 잡았고, "
            f"평범한 해에 잘못 울린 비율은 **{t['잘못된경보율']:.1%}**입니다. 상반기 안에 잡은 비율은 {t['상반기내_감지율']:.0%}입니다.",
+           *([f"- 같은 기준으로 그 기간에 매달 이 뉴스레터를 냈다면, {k}월 자료로 낸 경보의 **{pr.같은방향:.0%}**가 연말 확정치에서도 같은 방향이었고, "
+              f"{pr.진짜이탈:.0%}는 크게 벗어난 해였으며, {pr.평범한해:.0%}는 평범한 해(잘못 울린 경보)였습니다."] if pr is not None else []),
            "- 예측: 작년 연간 값 × 최근 5년 평균 월별 비중 (모든 지역에 같은 방식 하나).",
            "- 판정: 매달 확인해도 유효한 신뢰 구간이 0(예측과 같음)을 벗어날 때" + (f", 그리고 누적 차이가 규모의 {cb.m:.1%} 이상일 때" if cb.m > 0 else "") + f" (통일 규칙 6차, α = {cb.alpha}).",
            "- 기준은 보정 기간에서 한 번 정하고, 채점 기간 결과를 본 뒤 고치지 않았습니다. "
            f"[사전 등록 문서]({REPO}preregistration_births_v5_v6.md) · [코드]({REPO}kosis_monitor.py)",
            "- 이번 호의 경보는 모두 [적중 기록]({0}newsletter/ledger.csv)에 남기고, 해가 끝나 확정치가 나오면 맞았는지 공개합니다.".format(REPO),
+           f"- 이번 호 경보 목록의 지문(SHA-256 앞 16자리): `{digest}`. 발행 뒤 목록을 바꾸지 않았다는 증거로, 저장소 기록과 대조할 수 있습니다.",
            "", "## 출처", "",
            f"통계청 KOSIS 국내인구이동통계 `{main['table']}`" + "".join(f", `{s['table']}`" for s in secs[1:] if s['table'] != main['table'])
            + " (공공데이터, 가공함). 경보는 예측 대비 차이만 알려 주며, 원인은 확인 전까지 추정입니다.",
            "", "---", "우리 지역만 따로 받아 보기, 기준에 대한 질문은 이 메일에 답장해 주세요."]
     ledger_rows = [dict(호=no, 발행월=month, 주제=s["name"], 공표기준=s["latest"], 지역=r.지역, 방향=r.방향, 경보월=r.경보월,
-                        누적차이=r.예측대비_누적차이, 이탈률=r.이탈률) for s in secs for r in s["keep"].itertuples()]
+                        누적차이=r.예측대비_누적차이, 이탈률=r.이탈률, 지문=digest) for s in secs for r in s["keep"].itertuples()]
     return "\n".join(md), _html(title, secs, md), ledger_rows
 
 
