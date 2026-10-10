@@ -57,3 +57,70 @@ def run(topic: K.Topic, year=2026, placebo_year=2025, placebo_k=9):
     plac = status(out, placebo_year, placebo_k)
     return dict(out=out, treat=t, control=c, k=k, main=main, judge=judge(main, t, c),
                 placebo=judge(plac, *groups(out["units"], placebo_year)), test=out["test"])
+
+
+# ───────────────────────── 2차 (2026-10-10 사전 등록): 휘슬(발표) 기준 예측 ─────────────────────────
+EVAL2 = ("202609", "202612")      # 평가 기간: 사전 등록 시점에 아직 공표되지 않은 달만
+WHISTLE = {"추가 선정 7개 군": ("202606", LATER), "첫 10개 군": ("202510", TREAT)}
+
+
+def _wide(tidy, names):
+    d = tidy[tidy.unit.isin(names)].copy()
+    w = d.pivot_table(index=["unit", "ym"], columns="series", values="value").reset_index()
+    return {u: g.set_index("ym") for u, g in w.groupby("unit")}
+
+
+def whistle_unit(g, whistle: str, months: list[str]):
+    """발표 전 12개월 합계 × 발표 전 5개 달력 연도 평균 월별 비중 → 평가 달의 전입·전출 예측. 자료가 모자라면 None."""
+    yms = list(g.index)
+    w = yms.index(whistle) if whistle in yms else None
+    if w is None or w < 12: return None
+    base = g.iloc[w - 12:w][["in", "out"]].sum()
+    wy = int(whistle[:4])
+    sh = {}
+    for s in ("in", "out"):
+        M = []
+        for y in range(wy - 5, wy):
+            row = [g[s].get(f"{y}{m:02d}", np.nan) for m in range(1, 13)]
+            if np.isnan(row).any() or sum(row) <= 0: return None
+            M.append(np.array(row) / sum(row))
+        sh[s] = np.mean(M, axis=0)
+    have = [m for m in months if m in g.index]
+    if not have: return None
+    fi = np.array([base["in"] * sh["in"][int(m[4:]) - 1] for m in have])
+    fo = np.array([base["out"] * sh["out"][int(m[4:]) - 1] for m in have])
+    act = np.array([g.loc[m, "in"] - g.loc[m, "out"] for m in have])
+    return dict(e=act - (fi - fo), var_raw=fi + fo, scale_inc=fi, n=len(have), size=float(base["in"]), have=have)
+
+
+def run2(topic: K.Topic, months=EVAL2, year=2026):
+    """2차 판정. months 안에서 공표된 달까지만 씀(중간 판정 가능). 판정 규칙·α·m·지역별 φ는 후보 E 보정 그대로."""
+    out = K.run(topic, rule="v6", verbose=False)
+    cb, U = out["calibration"], out["units"]
+    tidy = K.fetch(topic, verbose=False)
+    names = {u: d["name"] for (u, y), d in U.items() if y == year}
+    unit_of = {v: k for k, v in names.items()}
+    W = _wide(tidy, list(names))
+    span = [f"{y}{m:02d}" for y in range(int(months[0][:4]), int(months[1][:4]) + 1) for m in range(1, 13)
+            if months[0] <= f"{y}{m:02d}" <= months[1]]
+    t_all, c = groups(U, year)
+    res = {}
+    for label, (whistle, treat) in WHISTLE.items():
+        rows = []
+        for n in [*treat, *c]:
+            uid = unit_of.get(n)
+            if uid is None or uid not in W: continue
+            u = whistle_unit(W[uid], whistle, span)
+            if u is None: continue
+            mo, s = K.alarm(u, K._phi(cb, uid, year), cb.rule, cb.alpha, cb.m)
+            S, Sc = u["e"].sum(), u["scale_inc"].sum()
+            keep = s != 0 and np.sign(S) == s and abs(S / Sc) >= cb.m
+            rows.append(dict(지역=n, 그룹="시범" if n in treat else "대조", 월=f"{u['have'][0]}~{u['have'][-1]}",
+                             방향={1: "증가", -1: "감소", 0: ""}[int(s) if keep else 0], 누적차이=round(float(S), 1), 이탈률=float(S / Sc)))
+        st = pd.DataFrame(rows)
+        j = judge(st, [n for n in treat if n in set(st.지역)], [n for n in c if n in set(st.지역)]) if len(st) else {}
+        if len(st):
+            j["시범군_감소경보"] = round(float((st[st.그룹 == "시범"].방향 == "감소").mean()), 3)
+            j["판정"] = j["판정"].replace("효과 확인", "효과 지속 확인").replace("효과 지속 확인 안 됨", "효과 지속 확인 안 됨")
+        res[label] = dict(status=st, judge=j, whistle=whistle)
+    return res
