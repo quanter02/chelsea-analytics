@@ -37,7 +37,7 @@
 
     <div class="panel" style="display:grid; gap:12px">
       <h3>② 2계 도함수: 고객이 늘수록 이익이 얼마나 빨리 꺾이나 (확장성)</h3>
-      <p style="font-size:13.5px">가로축은 고객 수, 곡선은 <b>월 매출의 누적</b>(고객 1명당 한계매출을 고객 수로 적분한 값)입니다. 혼자 쓸 수 있는 시간(월 120시간)이 바닥나는 지점이 회색 점선 '시간 벽'입니다. 벽에서 곡선이 꺾여 평평해지는 곳이 2계 도함수가 크게 음수인 지점입니다. 일찍 꺾이면 확장하기 어렵고(사람을 써야 함), 시장 끝까지 곧게 오르면 확장하기 좋습니다.</p>
+      <p style="font-size:13.5px">가로축은 고객 수, 곡선은 <b>월 매출의 누적</b>(고객 1명당 한계매출을 고객 수로 적분한 값)입니다. 혼자 쓸 수 있는 시간(월 120시간)이 바닥나는 지점이 회색 점선 '시간 벽'입니다. 벽에서 곡선이 꺾여 평평해지는 곳이 2계 도함수가 크게 음수인 지점입니다. 일찍 꺾이면 확장하기 어렵고(사람을 써야 함), 시장 끝까지 곧게 오르면 확장하기 좋습니다. 마지막 <b>검증 배지(기반형)</b>만 곡선이 <b>위로 휩니다</b>(2계 도함수 &gt; 0). 쓰는 사람이 늘수록 배지 한 장의 신뢰 가치가 커지는 네트워크 효과입니다.</p>
       <div class="pf-grid" id="pf-scale"></div>
     </div>
 
@@ -57,6 +57,32 @@
       </div>
     </div>
 
+    <div class="panel" style="display:grid; gap:12px">
+      <h3>검증 배지 시제품: 기반형으로 가는 가장 싼 실험 (E4)</h3>
+      <p style="font-size:13.5px">예측을 공개하는 사람이 자기 글·영상 설명에 붙이는 카드입니다. 붙이는 사람에게는 신뢰를, 보는 사람에게는 '경기 전에 적었는지' 직접 확인하는 길을, 우리에게는 카드마다 장부로 들어오는 입구를 줍니다. 첫 시제품은 우리 자신의 맨유–토트넘 예측입니다.</p>
+      <div class="grid2" style="align-items:start">
+        <div><div style="font-family:system-ui,-apple-system,'Segoe UI',sans-serif;max-width:420px;border:1px solid #dce2e7;border-radius:10px;padding:12px 14px;background:#fff;color:#15202b;font-size:13px;line-height:1.5">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+    <b style="font-size:13px">✅ 경기 전 기록 · Pre-registered</b>
+    <a href="https://github.com/quanter02/chelsea-analytics" style="color:#2a63d4;text-decoration:none;font-weight:700">셈법</a>
+  </div>
+  <div style="margin:6px 0 2px;font-size:15px;font-weight:700">Manchester United v Tottenham Hotspur</div>
+  <div style="font-family:ui-monospace,Menlo,monospace">71% · 17% · 12% <span style="color:#5a6672">(H · D · A)</span></div>
+  <div style="display:flex;gap:2px;margin:6px 0"><div style="flex:0.709;background:#2a63d4;height:8px;border-radius:2px" title="Home 71%"></div><div style="flex:0.171;background:#9aa3ac;height:8px;border-radius:2px" title="Draw 17%"></div><div style="flex:0.120;background:#df6330;height:8px;border-radius:2px" title="Away 12%"></div></div>
+  <div style="color:#5a6672;font-size:12px">기록 Recorded 2026-10-05 04:34 UTC · 킥오프 5d 11h 전 before kickoff</div>
+  <div style="font-family:ui-monospace,Menlo,monospace;font-size:12px">hash 42b9102bd531bb46 · commit 25644f2</div>
+  <div style="margin-top:6px;color:#5a6672">경기 후 채점 예정 · scoring after the match</div>
+  <div style="margin-top:6px;font-size:12px"><a href="https://github.com/quanter02/chelsea-analytics/blob/claude/adoring-dijkstra-jshoun/llm-reliability/ledger/predictions.jsonl" style="color:#2a63d4">장부에서 확인 · Verify</a> <span style="color:#5a6672">— python -m llmrel.ledger verify</span></div>
+</div></div>
+        <div style="display:grid; gap:8px; font-size:13px">
+          <div><b>유튜브 설명·X용 한 줄</b></div>
+          <pre class="num" style="white-space:pre-wrap; word-break:break-all; background:var(--soft); padding:10px; border-radius:8px; font-size:11.5px; margin:0">✅ Pre-registered forecast | Manchester United v Tottenham Hotspur: 71% / 17% / 12% (H/D/A) · recorded 2026-10-05 04:34 UTC (5d 11h before kickoff) · hash 42b9102bd531bb46 · scoring after the match · verify: https://github.com/quanter02/chelsea-analytics/blob/claude/adoring-dijkstra-jshoun/llm-reliability/ledger/predictions.jsonl</pre>
+          <div class="muted">같은 내용의 SVG 이미지도 있습니다(GitHub·노션용). 경기 결과가 들어오면 같은 카드에 RPS 채점이 붙습니다.</div>
+          <div><b>E4 사전등록</b>: 예측자 10명에게 보여주고 2명 이상이 자기 예측에 붙여 보면 계속, 0~1명이면 보류. 학습 우선순위 1위(결정 변화 확률 72%).</div>
+        </div>
+      </div>
+      <p class="note">'몰래 쓰게 만들기'가 아니라 '너무 자연스러워서 의식하지 않고 쓰게 되기'가 목표입니다. 카드에는 출처(셈법)와 확인 방법이 늘 보이고, 보는 사람의 데이터는 수집하지 않습니다.</p>
+    </div>
     <div class="panel tablewrap" style="display:grid; gap:8px">
       <h3>가정표 (실험 결과로 갱신)</h3>
       <table style="min-width:640px">
@@ -121,26 +147,29 @@
         { n: "혼인 수요 예측", price: 30, hrs: 1, fixed: 15, reach: 200, p: null, note: "웨딩·혼수·분양 업체 2,000곳 × 10% (가정), 같은 엔진 재사용" },
         { n: "노트 유료판", price: 0.49, hrs: 0.005, fixed: 20, reach: 2500, p: 0.15, note: "독자 5만 × 5% (가정), 월 4,900원" },
         { n: "예측 장부 공증 (해외)", price: 1.3, hrs: 0.02, fixed: 40, reach: 5000, p: 0.05, note: "해외 예측자 50만 × 1% (가정), 월 약 $9" },
-        { n: "일본판 리포트", price: 100, hrs: 8, fixed: 30, reach: 85, p: 0.08, note: "시정촌 1,700곳 × 5% (가정)" }];
+        { n: "일본판 리포트", price: 100, hrs: 8, fixed: 30, reach: 85, p: 0.08, note: "시정촌 1,700곳 × 5% (가정)" },
+        { n: "검증 배지 (기반형)", price: 0.3, hrs: 0.002, fixed: 30, reach: 5000, p: 0.06, infra: true,
+          rev: n => 0.3 * n * (1 + n / 1500), note: "예측자 5,000명 (가정), 유료 전환 월 3천원 × 네트워크 효과(1 + 사용자/1,500): 쓰는 사람이 늘수록 배지 한 장의 신뢰 가치가 커짐" }];
+      const revOf = (m, n) => m.rev ? m.rev(n) : m.price * n;
       const capN = m => Math.max(0, Math.min(m.reach, Math.floor((CAP - m.fixed) / m.hrs)));
       const scale = document.getElementById("pf-scale");
       MODELS.forEach(m => {
         const W = 220, H = 130, L = 34, R = 8, T = 8, Bt = 22;
-        const nMax = Math.max(m.reach, 10), wall = capN(m), top = m.price * capN(m);
+        const nMax = Math.max(m.reach, 10), wall = capN(m), top = revOf(m, capN(m));
         const box = document.createElement("div"); box.className = "mini";
         box.innerHTML = `<h4>${m.n}</h4><div class="sub">시간 벽 고객 ${wall.toLocaleString()} · 월 ${fmt(top)}원</div>`;
         const s = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": `${m.n} 누적 이익 곡선` }, box);
         const lx = v => L + v / nMax * (W - L - R);
-        const ymax = m.price * m.reach, sy = v => T + (1 - v / ymax) * (H - T - Bt);
+        const ymax = revOf(m, m.reach), sy = v => T + (1 - v / ymax) * (H - T - Bt);
         [0, 0.5, 1].forEach(f => { el("line", { class: "grid", x1: L, x2: W - R, y1: sy(f * ymax), y2: sy(f * ymax) }, s); el("text", { class: "lbl", x: L - 4, y: sy(f * ymax) + 3, "text-anchor": "end" }, s).textContent = fmt(f * ymax); });
         [0, Math.round(nMax / 2), nMax].forEach(v => { el("text", { class: "lbl", x: lx(v), y: H - 6, "text-anchor": "middle" }, s).textContent = v.toLocaleString(); });
         let d = "", area = `M${lx(0)} ${sy(0)}`;
-        for (let k = 0; k <= 60; k++) { const n = nMax * k / 60; const prof = m.price * Math.min(n, wall); d += (k ? "L" : "M") + lx(n) + " " + sy(prof); area += `L${lx(n)} ${sy(prof)}`; }
+        for (let k = 0; k <= 60; k++) { const n = nMax * k / 60; const prof = revOf(m, Math.min(n, wall)); d += (k ? "L" : "M") + lx(n) + " " + sy(prof); area += `L${lx(n)} ${sy(prof)}`; }
         el("path", { class: "area", d: area + `L${lx(nMax)} ${sy(0)}Z` }, s);
         el("path", { class: "curve", d }, s);
         if (wall < m.reach) { el("line", { class: "wall", x1: lx(wall), x2: lx(wall), y1: T, y2: H - Bt }, s); const left = lx(wall) - L > 50; el("text", { class: "lbl", x: lx(wall) + (left ? -3 : 3), y: T + 10, "text-anchor": left ? "end" : "start" }, s).textContent = "시간 벽"; }
         const hit = el("rect", { class: "hit", x: 0, y: 0, width: W, height: H }, s);
-        hit.addEventListener("mousemove", ev => showTip(ev, `<b>${m.n}</b><br>고객 1명 더: +${fmt(m.price)}원/월, +${m.hrs}시간/월<br>혼자 갈 수 있는 끝: 고객 ${wall.toLocaleString()} (월 ${fmt(top)}원)<br>${wall < m.reach ? "시간 벽에서 꺾임 → 사람을 써야 확장" : "시장 끝까지 시간이 남음 → 확장성 높음"}`));
+        hit.addEventListener("mousemove", ev => showTip(ev, `<b>${m.n}</b><br>고객 1명 더: ${m.rev ? "처음 +" + fmt(m.price) + "원 → 끝에서 +" + fmt(revOf(m, wall) - revOf(m, wall - 1)) + "원 (갈수록 커짐)" : "+" + fmt(m.price) + "원"}/월, +${m.hrs}시간/월<br>혼자 갈 수 있는 끝: 고객 ${wall.toLocaleString()} (월 ${fmt(top)}원)<br>${m.infra ? "곡선이 위로 휨 (2계 도함수 > 0): 쓰는 사람이 늘수록 1명당 가치가 커짐" : wall < m.reach ? "시간 벽에서 꺾임 → 사람을 써야 확장" : "시장 끝까지 시간이 남음 → 확장성 높음"}`));
         hit.addEventListener("mouseleave", hideTip);
         scale.appendChild(box);
       });
@@ -156,16 +185,16 @@
         const host = document.getElementById("pf-map"); host.innerHTML = "";
         const W = 420, H = 260, L = 46, R = 16, T = 12, Bt = 34;
         const s = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "모델별 성공 확률과 확장 크기" }, host);
-        const sx = p => L + p / 0.5 * (W - L - R), ymin = 500, ymax = 10000, sy = v => T + (1 - (Math.log10(v) - Math.log10(ymin)) / (Math.log10(ymax) - Math.log10(ymin))) * (H - T - Bt);
-        [500, 1000, 3000, 10000].forEach(v => { el("line", { class: "grid", x1: L, x2: W - R, y1: sy(v), y2: sy(v) }, s); el("text", { class: "lbl", x: L - 4, y: sy(v) + 3, "text-anchor": "end" }, s).textContent = fmt(v); });
+        const sx = p => L + p / 0.5 * (W - L - R), ymin = 500, ymax = 20000, sy = v => T + (1 - (Math.log10(v) - Math.log10(ymin)) / (Math.log10(ymax) - Math.log10(ymin))) * (H - T - Bt);
+        [500, 1000, 3000, 10000, 20000].forEach(v => { el("line", { class: "grid", x1: L, x2: W - R, y1: sy(v), y2: sy(v) }, s); el("text", { class: "lbl", x: L - 4, y: sy(v) + 3, "text-anchor": "end" }, s).textContent = fmt(v); });
         [0, 0.1, 0.2, 0.3, 0.4, 0.5].forEach(p => el("text", { class: "lbl", x: sx(p), y: H - 18, "text-anchor": "middle" }, s).textContent = Math.round(p * 100) + "%");
         el("text", { class: "lbl", x: (L + W - R) / 2, y: H - 4, "text-anchor": "middle" }, s).textContent = "성공 확률 →";
         el("text", { class: "lbl", x: L, y: T - 2 }, s).textContent = "월 매출 (시간 벽까지)";
-        const rows = MODELS.map(m => ({ m, p: pSuccess(m, post), top: m.price * capN(m) })).map(o => ({ ...o, ev: o.p * o.top }));
+        const rows = MODELS.map(m => ({ m, p: pSuccess(m, post), top: revOf(m, capN(m)) })).map(o => ({ ...o, ev: o.p * o.top }));
         rows.forEach(o => {
           const cx = sx(o.p), cy = sy(Math.max(ymin, o.top));
           el("circle", { class: "dot", cx, cy, r: 6 }, s);
-          const pos = { "일본판 리포트": [0, 18, "middle"], "노트 유료판": [9, -8, "start"] }[o.m.n] || [9, 4, "start"];
+          const pos = { "일본판 리포트": [0, 18, "middle"], "노트 유료판": [9, -8, "start"], "검증 배지 (기반형)": [9, -7, "start"], "예측 장부 공증 (해외)": [9, 15, "start"] }[o.m.n] || [9, 4, "start"];
           const t = el("text", { class: "lbl-ink", x: cx + pos[0], y: cy + pos[1], "text-anchor": pos[2] }, s); t.textContent = `${o.m.n} · ${fmt(o.ev)}`;
           const hit = el("circle", { class: "hit", cx, cy, r: 14 }, s);
           hit.addEventListener("mousemove", ev => showTip(ev, `<b>${o.m.n}</b><br>성공 확률 ${(o.p * 100).toFixed(0)}%<br>시간 벽까지 월 매출 ${fmt(o.top)}원<br>기대 크기 월 ${fmt(o.ev)}원`));

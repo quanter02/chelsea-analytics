@@ -412,3 +412,13 @@ def test_weekly_note_parser_keeps_only_anonymous_fields():
     import weekly
     rows = weekly.parse_notes("E3 업체A L1 통화 15분\n아무 말\nE1 지자체B L3 3,000,000원 파일럿 계약", "2026-10-19")
     assert rows == [["2026-10-19", "E3", "업체A", "L1", 0, "통화 15분"], ["2026-10-19", "E1", "지자체B", "L3", 3000000, "파일럿 계약"]]
+
+
+def test_badge_uses_first_ledger_line_and_scores_rps():
+    """배지: 장부의 '처음' 기록(경기 전 증거)을 쓰고, RPS는 확실한 정답이면 0."""
+    from llmrel import badge
+    d = badge.card_data("2026-10-10|Manchester United|Tottenham Hotspur", "2026-10-10T16:30:00Z")
+    assert d["before"] and d["hash"].startswith("42b9102bd531bb46") and d["result"] is None
+    assert badge.rps((1.0, 0.0, 0.0), 0) == 0 and abs(badge.rps((0.0, 0.0, 1.0), 0) - 1.0) < 1e-12
+    d2 = badge.card_data("2026-10-10|Manchester United|Tottenham Hotspur", "2026-10-10T16:30:00Z", result="2-1")
+    assert abs(d2["rps"] - badge.rps(d2["p"], 0)) < 1e-12 and "RPS" in badge.to_text(d2)

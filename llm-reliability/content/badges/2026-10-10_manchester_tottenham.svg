@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="150" viewBox="0 0 420 150" role="img" aria-label="Pre-registered forecast Manchester United v Tottenham Hotspur">
+  <rect x="0.5" y="0.5" width="419" height="149" rx="10" fill="#ffffff" stroke="#dce2e7"/>
+  <g font-family="system-ui,-apple-system,Segoe UI,sans-serif">
+    <text x="14" y="22" font-size="12.5" font-weight="700" fill="#148f68">✓ 경기 전 기록 · Pre-registered</text>
+    <text x="406" y="22" font-size="12.5" font-weight="700" fill="#2a63d4" text-anchor="end">셈법</text>
+    <text x="14" y="42" font-size="15" font-weight="700" fill="#15202b">Manchester United v Tottenham Hotspur</text>
+    <text x="14" y="61" font-size="12.5" fill="#15202b" font-family="ui-monospace,Menlo,monospace">71% · 17% · 12%  (H · D · A)</text>
+    <rect x="14.0" y="70" width="275.9" height="8" rx="2" fill="#2a63d4"/><rect x="291.9" y="70" width="65.0" height="8" rx="2" fill="#9aa3ac"/><rect x="359.0" y="70" width="45.0" height="8" rx="2" fill="#df6330"/>
+    <text x="14" y="96" font-size="11.5" fill="#5a6672">Recorded 2026-10-05 04:34 UTC · 5d 11h before kickoff</text>
+    <text x="14" y="114" font-size="11.5" fill="#15202b" font-family="ui-monospace,Menlo,monospace">hash 42b9102bd531bb46 · commit 25644f2</text>
+    <text x="14" y="138" font-size="12" fill="#5a6672">경기 후 채점 예정 · scoring after the match</text>
+  </g>
+</svg>
