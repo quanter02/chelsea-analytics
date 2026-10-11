@@ -422,3 +422,17 @@ def test_badge_uses_first_ledger_line_and_scores_rps():
     assert badge.rps((1.0, 0.0, 0.0), 0) == 0 and abs(badge.rps((0.0, 0.0, 1.0), 0) - 1.0) < 1e-12
     d2 = badge.card_data("2026-10-10|Manchester United|Tottenham Hotspur", "2026-10-10T16:30:00Z", result="2-1")
     assert abs(d2["rps"] - badge.rps(d2["p"], 0)) < 1e-12 and "RPS" in badge.to_text(d2)
+
+
+def test_town_cards_data_and_guardrails():
+    import json
+    from pathlib import Path
+    root = Path(__file__).parent.parent
+    d = json.loads((root / "content" / "town_cards" / "towns.json").read_text(encoding="utf-8"))
+    assert len(d["towns"]) == 243
+    for t in d["towns"]:
+        assert t["lo"] <= t["pred"] <= t["hi"] and len(t["h"]) == 16       # 예측은 범위 안, 장부 해시 있음
+        assert abs(t["pop"] * t["mr"] - t["r"]) < 0.03 or t["par"]            # 두 요인의 곱 = 미혼 성비
+    tpl = (root / "content" / "web" / "town_section.tpl.html").read_text(encoding="utf-8")
+    for banned in ("꼴찌", "최하위", "순위", "탓"):
+        assert banned not in tpl.split("<script>")[1]                       # 카드 문구에 순위·탓하기 없음

@@ -1,0 +1,133 @@
+  <section id="town">
+    <style>
+      #town .ctrl { display:flex; gap:10px; align-items:center; flex-wrap:wrap; font-size:13.5px }
+      #town input[type=search] { font: inherit; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background: var(--surface); color: var(--ink); min-width: min(280px, 100%) }
+      #town button { font: inherit; font-size:13px; padding:8px 12px; border-radius:8px; border:1px solid var(--line); background: var(--soft); color: var(--ink); cursor:pointer }
+      #town button.primary { background: var(--accent); border-color: var(--accent); color:#fff }
+      #town .cardwrap { max-width: 432px; width:100%; }
+      #town .cardwrap svg { width:100%; height:auto; display:block; border-radius:14px; box-shadow: 0 2px 10px rgba(0,0,0,.10) }
+      #town .chips { display:flex; gap:6px; flex-wrap:wrap }
+      #town .chips button { padding:4px 10px; font-size:12.5px }
+    </style>
+    <h2>우리 동네 결혼 시장 카드</h2>
+    <p class="muted">동네를 고르면 카드 한 장이 나옵니다. 이미지로 저장해 공유할 수 있습니다. 숫자는 모두 통계청 KOSIS(2025)와 셈법 예측 장부에서 왔습니다.</p>
+    <div class="grid2" style="align-items:start">
+      <div class="panel" style="display:grid; gap:12px; align-content:start">
+        <div class="ctrl">
+          <label for="town-q">동네 찾기</label>
+          <input id="town-q" type="search" list="town-list" placeholder="예: 수원, 강남구, 인제군" autocomplete="off">
+          <datalist id="town-list"></datalist>
+        </div>
+        <div class="chips" id="town-chips"></div>
+        <div class="ctrl"><button class="primary" id="town-save">이미지 저장</button><button id="town-copy">공유 문구 복사</button><span class="muted" id="town-msg" style="font-size:12.5px"></span></div>
+        <div style="font-size:13px; display:grid; gap:6px">
+          <div><b>카드 읽는 법</b></div>
+          <div>미혼 성비 = <b>인구 구성</b>(젊은 남성 ÷ 여성) × <b>결혼 비율 차이</b>(남성 미혼율 ÷ 여성 미혼율). 숫자가 같아도 동네마다 이유가 다릅니다.</div>
+          <div>2026년 예측은 발표 전에 장부에 적어 둔 숫자이고, 2027년 통계가 나오면 채점합니다.</div>
+        </div>
+        <p class="note">편 가르기를 하지 않습니다. 꼴찌 순위나 성별을 탓하는 표현은 넣지 않고, 개인 정보는 쓰지 않습니다. 등록 주소 기준이라 실제 생활권(통근권)과 다를 수 있습니다.</p>
+      </div>
+      <div class="cardwrap" id="town-card"></div>
+    </div>
+    <script>
+    (() => {
+      const DATA = __DATA__;
+      const NAT = DATA.nat, T = DATA.towns;
+      const byName = new Map(T.map(t => [t.n, t]));
+      const list = document.getElementById("town-list");
+      T.forEach(t => { const o = document.createElement("option"); o.value = t.n; list.appendChild(o); });
+      const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+      const pctDiff = v => Math.round(Math.abs(v - 1) * 100);
+      const sgn = v => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1) + "%";
+      const num = v => v.toLocaleString("ko-KR");
+
+      function headline(t) {
+        if (t.r >= 1.05) return "미혼 남성이 더 많은 동네";
+        if (t.r <= 0.95) return "미혼 여성이 더 많은 동네";
+        return "미혼 남녀가 비슷한 동네";
+      }
+      function why(t) {
+        const a = Math.abs(Math.log(t.pop)), b = Math.abs(Math.log(t.mr));
+        if (a < 0.02 && b < 0.02) return "두 요인 모두 균형에 가깝습니다";
+        return a >= b ? "주된 이유: 사는 사람의 구성 (인구 구성)" : "주된 이유: 결혼하는 정도의 차이 (결혼 비율)";
+      }
+      function popText(v) { return v >= 1.01 ? `젊은 남성이 ${pctDiff(v)}% 더 많이 삽니다` : v <= 0.99 ? `젊은 여성이 ${pctDiff(v)}% 더 많이 삽니다` : "젊은 남녀 인구가 비슷합니다"; }
+      function mrText(v) { return v >= 1.01 ? `남성이 결혼을 덜 한 정도 ${pctDiff(v)}%` : v <= 0.99 ? `여성이 결혼을 덜 한 정도 ${pctDiff(v)}%` : "결혼한 비율이 비슷합니다"; }
+
+      // 0.7 ~ 1.7 눈금 위의 위치 (1 = 균형)
+      function scaleRow(y, label, v, nat, desc) {
+        const x0 = 90, x1 = 990, lo = 0.7, hi = 1.7, X = u => x0 + (Math.min(hi, Math.max(lo, u)) - lo) / (hi - lo) * (x1 - x0);
+        return `
+          <text x="90" y="${y}" font-size="30" font-weight="700" fill="#15202b">${label}</text>
+          <text x="990" y="${y}" font-size="34" font-weight="800" fill="#2a63d4" text-anchor="end" font-family="ui-monospace,Menlo,monospace">${v.toFixed(2)}</text>
+          <line x1="${x0}" y1="${y + 74}" x2="${x1}" y2="${y + 74}" stroke="#dce2e7" stroke-width="10" stroke-linecap="round"/>
+          <line x1="${X(1)}" y1="${y + 60}" x2="${X(1)}" y2="${y + 88}" stroke="#9aa3ac" stroke-width="3"/>
+          <text x="${X(1)}" y="${y + 114}" font-size="20" fill="#5a6672" text-anchor="middle">균형 1.00</text>
+          <line x1="${X(nat)}" y1="${y + 62}" x2="${X(nat)}" y2="${y + 86}" stroke="#5a6672" stroke-width="3" stroke-dasharray="4 3"/>
+          <text x="${X(nat)}" y="${y + 50}" font-size="19" fill="#5a6672" text-anchor="middle">전국 ${nat.toFixed(2)}</text>
+          <circle cx="${X(v)}" cy="${y + 74}" r="16" fill="#2a63d4" stroke="#ffffff" stroke-width="5"/>
+          <text x="90" y="${y + 152}" font-size="24" fill="#15202b">${esc(desc)}</text>`;
+      }
+
+      function cardSVG(t) {
+        const parNote = t.par ? `<text x="90" y="1160" font-size="20" fill="#5a6672">성비·이동은 ${esc(t.par)} 전체 값 (구 단위 자료 없음), 예측은 ${esc(t.n)} 단위</text>` : "";
+        return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1350" width="1080" height="1350" font-family="'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR','IBM Plex Sans KR',system-ui,sans-serif">
+          <rect width="1080" height="1350" fill="#ffffff"/>
+          <rect width="1080" height="14" fill="#2a63d4"/>
+          <text x="90" y="100" font-size="28" font-weight="800" fill="#2a63d4">셈법 <tspan fill="#15202b" font-weight="600">· 우리 동네 결혼 시장 카드</tspan></text>
+          <text x="90" y="190" font-size="68" font-weight="800" fill="#15202b">${esc(t.n)}</text>
+          <text x="90" y="250" font-size="30" fill="#5a6672">25~39세 미혼 남성 ÷ 미혼 여성</text>
+          <text x="90" y="392" font-size="150" font-weight="800" fill="#15202b" font-family="ui-monospace,Menlo,monospace">${t.r.toFixed(2)}</text>
+          <text x="560" y="340" font-size="34" font-weight="700" fill="#15202b">${headline(t)}</text>
+          <text x="560" y="386" font-size="26" fill="#5a6672">전국 ${NAT.r.toFixed(2)}</text>
+          <text x="90" y="466" font-size="26" font-weight="700" fill="#148f68">${why(t)}</text>
+          ${scaleRow(530, "① 인구 구성 (젊은 남성 ÷ 여성)", t.pop, NAT.pop, popText(t.pop))}
+          ${scaleRow(740, "② 결혼 비율 차이 (남성 미혼율 ÷ 여성 미혼율)", t.mr, NAT.mr, mrText(t.mr))}
+          <text x="90" y="935" font-size="24" fill="#5a6672">① × ② = 미혼 성비 · 20~34세 순이동(연) 여성 ${sgn(t.mf)} · 남성 ${sgn(t.mm)}</text>
+          <rect x="90" y="960" width="900" height="160" rx="18" fill="#f3f5f7"/>
+          <text x="120" y="1004" font-size="26" fill="#5a6672">2026년 혼인 건수 예측 (2025년 ${num(t.p25)}건)</text>
+          <text x="120" y="1064" font-size="54" font-weight="800" fill="#15202b" font-family="ui-monospace,Menlo,monospace">${num(t.pred)}건</text>
+          <text x="440" y="1057" font-size="26" fill="#15202b">80% 범위 ${num(t.lo)} ~ ${num(t.hi)}</text>
+          <text x="120" y="1100" font-size="20" fill="#5a6672" font-family="ui-monospace,Menlo,monospace">발표 전에 장부에 기록 · ${esc(t.h)} · 2027년에 채점</text>
+          ${parNote}
+          <line x1="90" y1="1190" x2="990" y2="1190" stroke="#dce2e7" stroke-width="2"/>
+          <text x="90" y="1235" font-size="21" fill="#5a6672">자료: 통계청 KOSIS 2025 · 등록 주소 기준이라 생활권과 다를 수 있습니다</text>
+          <text x="90" y="1290" font-size="26" font-weight="700" fill="#15202b">셈법 · 미리 적고, 채점까지 공개합니다</text>
+          <text x="990" y="1290" font-size="24" font-weight="700" fill="#2a63d4" text-anchor="end">우리 동네도 찾아보기 →</text>
+        </svg>`;
+      }
+
+      let cur = byName.get("경기 수원시") || T[0];
+      const host = document.getElementById("town-card");
+      function show(t) { cur = t; host.innerHTML = cardSVG(t); document.getElementById("town-msg").textContent = ""; }
+      const q = document.getElementById("town-q");
+      function pick() {
+        const v = q.value.trim(); if (!v) return;
+        const t = byName.get(v) || T.find(x => x.n.includes(v));
+        if (t) { show(t); q.value = t.n; } else document.getElementById("town-msg").textContent = "찾는 동네가 없습니다. 시·군·구 이름으로 검색해 보세요.";
+      }
+      q.addEventListener("change", pick);
+      q.addEventListener("keydown", e => { if (e.key === "Enter") pick(); });
+      const chips = document.getElementById("town-chips");
+      ["경기 수원시", "경기 용인시", "경기 성남시", "서울 마포구", "강원 인제군"].forEach(n => {
+        const t = byName.get(n); if (!t) return;
+        const b = document.createElement("button"); b.textContent = n; b.addEventListener("click", () => { show(t); q.value = n; }); chips.appendChild(b);
+      });
+      document.getElementById("town-save").addEventListener("click", () => {
+        const img = new Image();
+        img.onload = () => {
+          const c = document.createElement("canvas"); c.width = 1080; c.height = 1350;
+          c.getContext("2d").drawImage(img, 0, 0);
+          c.toBlob(b => { const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `셈법_${cur.n.replace(/\s+/g, "_")}.png`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }, "image/png");
+        };
+        img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(cardSVG(cur));
+      });
+      document.getElementById("town-copy").addEventListener("click", async () => {
+        const txt = `${cur.n} 미혼 성비 ${cur.r.toFixed(2)} (전국 ${NAT.r.toFixed(2)}) · ${headline(cur)}. 2026년 혼인 ${num(cur.pred)}건 예상 (80% 범위 ${num(cur.lo)}~${num(cur.hi)}), 발표 전 장부에 기록. 우리 동네는? #셈법`;
+        try { await navigator.clipboard.writeText(txt); document.getElementById("town-msg").textContent = "복사했습니다."; }
+        catch (e) { document.getElementById("town-msg").textContent = txt; }
+      });
+      show(cur);
+    })();
+    </script>
+  </section>
