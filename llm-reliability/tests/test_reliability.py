@@ -389,3 +389,19 @@ def test_voi_ranks_decision_relevant_experiments():
     assert t.loc["E3", "score"] > t.loc["E1", "score"]                 # 혼인 수요 실험이 리포트 회신 실험보다 결정에 유용
     assert voi.realized("E3", 0)["changed"] and not voi.realized("E3", 2)["changed"]
     assert voi.realized("E2", 9)["decision_after"] == "유료판 출시"
+
+
+def test_allocator_equalizes_marginal_value():
+    """시간 배분: 예산을 다 쓰고, 상한·하한 사이에 있는 활동들은 마지막 1시간 가치가 같다."""
+    import numpy as np
+    from llmrel import allocator as A
+    w, tau = np.array([60.0, 30.0, 10.0]), np.array([4.0, 3.0, 2.0])
+    lo, hi = np.zeros(3), np.full(3, 99.0)
+    h, mu = A.water_fill(w, tau, lo, hi, 12.0)
+    assert abs(h.sum() - 12.0) < 1e-6 and h[0] > h[1] > h[2] >= 0
+    mv = (w / tau) * np.exp(-h / tau)
+    inner = h > 1e-6
+    assert np.allclose(mv[inner], mu, rtol=1e-3)
+    assert (mv[~inner] <= mu + 1e-6).all()                          # 0시간 활동은 첫 1시간 가치도 μ 이하
+    h2, _ = A.water_fill(w, tau, lo, np.array([2.0, 99, 99]), 12.0)
+    assert h2[0] == 2.0 and abs(h2.sum() - 12.0) < 1e-6              # 상한에 막히면 나머지로 재분배
