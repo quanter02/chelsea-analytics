@@ -87,6 +87,15 @@
       "id": "a5d1c3f6b86b491995bf381e4dd7013a",
       "data_source": "collection://75cfd1e2-bad2-4690-96a9-f3933f44df82",
       "rows": 243
+    },
+    "수익 실험": {
+      "id": "78443f44fb1f45efa1a2b3bcdbea6dd0",
+      "data_source": "collection://a0ba9e27-e601-4d5e-bf78-69ce4ce7800b",
+      "rows": {
+        "E1": "3f6ae285-d069-81e4-ab1a-f055c37eaeba",
+        "E2": "3f6ae285-d069-81ff-bced-dc180407ddda",
+        "E3": "3f6ae285-d069-81e7-b2b8-c28dd99ef1e3"
+      }
     }
   },
   "images": "노션 업로드 API는 수집 환경에서 막혀 있어 GitHub raw 주소(공개 레포)로 표시합니다."
