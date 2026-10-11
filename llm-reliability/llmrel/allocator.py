@@ -91,9 +91,9 @@ def allocate(cfg: dict, acts: pd.DataFrame, n_draws: int = 200, seed: int = 0) -
     return out
 
 
-def main(today: str | None = None):
+def main(today: str | None = None, cfg: dict | None = None):
     OUT.mkdir(parents=True, exist_ok=True)
-    cfg = load()
+    cfg = cfg or load()
     t = pd.Timestamp(today or cfg.get("week_of") or pd.Timestamp.today().normalize())
     acts = weights(cfg, t)
     res = allocate(cfg, acts)

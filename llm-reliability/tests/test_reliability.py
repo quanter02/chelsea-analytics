@@ -405,3 +405,10 @@ def test_allocator_equalizes_marginal_value():
     assert (mv[~inner] <= mu + 1e-6).all()                          # 0시간 활동은 첫 1시간 가치도 μ 이하
     h2, _ = A.water_fill(w, tau, lo, np.array([2.0, 99, 99]), 12.0)
     assert h2[0] == 2.0 and abs(h2.sum() - 12.0) < 1e-6              # 상한에 막히면 나머지로 재분배
+
+
+def test_weekly_note_parser_keeps_only_anonymous_fields():
+    """주간 메모: 'E번호 익명상대 L단계 [금액] 메모' 줄만 증거로 받고, 형식이 다른 줄은 무시한다."""
+    import weekly
+    rows = weekly.parse_notes("E3 업체A L1 통화 15분\n아무 말\nE1 지자체B L3 3,000,000원 파일럿 계약", "2026-10-19")
+    assert rows == [["2026-10-19", "E3", "업체A", "L1", 0, "통화 15분"], ["2026-10-19", "E1", "지자체B", "L3", 3000000, "파일럿 계약"]]
