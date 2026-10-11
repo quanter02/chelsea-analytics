@@ -360,3 +360,22 @@ def test_intervals_use_only_past_errors():
         assert np.allclose(wa, wb)
     c, phi = I._cphi(r[r.year < 2012])
     assert 0.02 < c < 0.08 and 1.0 < phi < 3.0           # 오차² = c² + φ/n 구조를 되찾음
+
+
+def test_biz_ledger_and_world_elimination(tmp_path):
+    """수익 실험: 사전등록은 해시 체인에 남고, 판매 기록이 많으면 느린 판매 세계가 탈락한다."""
+    import pandas as pd
+    from llmrel import biz, ledger
+    import biz_update as U
+    p = tmp_path / "led.jsonl"
+    assert biz.register(path=p) == len(biz.EXPERIMENTS)
+    assert biz.register(path=p) == 0                                   # 같은 내용은 다시 안 남김
+    ev = pd.DataFrame([["2027-05-01", "E1", "지자체A", "L1", 0, ""], ["2027-06-01", "E1", "지자체A", "L3", 3000000, ""]], columns=biz.COLUMNS)
+    st = biz.status(ev).set_index("exp")
+    assert st.loc["E1", "reached"] == 1 and st.loc["E1", "best_level"] == "L3" and st.loc["E1", "verdict"] == "성공"
+    assert biz.record_result("E1", path=p, ev=ev) == 1
+    assert ledger.verify(p)[0]
+    obs = {"paid": 12, "months": 24.0, "effort": 0.5, "bets": [], "W0": None}
+    ws = U.surviving(obs)
+    assert not ws[ws.lam == 0.15].keep.any() and ws[ws.lam == 0.5].keep.all()
+    assert U.surviving({**obs, "months": 0.0, "paid": 0}).keep.all()   # 판매 전에는 아무것도 안 지움

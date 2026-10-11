@@ -1,0 +1,7 @@
+{
+  "_설명": "biz_update.py 입력. selling_from은 사업자 등록 뒤 유료 판매가 가능해진 날. 그 전에는 판매 속도 세계를 지우지 않음.",
+  "selling_from": "2100-01-01",
+  "report_effort": 0.3,
+  "W0": null,
+  "bets": []
+}
