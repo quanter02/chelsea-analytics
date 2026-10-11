@@ -379,3 +379,13 @@ def test_biz_ledger_and_world_elimination(tmp_path):
     ws = U.surviving(obs)
     assert not ws[ws.lam == 0.15].keep.any() and ws[ws.lam == 0.5].keep.all()
     assert U.surviving({**obs, "months": 0.0, "paid": 0}).keep.all()   # 판매 전에는 아무것도 안 지움
+
+
+def test_voi_ranks_decision_relevant_experiments():
+    """정보의 가치: 정보량은 0 이상, 결정을 못 바꾸는 실험은 점수 0, 결과가 극단이면 결정이 바뀐다."""
+    from llmrel import voi
+    t = voi.ranking().set_index("exp")
+    assert (t.bits >= -1e-9).all() and (t.p_change.between(0, 1)).all()
+    assert t.loc["E3", "score"] > t.loc["E1", "score"]                 # 혼인 수요 실험이 리포트 회신 실험보다 결정에 유용
+    assert voi.realized("E3", 0)["changed"] and not voi.realized("E3", 2)["changed"]
+    assert voi.realized("E2", 9)["decision_after"] == "유료판 출시"

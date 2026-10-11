@@ -83,6 +83,14 @@ def record_result(exp: str, verdict: str | None = None, path: Path = ledger.PATH
         if verdict == "진행 중" and pd.Timestamp.today().normalize() > pd.Timestamp(EXPERIMENTS[exp]["deadline"]):
             verdict = "실패"
     payload = {"reached": int(s["reached"]), "best_level": s["best_level"], "revenue_krw": int(s["revenue_krw"]), "verdict": verdict}
+    try:                                                     # 실현 정보량: 이 결과로 얼마나 배웠고 결정이 바뀌었나
+        from . import voi
+        if exp in voi.EXPS and int(s["reached"]) <= voi.EXPS[exp][1]:
+            rz = voi.realized(exp, int(s["reached"]))
+            payload.update({"info_bits": round(rz["bits"], 3), "decision_before": rz["decision_before"],
+                            "decision_after": rz["decision_after"], "decision_changed": rz["changed"]})
+    except Exception:                                        # 정보량 계산이 실패해도 결과 기록은 남긴다
+        pass
     return ledger.append([dict(kind="biz_result", key=exp, payload=payload, model="수익 실험 결과",
                                evidence=f"data_biz/events.csv 기준, 목표 {s['target']}")], path=path)
 
