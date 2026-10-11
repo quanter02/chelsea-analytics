@@ -97,7 +97,14 @@
         "E2": "3f6ae285-d069-81ff-bced-dc180407ddda",
         "E3": "3f6ae285-d069-81e7-b2b8-c28dd99ef1e3"
       }
+    },
+    "주간 기록": {
+      "id": "004ea5e2aad34ed181e5465dfa31b639",
+      "data_source": "collection://43b2de76-19ac-447d-a823-bd73e6fa6f72"
     }
   },
-  "images": "노션 업로드 API는 수집 환경에서 막혀 있어 GitHub raw 주소(공개 레포)로 표시합니다."
+  "images": "노션 업로드 API는 수집 환경에서 막혀 있어 GitHub raw 주소(공개 레포)로 표시합니다.",
+  "routines": {
+    "주간 루틴 (일요일 20시 KST)": "trig_01AGpChXhN9b9d5TfeSHDhRp"
+  }
 }
