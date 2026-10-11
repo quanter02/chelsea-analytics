@@ -1,0 +1,206 @@
+  <section id="portfolio">
+    <style>
+      #portfolio .pf-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 12px }
+      #portfolio .mini { border:1px solid var(--line); border-radius:8px; padding:10px; background: var(--surface); min-width:0 }
+      #portfolio .mini h4 { margin:0 0 4px; font-size:13px; font-weight:600 }
+      #portfolio .mini .sub { font-size:12px; color: var(--muted) }
+      #portfolio svg { width:100%; height:auto; display:block; overflow:visible }
+      #portfolio .axis { stroke: var(--line); stroke-width:1 }
+      #portfolio .grid { stroke: var(--soft); stroke-width:1 }
+      #portfolio .lbl { fill: var(--muted); font-size:10px; font-family: var(--font-data) }
+      #portfolio .lbl-ink { fill: var(--ink); font-size:11px; font-family: var(--font-body) }
+      #portfolio .curve { fill:none; stroke: var(--accent); stroke-width:2; stroke-linecap:round }
+      #portfolio .area { fill: var(--accent); opacity:.14 }
+      #portfolio .mu { stroke: var(--warn); stroke-width:1.5; stroke-dasharray:4 3 }
+      #portfolio .wall { stroke: var(--muted); stroke-width:1.5; stroke-dasharray:2 3 }
+      #portfolio .dot { fill: var(--accent); stroke: var(--surface); stroke-width:2 }
+      #portfolio .hit { fill: transparent; cursor: default }
+      #portfolio .ctrl { display:flex; gap:12px; align-items:center; flex-wrap:wrap; font-size:13px }
+      #portfolio input[type=range] { width: min(320px, 100%); accent-color: var(--accent) }
+      #portfolio .pill { display:inline-block; padding:2px 8px; border-radius:999px; background: var(--soft); font-size:12px }
+      #pf-tip { position:fixed; pointer-events:none; z-index:50; background: var(--surface); color: var(--ink); border:1px solid var(--line);
+                border-radius:6px; padding:6px 8px; font-size:12px; box-shadow:0 2px 8px rgba(0,0,0,.12); display:none; max-width:260px }
+      #portfolio .bar { fill: var(--accent) }
+      #portfolio .bar.off { fill: var(--abstain) }
+      #portfolio table td, #portfolio table th { font-size:12.5px }
+    </style>
+    <h2>확장 지도: 작은 모델 여러 개 중 어디를 키울까 (미적분으로 보기)</h2>
+    <p class="muted">여러 작은 모델이 틈새시장에서 크고 작은 수익을 낸다고 보고, 그중 <b>넓히기 좋은 하나</b>를 골라 실패 확률은 낮추고 성공 확률은 높이는 구조입니다. 미분·적분이 각각 어떤 질문에 답하는지 네 장의 그림으로 나눴습니다.</p>
+
+    <div class="panel" style="display:grid; gap:12px">
+      <h3>① 1계 도함수: 다음 1시간을 어디에 쓰나 (한계효용)</h3>
+      <p style="font-size:13.5px">각 칸의 곡선은 그 활동에 시간을 더 넣을 때 <b>1시간당 늘어나는 가치</b>(도함수)입니다. 넣을수록 내려갑니다. 빨간 점선(μ)이 모든 칸에서 같은 높이일 때가 최적이고, 점이 그 지점입니다. 이번 주 쓸 수 있는 시간을 바꿔 보세요.</p>
+      <div class="ctrl"><label for="pf-budget">바닥(학업·회복)을 뺀 이번 주 시간</label><input id="pf-budget" type="range" min="6" max="40" step="1" value="24"><span class="pill num" id="pf-budget-v">24시간</span><span class="pill" id="pf-mu"></span></div>
+      <div class="pf-grid" id="pf-marg"></div>
+      <p class="note">가치 곡선과 가중치는 주간 시간 배분기(llmrel/allocator.py)와 같은 가정입니다. 수익 실험의 가중치는 '결정이 바뀔 확률'입니다.</p>
+    </div>
+
+    <div class="panel" style="display:grid; gap:12px">
+      <h3>② 2계 도함수: 고객이 늘수록 이익이 얼마나 빨리 꺾이나 (확장성)</h3>
+      <p style="font-size:13.5px">가로축은 고객 수, 곡선은 <b>월 매출의 누적</b>(고객 1명당 한계매출을 고객 수로 적분한 값)입니다. 혼자 쓸 수 있는 시간(월 120시간)이 바닥나는 지점이 회색 점선 '시간 벽'입니다. 벽에서 곡선이 꺾여 평평해지는 곳이 2계 도함수가 크게 음수인 지점입니다. 일찍 꺾이면 확장하기 어렵고(사람을 써야 함), 시장 끝까지 곧게 오르면 확장하기 좋습니다.</p>
+      <div class="pf-grid" id="pf-scale"></div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel" style="display:grid; gap:12px; align-content:start">
+        <h3>③ 적분: 성공 확률 × 크기 = 기대 크기</h3>
+        <p style="font-size:13.5px">가로는 성공 확률, 세로는 시간 벽까지 갔을 때의 월 매출(로그)입니다. <b>오른쪽 위</b>일수록 넓히기 좋습니다. 점 옆 숫자는 기대 크기(확률 × 월 매출)입니다.</p>
+        <div id="pf-map"></div>
+        <p class="note" id="pf-pick"></p>
+      </div>
+      <div class="panel" style="display:grid; gap:12px; align-content:start">
+        <h3>④ 갱신: 실험 결과가 성공 확률을 움직인다</h3>
+        <p style="font-size:13.5px">E3(웨딩·혼수 업체 3곳 연락)의 회신 수를 움직여 보세요. 회신율 × 전환율 세계 6개의 확률이 바뀌고(막대), 혼인 수요 예측의 성공 확률이 ③의 지도에서 함께 움직입니다.</p>
+        <div class="ctrl"><label for="pf-y">E3 회신 수 (3곳 중)</label><input id="pf-y" type="range" min="-1" max="3" step="1" value="-1"><span class="pill" id="pf-y-v">실험 전</span></div>
+        <div id="pf-post"></div>
+        <p style="font-size:13px" id="pf-dec"></p>
+      </div>
+    </div>
+
+    <div class="panel tablewrap" style="display:grid; gap:8px">
+      <h3>가정표 (실험 결과로 갱신)</h3>
+      <table style="min-width:640px">
+        <thead><tr><th>모델</th><th class="r">고객당 월 매출</th><th class="r">고객당 월 시간</th><th class="r">닿을 수 있는 고객</th><th class="r">성공 확률 (사전)</th><th>근거</th></tr></thead>
+        <tbody id="pf-table"></tbody>
+      </table>
+      <p class="note">모든 숫자는 사전등록 가정입니다(데이터 아님). '혼인 수요 예측'의 성공 확률은 ④의 세계 계산과 연결돼 있습니다: 성공 확률 = 0.5 × P(회신율 × 전환율 ≥ 3%). 실험 결과가 장부에 쌓이면 가정표가 바뀌고 지도도 바뀝니다.</p>
+    </div>
+    <div id="pf-tip" role="tooltip"></div>
+
+    <script>
+    (() => {
+      const NS = "http://www.w3.org/2000/svg";
+      const el = (t, a = {}, p) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+      const tip = document.getElementById("pf-tip");
+      const showTip = (ev, html) => { tip.innerHTML = html; tip.style.display = "block"; const x = Math.min(ev.clientX + 12, window.innerWidth - 270); tip.style.left = x + "px"; tip.style.top = (ev.clientY + 12) + "px"; };
+      const hideTip = () => { tip.style.display = "none"; };
+      const fmt = (v) => v >= 10000 ? (v / 10000).toFixed(1) + "억" : v >= 10 || v === 0 ? Math.round(v).toLocaleString() + "만" : v >= 1 ? (+v.toFixed(1)).toLocaleString() + "만" : Math.round(v * 10000).toLocaleString();
+
+      // ① 시간 배분 (allocator.json과 같은 가정)
+      const ACTS = [
+        { n: "동계 인턴 준비", w: 60, tau: 4, max: 10 }, { n: "E3 혼인 수요", w: 53, tau: 2, max: 4 },
+        { n: "E2 노트", w: 32, tau: 3, max: 6 }, { n: "E1 지자체 (첫 고객)", w: 40, tau: 2, max: 4 },
+        { n: "학업 추가", w: 25, tau: 4, max: 8 }, { n: "EPL 콘텐츠", w: 15, tau: 1.5, max: 3 },
+        { n: "사업계획서 (마감 멀어 ×0.3)", w: 16.5, tau: 4, max: 8 }];
+      const hoursAt = (mu) => ACTS.map(a => Math.min(a.max, Math.max(0, a.tau * Math.log(a.w / (a.tau * mu)))));
+      const fill = (B) => { let lo = 1e-6, hi = 100; for (let i = 0; i < 100; i++) { const m = Math.sqrt(lo * hi); (hoursAt(m).reduce((s, v) => s + v, 0) > B) ? lo = m : hi = m; } const mu = Math.sqrt(lo * hi); return { h: hoursAt(mu), mu }; };
+      const marg = document.getElementById("pf-marg");
+      function drawMarg(B) {
+        const { h, mu } = fill(B);
+        document.getElementById("pf-budget-v").textContent = B + "시간";
+        document.getElementById("pf-mu").textContent = "같아진 한계효용 μ = " + mu.toFixed(1);
+        marg.innerHTML = "";
+        const W = 220, H = 120, L = 26, R = 8, T = 8, Bt = 22, X = 10, Y = 30;
+        ACTS.forEach((a, i) => {
+          const box = document.createElement("div"); box.className = "mini";
+          box.innerHTML = `<h4>${a.n}</h4><div class="sub num">${h[i].toFixed(1)}시간${h[i] >= a.max - 1e-6 ? " (상한)" : ""}</div>`;
+          const s = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": `${a.n}: ${h[i].toFixed(1)}시간` }, box);
+          const sx = v => L + v / X * (W - L - R), sy = v => T + (1 - Math.min(v, Y) / Y) * (H - T - Bt);
+          [0, 15, 30].forEach(v => { el("line", { class: "grid", x1: L, x2: W - R, y1: sy(v), y2: sy(v) }, s); el("text", { class: "lbl", x: L - 4, y: sy(v) + 3, "text-anchor": "end" }, s).textContent = v; });
+          [0, 5, 10].forEach(v => { el("text", { class: "lbl", x: sx(v), y: H - 6, "text-anchor": "middle" }, s).textContent = v + "h"; });
+          let d = ""; for (let x = 0; x <= Math.min(X, a.max); x += 0.1) d += (x ? "L" : "M") + sx(x) + " " + sy(a.w / a.tau * Math.exp(-x / a.tau));
+          el("path", { class: "curve", d }, s);
+          if (a.max < X) el("line", { class: "wall", x1: sx(a.max), x2: sx(a.max), y1: T, y2: H - Bt }, s);
+          el("line", { class: "mu", x1: L, x2: W - R, y1: sy(mu), y2: sy(mu) }, s);
+          const v = a.w / a.tau * Math.exp(-h[i] / a.tau);
+          el("circle", { class: "dot", cx: sx(h[i]), cy: sy(v), r: 5 }, s);
+          const hit = el("rect", { class: "hit", x: 0, y: 0, width: W, height: H }, s);
+          hit.addEventListener("mousemove", ev => showTip(ev, `<b>${a.n}</b><br>배분 ${h[i].toFixed(1)}시간<br>마지막 1시간의 가치 ${v.toFixed(1)} (μ ${mu.toFixed(1)})<br>첫 1시간의 가치 ${(a.w / a.tau).toFixed(1)}`));
+          hit.addEventListener("mouseleave", hideTip);
+          marg.appendChild(box);
+        });
+      }
+      const bud = document.getElementById("pf-budget");
+      bud.addEventListener("input", () => drawMarg(+bud.value));
+      drawMarg(24);
+
+      // ②③ 모델 가정
+      const CAP = 120;  // 혼자 쓸 수 있는 월 시간
+      const MODELS = [
+        { n: "지자체 리포트", price: 100, hrs: 6, fixed: 10, reach: 24, p: 0.35, note: "243곳 × 10%, 연 1,200만원(B안)" },
+        { n: "혼인 수요 예측", price: 30, hrs: 1, fixed: 15, reach: 200, p: null, note: "웨딩·혼수·분양 업체 2,000곳 × 10% (가정), 같은 엔진 재사용" },
+        { n: "노트 유료판", price: 0.49, hrs: 0.005, fixed: 20, reach: 2500, p: 0.15, note: "독자 5만 × 5% (가정), 월 4,900원" },
+        { n: "예측 장부 공증 (해외)", price: 1.3, hrs: 0.02, fixed: 40, reach: 5000, p: 0.05, note: "해외 예측자 50만 × 1% (가정), 월 약 $9" },
+        { n: "일본판 리포트", price: 100, hrs: 8, fixed: 30, reach: 85, p: 0.08, note: "시정촌 1,700곳 × 5% (가정)" }];
+      const capN = m => Math.max(0, Math.min(m.reach, Math.floor((CAP - m.fixed) / m.hrs)));
+      const scale = document.getElementById("pf-scale");
+      MODELS.forEach(m => {
+        const W = 220, H = 130, L = 34, R = 8, T = 8, Bt = 22;
+        const nMax = Math.max(m.reach, 10), wall = capN(m), top = m.price * capN(m);
+        const box = document.createElement("div"); box.className = "mini";
+        box.innerHTML = `<h4>${m.n}</h4><div class="sub">시간 벽 고객 ${wall.toLocaleString()} · 월 ${fmt(top)}원</div>`;
+        const s = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": `${m.n} 누적 이익 곡선` }, box);
+        const lx = v => L + v / nMax * (W - L - R);
+        const ymax = m.price * m.reach, sy = v => T + (1 - v / ymax) * (H - T - Bt);
+        [0, 0.5, 1].forEach(f => { el("line", { class: "grid", x1: L, x2: W - R, y1: sy(f * ymax), y2: sy(f * ymax) }, s); el("text", { class: "lbl", x: L - 4, y: sy(f * ymax) + 3, "text-anchor": "end" }, s).textContent = fmt(f * ymax); });
+        [0, Math.round(nMax / 2), nMax].forEach(v => { el("text", { class: "lbl", x: lx(v), y: H - 6, "text-anchor": "middle" }, s).textContent = v.toLocaleString(); });
+        let d = "", area = `M${lx(0)} ${sy(0)}`;
+        for (let k = 0; k <= 60; k++) { const n = nMax * k / 60; const prof = m.price * Math.min(n, wall); d += (k ? "L" : "M") + lx(n) + " " + sy(prof); area += `L${lx(n)} ${sy(prof)}`; }
+        el("path", { class: "area", d: area + `L${lx(nMax)} ${sy(0)}Z` }, s);
+        el("path", { class: "curve", d }, s);
+        if (wall < m.reach) { el("line", { class: "wall", x1: lx(wall), x2: lx(wall), y1: T, y2: H - Bt }, s); const left = lx(wall) - L > 50; el("text", { class: "lbl", x: lx(wall) + (left ? -3 : 3), y: T + 10, "text-anchor": left ? "end" : "start" }, s).textContent = "시간 벽"; }
+        const hit = el("rect", { class: "hit", x: 0, y: 0, width: W, height: H }, s);
+        hit.addEventListener("mousemove", ev => showTip(ev, `<b>${m.n}</b><br>고객 1명 더: +${fmt(m.price)}원/월, +${m.hrs}시간/월<br>혼자 갈 수 있는 끝: 고객 ${wall.toLocaleString()} (월 ${fmt(top)}원)<br>${wall < m.reach ? "시간 벽에서 꺾임 → 사람을 써야 확장" : "시장 끝까지 시간이 남음 → 확장성 높음"}`));
+        hit.addEventListener("mouseleave", hideTip);
+        scale.appendChild(box);
+      });
+
+      // ④ E3 세계 (llmrel/voi.py와 같은 격자)
+      const R3 = [0.05, 0.2, 0.4], C3 = [0.1, 0.3], WORLDS = [];
+      R3.forEach(r => C3.forEach(c => WORLDS.push({ r, c })));
+      const binom = (n, k, p) => { let c = 1; for (let i = 0; i < k; i++) c = c * (n - i) / (i + 1); return c * Math.pow(p, k) * Math.pow(1 - p, n - k); };
+      function postE3(y) { let w = WORLDS.map(() => 1 / WORLDS.length); if (y >= 0) { w = WORLDS.map((v, i) => w[i] * binom(3, y, v.r)); const s = w.reduce((a, b) => a + b, 0); w = w.map(v => v / s); } return w; }
+      const pSuccess = (m, post) => m.p !== null ? m.p : 0.5 * WORLDS.reduce((s, v, i) => s + (v.r * v.c >= 0.03 ? post[i] : 0), 0);
+
+      function drawMap(post) {
+        const host = document.getElementById("pf-map"); host.innerHTML = "";
+        const W = 420, H = 260, L = 46, R = 16, T = 12, Bt = 34;
+        const s = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "모델별 성공 확률과 확장 크기" }, host);
+        const sx = p => L + p / 0.5 * (W - L - R), ymin = 500, ymax = 10000, sy = v => T + (1 - (Math.log10(v) - Math.log10(ymin)) / (Math.log10(ymax) - Math.log10(ymin))) * (H - T - Bt);
+        [500, 1000, 3000, 10000].forEach(v => { el("line", { class: "grid", x1: L, x2: W - R, y1: sy(v), y2: sy(v) }, s); el("text", { class: "lbl", x: L - 4, y: sy(v) + 3, "text-anchor": "end" }, s).textContent = fmt(v); });
+        [0, 0.1, 0.2, 0.3, 0.4, 0.5].forEach(p => el("text", { class: "lbl", x: sx(p), y: H - 18, "text-anchor": "middle" }, s).textContent = Math.round(p * 100) + "%");
+        el("text", { class: "lbl", x: (L + W - R) / 2, y: H - 4, "text-anchor": "middle" }, s).textContent = "성공 확률 →";
+        el("text", { class: "lbl", x: L, y: T - 2 }, s).textContent = "월 매출 (시간 벽까지)";
+        const rows = MODELS.map(m => ({ m, p: pSuccess(m, post), top: m.price * capN(m) })).map(o => ({ ...o, ev: o.p * o.top }));
+        rows.forEach(o => {
+          const cx = sx(o.p), cy = sy(Math.max(ymin, o.top));
+          el("circle", { class: "dot", cx, cy, r: 6 }, s);
+          const pos = { "일본판 리포트": [0, 18, "middle"], "노트 유료판": [9, -8, "start"] }[o.m.n] || [9, 4, "start"];
+          const t = el("text", { class: "lbl-ink", x: cx + pos[0], y: cy + pos[1], "text-anchor": pos[2] }, s); t.textContent = `${o.m.n} · ${fmt(o.ev)}`;
+          const hit = el("circle", { class: "hit", cx, cy, r: 14 }, s);
+          hit.addEventListener("mousemove", ev => showTip(ev, `<b>${o.m.n}</b><br>성공 확률 ${(o.p * 100).toFixed(0)}%<br>시간 벽까지 월 매출 ${fmt(o.top)}원<br>기대 크기 월 ${fmt(o.ev)}원`));
+          hit.addEventListener("mouseleave", hideTip);
+        });
+        const best = rows.slice().sort((a, b) => b.ev - a.ev)[0];
+        document.getElementById("pf-pick").innerHTML = `지금 가정에서 기대 크기 1위: <b>${best.m.n}</b> (월 ${fmt(best.ev)}원). 다만 가정이 크게 섞여 있어, 확정이 아니라 '먼저 시험할 곳'의 순서로 봅니다.`;
+        document.getElementById("pf-table").innerHTML = rows.map(o => `<tr><td>${o.m.n}</td><td class="r num">${fmt(o.m.price)}원</td><td class="r num">${o.m.hrs}h</td><td class="r num">${o.m.reach.toLocaleString()}</td><td class="r num">${(o.p * 100).toFixed(0)}%</td><td>${o.m.note}</td></tr>`).join("");
+      }
+      function drawPost(y) {
+        const post = postE3(y);
+        document.getElementById("pf-y-v").textContent = y < 0 ? "실험 전" : y + "곳 회신";
+        const host = document.getElementById("pf-post"); host.innerHTML = "";
+        const W = 420, H = 170, L = 34, R = 8, T = 10, Bt = 40;
+        const s = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "E3 세계별 확률" }, host);
+        const bw = (W - L - R) / WORLDS.length, sy = v => T + (1 - v / 0.6) * (H - T - Bt);
+        [0, 0.3, 0.6].forEach(v => { el("line", { class: "grid", x1: L, x2: W - R, y1: sy(v), y2: sy(v) }, s); el("text", { class: "lbl", x: L - 4, y: sy(v) + 3, "text-anchor": "end" }, s).textContent = Math.round(v * 100) + "%"; });
+        WORLDS.forEach((v, i) => {
+          const x = L + i * bw + 4, ok = v.r * v.c >= 0.03, top = sy(post[i]);
+          el("rect", { class: "bar" + (ok ? "" : " off"), x, y: top, width: bw - 8, height: Math.max(0, sy(0) - top), rx: 3 }, s);
+          el("text", { class: "lbl", x: x + (bw - 8) / 2, y: H - 24, "text-anchor": "middle" }, s).textContent = `회신 ${v.r * 100}%`;
+          el("text", { class: "lbl", x: x + (bw - 8) / 2, y: H - 12, "text-anchor": "middle" }, s).textContent = `전환 ${v.c * 100}%`;
+          const hit = el("rect", { class: "hit", x: L + i * bw, y: T, width: bw, height: H - T - Bt }, s);
+          hit.addEventListener("mousemove", ev => showTip(ev, `회신율 ${v.r * 100}% × 전환율 ${v.c * 100}% = ${(v.r * v.c * 100).toFixed(1)}%<br>이 세계일 확률 ${(post[i] * 100).toFixed(0)}%<br>${ok ? "직접 영업이 이득 (≥3%)" : "직접 영업 손해 (<3%)"}`));
+          hit.addEventListener("mouseleave", hideTip);
+        });
+        const eu = WORLDS.reduce((sum, v, i) => sum + post[i] * (v.r * v.c - 0.03), 0);
+        const pw = WORLDS.reduce((sum, v, i) => sum + (v.r * v.c >= 0.03 ? post[i] : 0), 0);
+        document.getElementById("pf-dec").innerHTML = `직접 영업이 이득인 세계(진한 막대)의 확률 <b class="num">${(pw * 100).toFixed(0)}%</b> → 결정: <b>${eu > 0 ? "직접 영업 계속" : "바우처 경로만 남김"}</b>. 혼인 수요 예측의 성공 확률은 <b class="num">${(0.5 * pw * 100).toFixed(0)}%</b>로 ③에 반영됩니다.`;
+        drawMap(post);
+      }
+      const ys = document.getElementById("pf-y");
+      ys.addEventListener("input", () => drawPost(+ys.value));
+      drawPost(-1);
+    })();
+    </script>
+  </section>
+
