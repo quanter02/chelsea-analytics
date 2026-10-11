@@ -118,7 +118,16 @@
         img.onload = () => {
           const c = document.createElement("canvas"); c.width = 1080; c.height = 1350;
           c.getContext("2d").drawImage(img, 0, 0);
-          c.toBlob(b => { const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `셈법_${cur.n.replace(/\s+/g, "_")}.png`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }, "image/png");
+          c.toBlob(async b => {
+            const filename = `셈법_${cur.n.replace(/\s+/g, "_")}.png`, msg = document.getElementById("town-msg");
+            const dl = window.claude ? await window.claude.use("downloads") : null;
+            if (dl) {
+              try { await dl.save({ filename, data: b }); msg.textContent = "저장했습니다."; }
+              catch (e) { msg.textContent = e && e.code === "declined" ? "" : "이 화면에서는 저장할 수 없습니다."; }
+              return;
+            }
+            const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = filename; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+          }, "image/png");
         };
         img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(cardSVG(cur));
       });
