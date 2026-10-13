@@ -448,3 +448,15 @@ def test_allocator_start_and_floor_until():
     assert acts.set_index("활동").loc["B", "w"] == 0                      # 시작 전 보류
     assert sum(f["hours"] for f in allocator.active_floor(cfg, t)["floor"]) == 10
     assert sum(f["hours"] for f in allocator.active_floor(cfg, pd.Timestamp("2027-01-04"))["floor"]) == 4   # 시험 뒤 토익 빠짐
+
+
+def test_births_cohort_and_sigungu_sum():
+    from llmrel import births
+    c = births.cohort_index()
+    assert abs(c.attrs["k"] - 1) < 0.05                              # 세대 재구성이 과거 출생아를 재현
+    assert c.women_30_34.idxmax() <= 2026 and c.cohort_rel[2035] < 0.9   # 주출산 연령 여성은 지금이 꼭짓점
+    n = births.national()
+    s = births.sigungu(n)
+    top = s[~s.general_gu & s.pred.notna()]
+    assert abs(top.b2025.sum() - n["B25"]) < 1                         # 일반구 빼면 전국과 일치 (이중 집계 없음)
+    assert 0.7 < s.attrs["coverage"] < 0.95
