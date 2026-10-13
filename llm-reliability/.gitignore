@@ -3,3 +3,4 @@ __pycache__/
 .pytest_cache/
 data_cache/
 notion/export/
+data_crisis/raw_*.json

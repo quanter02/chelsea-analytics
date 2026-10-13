@@ -460,3 +460,14 @@ def test_births_cohort_and_sigungu_sum():
     top = s[~s.general_gu & s.pred.notna()]
     assert abs(top.b2025.sum() - n["B25"]) < 1                         # 일반구 빼면 전국과 일치 (이중 집계 없음)
     assert 0.7 < s.attrs["coverage"] < 0.95
+
+
+def test_crisis_no_lookahead_and_range_flag():
+    from llmrel import crisis
+    p = crisis.panel()
+    assert p.y.isna().sum() >= 3 * 12 - 3                              # 최근 12개월은 정답 미확정
+    w = crisis.walk_forward(p[p.index <= "1990-12-31"], start="1990-01-31")
+    assert w.p.between(0, 1).all() and len(w) > 0
+    now = crisis.current(p, n_boot=20)
+    assert set(now.market) == set(crisis.MARKETS) and (now.lo80 <= now.hi80).all()
+    assert "vol12" in now.set_index("market").loc["코스피", "out_of_range"]   # 학습에 없던 변동성은 외삽으로 표시
