@@ -26,16 +26,17 @@ EVENTS = ROOT / "data_biz" / "events.csv"
 LEVELS = {"L0": "가정", "L1": "회신·통화", "L2": "관심 확인서·사전 예약", "L3": "첫 결제", "L4": "재결제·갱신", "L5": "소개로 온 고객"}
 COLUMNS = ["date", "exp", "counterpart", "level", "amount_krw", "note"]
 
+# 2026-10-13 수정: 12월 토익 시험까지 사업 실험 보류(진로 우선) → E1·E2·E4·E5 마감을 2027-02-28로 연기. 장부에 새 줄로 남음.
 EXPERIMENTS = {
     "E1": {"name": "지자체 무료 샘플", "stream": "report",
            "hypothesis": "전화로 동의를 받고 무료 샘플 리포트를 보내면, 3곳 중 1곳 이상이 회신하거나 통화에 응한다",
            "action": "강한 지역 1~3순위(수원·용인·성남) 인구정책 부서에 전화 → 동의 시 샘플 메일",
-           "target_level": "L1", "target_count": 1, "attempts": 3, "deadline": "2026-12-31",
+           "target_level": "L1", "target_count": 1, "attempts": 3, "deadline": "2027-02-28",
            "kill": "0곳이면 메시지(제목·첫 숫자)를 바꿔 다음 3곳(4~6순위)으로 1회 재시도, 그래도 0곳이면 지자체 직접 영업 보류"},
     "E2": {"name": "셈법 노트 유료판 사전 예약", "stream": "note",
            "hypothesis": "콘텐츠 발행 후 모은 무료 구독자 중 10% 이상이 유료판(가설 가격 월 4,900원)을 사전 예약한다",
            "action": "콘텐츠 #1·#2 발행 → 무료 구독 모집 → 구독자 30명 이상 모이면 사전 예약 링크 공개",
-           "target_level": "L2", "target_count": 3, "attempts": 30, "deadline": "2027-01-31",
+           "target_level": "L2", "target_count": 3, "attempts": 30, "deadline": "2027-02-28",
            "kill": "구독자 30명 미만이면 판정 보류(표본 부족)로 기록, 30명 이상인데 예약 3명 미만이면 유료판 보류"},
     "E3": {"name": "혼인 수요 예측 (웨딩·혼수 업계)", "stream": "demand",
            "hypothesis": "웨딩홀·혼수 가전·가구 업체 3곳에 지역별 혼인 예측과 80% 범위를 보여주면 1곳 이상이 회신한다",
@@ -45,12 +46,12 @@ EXPERIMENTS = {
     "E4": {"name": "검증 배지 시제품 (예측 장부 공증)", "stream": "ledger",
            "hypothesis": "예측을 공개하는 사람(유튜버·애널리스트·블로거) 10명에게 맨유–토트넘 배지 시제품을 보여주면 2명 이상이 자기 예측에 배지를 붙여 본다",
            "action": "배지 카드(HTML·SVG·한 줄 텍스트) 공개 → 공개 문의 창구로 동의 요청 → 원하는 사람의 예측 1건을 장부에 기록하고 배지 발급",
-           "target_level": "L2", "target_count": 2, "attempts": 10, "deadline": "2027-01-31",
+           "target_level": "L2", "target_count": 2, "attempts": 10, "deadline": "2027-02-28",
            "kill": "10명 중 0~1명이면 배지 단독 확장 보류, 셈법 자체 콘텐츠의 신뢰 표시로만 사용"},
     "E5": {"name": "우리 동네 결혼 카드 (공유 확산)", "stream": "demand",
            "hypothesis": "동네 카드 3장(수원·용인·성남)을 공개 게시하면 4주 안에 '우리 동네는?' 요청(댓글·DM·조회 페이지 저장 인증)이 10건 이상 온다",
            "action": "카드 3장 공개 게시 → 요청 온 동네 카드를 그 자리에서 만들어 답글 → 요청 건수와 동네를 익명으로 기록 (L1 = 요청 1건)",
-           "target_level": "L1", "target_count": 10, "attempts": 3, "deadline": "2026-12-31",
+           "target_level": "L1", "target_count": 10, "attempts": 3, "deadline": "2027-02-28",
            "kill": "4주에 요청 3건 미만이면 카드 확산 중단, 조회 페이지는 B2B 보고서의 부록으로만 유지"},
 }
 

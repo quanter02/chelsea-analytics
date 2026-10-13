@@ -33,6 +33,11 @@ def load(path: Path = CONFIG) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def active_floor(cfg: dict, today: pd.Timestamp) -> dict:
+    """바닥 중 'until'이 지난 항목(예: 시험이 끝난 토익)은 뺀다."""
+    return dict(cfg, floor=[f for f in cfg["floor"] if not f.get("until") or today <= pd.Timestamp(f["until"])])
+
+
 def weights(cfg: dict, today: pd.Timestamp, voi_table: pd.DataFrame | None = None, done: set | None = None) -> pd.DataFrame:
     """활동표: name, w, tau, min, max, 출처. 실험 가중치는 VOI에서 가져온다."""
     done = done if done is not None else {r["key"] for r in ledger.read() if r["kind"] == "biz_result"}
@@ -49,6 +54,9 @@ def weights(cfg: dict, today: pd.Timestamp, voi_table: pd.DataFrame | None = Non
             src = f"VOI 결정 변화 확률 {w:.0f}%"
         if a.get("exp") in done:
             w, src = 0.0, "결과 기록됨 (완료)"
+        start = a.get("start")                                   # 보류: 시작일 전에는 시간을 주지 않음
+        if start and today < pd.Timestamp(start):
+            w, src = 0.0, f"보류 ({start}부터)"
         due = a.get("due")
         if due and w > 0:
             weeks_left = (pd.Timestamp(due) - today).days / 7
@@ -95,14 +103,15 @@ def main(today: str | None = None, cfg: dict | None = None):
     OUT.mkdir(parents=True, exist_ok=True)
     cfg = cfg or load()
     t = pd.Timestamp(today or cfg.get("week_of") or pd.Timestamp.today().normalize())
+    cfg = active_floor(cfg, t)
     acts = weights(cfg, t)
     res = allocate(cfg, acts)
     open_ = res[res["시간"] < res["max"] - 1e-6]                 # 상한에 닿은 활동은 1시간을 더 넣을 수 없음
     nxt = (open_ if len(open_) else res).sort_values("한계효용", ascending=False).iloc[0]
     capped = res[(res["시간"] >= res["max"] - 1e-6) & (res["한계효용"] > res.attrs["mu"] + 1e-6)]
     L = [f"# 주간 시간 배분 ({t.date()} 주)", "",
-         f"전체 {cfg['hours_total']:.0f}시간 중 **바닥 {sum(f['hours'] for f in cfg['floor']):.0f}시간**(" + ", ".join(f"{f['name']} {f['hours']:.0f}" for f in cfg["floor"]) +
-         f")을 먼저 빼고, 남은 **{res.attrs['budget']:.0f}시간**을 '1시간당 효용 증가'가 같아지도록 나눴습니다.", "",
+         f"전체 {cfg['hours_total']:.0f}시간 중 **바닥 {sum(f['hours'] for f in cfg['floor']):g}시간**(" + ", ".join(f"{f['name']} {f['hours']:g}" for f in cfg["floor"]) +
+         f")을 먼저 빼고, 남은 **{res.attrs['budget']:g}시간**을 '1시간당 효용 증가'가 같아지도록 나눴습니다.", "",
          "| 활동 | 이번 주 시간 | 흔들어도 (10~90%) | 마지막 1시간의 가치 | 가중치 근거 |", "|---|---|---|---|---|"]
     for _, r in res.sort_values("시간", ascending=False).iterrows():
         L.append(f"| {r['활동']} | **{r['시간']:.1f}h** | {r['10%']:.1f}~{r['90%']:.1f}h | {r['한계효용']:.1f} | {r['근거']} |")

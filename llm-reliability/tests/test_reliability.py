@@ -436,3 +436,15 @@ def test_town_cards_data_and_guardrails():
     tpl = (root / "content" / "web" / "town_section.tpl.html").read_text(encoding="utf-8")
     for banned in ("꼴찌", "최하위", "순위", "탓"):
         assert banned not in tpl.split("<script>")[1]                       # 카드 문구에 순위·탓하기 없음
+
+
+def test_allocator_start_and_floor_until():
+    import pandas as pd
+    from llmrel import allocator
+    cfg = {"hours_total": 20, "floor": [{"name": "토익", "hours": 6, "until": "2026-12-31"}, {"name": "학업", "hours": 4}],
+           "activities": [{"name": "A", "w": 50, "tau": 2, "max": 10}, {"name": "B", "w": 50, "tau": 2, "max": 10, "start": "2026-12-21"}]}
+    t = pd.Timestamp("2026-10-12")
+    acts = allocator.weights(cfg, t, voi_table=pd.DataFrame({"exp": [], "p_change": []}), done=set())
+    assert acts.set_index("활동").loc["B", "w"] == 0                      # 시작 전 보류
+    assert sum(f["hours"] for f in allocator.active_floor(cfg, t)["floor"]) == 10
+    assert sum(f["hours"] for f in allocator.active_floor(cfg, pd.Timestamp("2027-01-04"))["floor"]) == 4   # 시험 뒤 토익 빠짐
