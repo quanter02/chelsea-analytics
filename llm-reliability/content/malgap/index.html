@@ -1,0 +1,320 @@
+<title>말값</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* 레이아웃: 휴대폰 한 손 앱. 위에서 아래로 — 내 말값(결과) → 적기 → 채점 대기 → 지난 기록 */
+:root {
+  --bg: #F3F5F4; --surface: #FFFFFF; --fg: #121715; --muted: #5E6B66; --line: #DCE3E0;
+  --seal: #0E7A5A; --seal-soft: #E1F1EA; --miss: #B5541C; --miss-soft: #F8E9DF;
+  --f-display: "Do Hyeon", "IBM Plex Sans KR", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
+  --f-num: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0F1412; --surface: #171E1B; --fg: #E8EEEB; --muted: #94A39D; --line: #2A3531;
+  --seal: #45C796; --seal-soft: #173328; --miss: #F0915A; --miss-soft: #3A2418; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0F1412; --surface: #171E1B; --fg: #E8EEEB; --muted: #94A39D; --line: #2A3531;
+  --seal: #45C796; --seal-soft: #173328; --miss: #F0915A; --miss-soft: #3A2418; color-scheme: dark }
+html, body { background: var(--bg); color: var(--fg); }
+body { font-family: var(--f-body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 480px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 48px; display: grid; gap: 18px; }
+h1, h2 { font-family: var(--f-display); font-weight: 400; margin: 0; text-wrap: balance; }
+h2 { font-size: 20px; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.num { font-family: var(--f-num); font-variant-numeric: tabular-nums; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 12px; min-width: 0; }
+header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+header h1 { font-size: 30px; letter-spacing: .5px; }
+.tag { font-size: 12px; color: var(--muted); }
+
+/* 말값 */
+.score { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; }
+.big { font-family: var(--f-display); font-size: 64px; line-height: 1; color: var(--seal); }
+.big.low { color: var(--miss); }
+.say { font-size: 15px; }
+.say b { font-family: var(--f-num); }
+.example { font-size: 11px; letter-spacing: .08em; color: var(--muted); border: 1px dashed var(--line); border-radius: 999px; padding: 2px 8px; justify-self: start; }
+
+/* 적기 */
+label { font-size: 13px; color: var(--muted); }
+input[type=text] { width: 100%; box-sizing: border-box; font: inherit; font-size: 16px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--fg); }
+input[type=text]:focus-visible, button:focus-visible, input[type=range]:focus-visible { outline: 2px solid var(--seal); outline-offset: 2px; }
+.prob { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; }
+.prob output { font-family: var(--f-display); font-size: 34px; min-width: 3.2ch; text-align: right; }
+input[type=range] { width: 100%; accent-color: var(--seal); }
+.hint { font-size: 13px; background: var(--seal-soft); border-radius: 8px; padding: 8px 10px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: inherit; font-size: 14px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.go { font: inherit; font-weight: 700; font-size: 16px; padding: 13px; border-radius: 12px; border: 0; background: var(--seal); color: var(--surface); cursor: pointer; }
+.go:disabled { opacity: .4; cursor: default; }
+
+/* 목록 */
+ul.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.item { display: grid; gap: 8px; padding-block: 10px; border-top: 1px solid var(--line); }
+.item:first-child { border-top: 0; padding-top: 0; }
+.row { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.text { font-weight: 500; overflow-wrap: anywhere; min-width: 0; }
+.meta { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.due-now { color: var(--miss); }
+.acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.kept, .missed { font: inherit; font-size: 14px; padding: 9px; border-radius: 10px; cursor: pointer; border: 1px solid; }
+.kept { background: var(--seal-soft); border-color: var(--seal); color: var(--fg); }
+.missed { background: var(--miss-soft); border-color: var(--miss); color: var(--fg); }
+.ask { font-size: 13px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.pill { font-size: 12px; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
+.pill.y { background: var(--seal-soft); color: var(--seal); }
+.pill.n { background: var(--miss-soft); color: var(--miss); }
+.empty { color: var(--muted); font-size: 14px; }
+
+/* 보정 그림 */
+svg.cal { width: 100%; height: auto; display: block; }
+svg.cal text { fill: var(--muted); font-family: var(--f-num); font-size: 11px; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.stat { background: var(--bg); border-radius: 10px; padding: 8px 10px; }
+.stat .v { font-family: var(--f-num); font-size: 18px; }
+.stat .k { font-size: 12px; color: var(--muted); }
+.foot { font-size: 12px; color: var(--muted); }
+.ghost { font: inherit; font-size: 12px; background: none; border: 0; color: var(--muted); text-decoration: underline; cursor: pointer; padding: 0; justify-self: start; }
+@media (prefers-reduced-motion: no-preference) { .item { animation: in .25s ease-out; } @keyframes in { from { transform: translateY(4px); opacity: .6 } } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>말값</h1>
+    <span class="tag">미리 적고, 채점까지</span>
+  </header>
+
+  <section class="card" aria-labelledby="h-score">
+    <h2 id="h-score" class="muted" style="font-size:15px; font-family:var(--f-body)">내 말값</h2>
+    <div class="score">
+      <div class="big num" id="big">—</div>
+      <div class="say" id="say"></div>
+    </div>
+    <span class="example" id="exampleTag" hidden>예시 — 다짐 3개를 채점하면 내 숫자로 바뀝니다</span>
+  </section>
+
+  <form class="card" id="form" aria-labelledby="h-new" autocomplete="off">
+    <h2 id="h-new">다짐 적기</h2>
+    <div style="display:grid; gap:6px">
+      <label for="text">무엇을 할 건가요</label>
+      <input type="text" id="text" maxlength="80" placeholder="예: 이번 주 코테 5문제">
+    </div>
+    <div style="display:grid; gap:6px">
+      <label for="p">지킬 확률</label>
+      <div class="prob"><input type="range" id="p" min="5" max="95" step="5" value="70"><output id="pOut" for="p" class="num">70%</output></div>
+      <div class="hint" id="hint" hidden></div>
+    </div>
+    <div style="display:grid; gap:6px">
+      <span class="small muted" id="lDue">언제까지</span>
+      <div class="chips" role="group" aria-labelledby="lDue" id="due"></div>
+    </div>
+    <div style="display:grid; gap:6px">
+      <span class="small muted" id="lStake">걸 돈 (가상, 실제 결제 없음)</span>
+      <div class="chips" role="group" aria-labelledby="lStake" id="stake"></div>
+    </div>
+    <button class="go" id="go" type="submit" disabled>적기</button>
+  </form>
+
+  <section class="card" aria-labelledby="h-open">
+    <div class="row"><h2 id="h-open">채점 기다리는 다짐</h2><span class="meta num" id="openCount"></span></div>
+    <ul class="list" id="open"></ul>
+  </section>
+
+  <section class="card" aria-labelledby="h-cal">
+    <h2 id="h-cal">말한 확률 vs 실제</h2>
+    <svg class="cal" id="cal" viewBox="0 0 320 200" role="img" aria-label="말한 확률 구간별 실제로 지킨 비율"></svg>
+    <div class="stats">
+      <div class="stat"><div class="v" id="sN">0</div><div class="k">채점한 다짐</div></div>
+      <div class="stat"><div class="v" id="sKept">—</div><div class="k">실제 지킨 비율</div></div>
+      <div class="stat"><div class="v" id="sBrier">—</div><div class="k">정밀도 (Brier, 낮을수록 좋음)</div></div>
+    </div>
+    <p class="foot" style="margin:0">점선 위의 점은 말한 만큼 지킨 것. 점선 아래면 큰소리친 것, 위면 겸손한 것.</p>
+  </section>
+
+  <section class="card" aria-labelledby="h-done">
+    <div class="row"><h2 id="h-done">지난 기록</h2><span class="meta num" id="doneCount"></span></div>
+    <ul class="list" id="done"></ul>
+  </section>
+
+  <p class="foot" id="where">불러오는 중…</p>
+</div>
+
+<script>
+(() => {
+  const DUE = [["오늘", 0], ["이번 주", 7], ["2주", 14], ["4주", 28]];
+  const STAKE = [["안 걸기", 0], ["1만 원", 10000], ["3만 원", 30000], ["5만 원", 50000]];
+  const EXAMPLE = [ // 비어 있을 때만 보여주는 예시. 저장하지 않음
+    { p: 80, kept: true }, { p: 70, kept: false }, { p: 70, kept: true }, { p: 90, kept: false }, { p: 60, kept: false }, { p: 80, kept: true }, { p: 50, kept: true },
+  ];
+  const $ = id => document.getElementById(id);
+  let rows = [], store = null, due = 7, stake = 0;
+
+  // ── 저장소: 로그인했으면 계정별 비공개 db, 아니면 이 기기에만
+  const local = {
+    key: "malgap.v1",
+    all() { try { return JSON.parse(localStorage.getItem(this.key) || "[]"); } catch { return []; } },
+    save(list) { try { localStorage.setItem(this.key, JSON.stringify(list)); } catch {} },
+    async put(r) { const l = this.all().filter(x => x.id !== r.id); l.push(r); this.save(l); rows = l; render(); },
+    async del(id) { const l = this.all().filter(x => x.id !== id); this.save(l); rows = l; render(); },
+  };
+  function useLocal(msg) { store = local; rows = local.all(); $("where").textContent = msg; render(); }
+  store = local; rows = local.all();
+  (async () => {
+    const [db, user] = await Promise.all([window.claude?.use?.("db"), window.claude?.use?.("user")]);
+    const uid = user ? await user.id() : null;
+    if (!db || !uid) return;
+    const col = db.collection("data/users/" + uid);
+    store = {
+      async put(r) { await col.doc(r.id).set(r); },
+      async del(id) { await col.doc(id).delete(); },
+    };
+    col.onSnapshot(snap => { rows = snap.docs.map(d => d.data()).filter(Boolean); render(); },
+      () => useLocal("계정 저장소에 연결하지 못해 이 기기에만 저장 중"));
+    $("where").textContent = "내 계정에 비공개로 저장 중. 다른 사람은 볼 수 없습니다.";
+  })();
+
+  // ── 계산
+  const resolved = () => rows.filter(r => r.kept === true || r.kept === false);
+  function stats(list) {
+    const n = list.length; if (!n) return null;
+    const said = list.reduce((s, r) => s + r.p, 0) / n / 100;
+    const kept = list.filter(r => r.kept).length / n;
+    const brier = list.reduce((s, r) => s + (r.p / 100 - (r.kept ? 1 : 0)) ** 2, 0) / n;
+    return { n, said, kept, brier, value: Math.round(Math.min(kept / said, 1.5) * 100) };
+  }
+  const fmtWon = w => w ? (w / 10000) + "만 원" : "";
+  const today = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
+  const dueText = r => {
+    const days = Math.round((new Date(r.due) - today()) / 864e5);
+    return days < 0 ? `${-days}일 지남` : days === 0 ? "오늘 마감" : `${days}일 남음`;
+  };
+
+  // ── 그리기
+  function chips(el, opts, cur, set) {
+    el.replaceChildren(...opts.map(([lab, v]) => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = lab;
+      b.setAttribute("aria-pressed", v === cur); b.onclick = () => { set(v); chips(el, opts, v, set); }; return b;
+    }));
+  }
+  chips($("due"), DUE, due, v => due = v);
+  chips($("stake"), STAKE, stake, v => stake = v);
+
+  function render() {
+    const res = resolved(), s = stats(res), ex = !s || s.n < 3;
+    const show = ex ? stats(EXAMPLE) : s;
+    $("exampleTag").hidden = !ex;
+    $("big").textContent = show.value;
+    $("big").classList.toggle("low", show.value < 85);
+    const p70 = Math.round(70 * show.value / 100);
+    $("say").replaceChildren();
+    const line = document.createElement("div");
+    line.innerHTML = `내 말은 액면가의 <b>${show.value}%</b>.`;
+    const line2 = document.createElement("div"); line2.className = "small muted";
+    line2.textContent = show.value < 95 ? `"70%"라고 하면 실제로는 약 ${p70}%만 지킵니다.` : show.value > 110 ? `말보다 더 지킵니다. 확률을 조금 올려 적어도 됩니다.` : `말한 만큼 지킵니다.`;
+    $("say").append(line, line2);
+    hint();
+    $("sN").textContent = res.length;
+    $("sKept").textContent = s ? Math.round(s.kept * 100) + "%" : "—";
+    $("sBrier").textContent = s ? s.brier.toFixed(3) : "—";
+    drawCal(ex ? EXAMPLE : res, ex);
+    list();
+  }
+
+  function hint() {
+    const s = stats(resolved()), p = +$("p").value;
+    $("pOut").textContent = p + "%";
+    if (!s || s.n < 3 || Math.abs(s.value - 100) < 5) { $("hint").hidden = true; return; }
+    $("hint").hidden = false;
+    $("hint").textContent = `지금까지 말값 ${s.value} 기준이면 실제로는 약 ${Math.round(Math.min(p * s.value / 100, 99))}%. ${s.value < 100 ? "목표를 줄이거나 확률을 낮춰 적어 보세요." : ""}`;
+  }
+
+  function drawCal(list, ex) {
+    const W = 320, H = 200, L = 34, R = 10, T = 10, B = 26;
+    const x = v => L + v * (W - L - R), y = v => T + (1 - v) * (H - T - B);
+    const bins = [[0, .45, "~40%"], [.45, .75, "50~70%"], [.75, 1.01, "80%~"]];
+    let g = "";
+    for (const v of [0, .5, 1]) g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v * 100}%</text>`;
+    g += `<line x1="${x(0)}" y1="${y(0)}" x2="${x(1)}" y2="${y(1)}" stroke="var(--muted)" stroke-dasharray="4 4"/>`;
+    for (const [a, b, lab] of bins) {
+      const inb = list.filter(r => r.p / 100 >= a && r.p / 100 < b);
+      g += `<text x="${x((a + Math.min(b, 1)) / 2)}" y="${H - 8}" text-anchor="middle">${lab}</text>`;
+      if (!inb.length) continue;
+      const said = inb.reduce((s, r) => s + r.p, 0) / inb.length / 100, kept = inb.filter(r => r.kept).length / inb.length;
+      const col = kept + .05 < said ? "var(--miss)" : "var(--seal)";
+      g += `<line x1="${x(said)}" x2="${x(said)}" y1="${y(said)}" y2="${y(kept)}" stroke="${col}" stroke-width="2"/>`;
+      g += `<circle cx="${x(said)}" cy="${y(kept)}" r="${6 + Math.min(inb.length, 10)}" fill="${col}" fill-opacity="${ex ? .35 : .85}" stroke="var(--surface)" stroke-width="2"><title>${lab}: ${inb.length}개, 말한 ${Math.round(said * 100)}% → 실제 ${Math.round(kept * 100)}%</title></circle>`;
+    }
+    $("cal").innerHTML = g;
+  }
+
+  function list() {
+    const open = rows.filter(r => r.kept !== true && r.kept !== false).sort((a, b) => a.due.localeCompare(b.due));
+    const done = resolved().sort((a, b) => (b.resolvedAt || "").localeCompare(a.resolvedAt || ""));
+    $("openCount").textContent = open.length ? open.length + "개" : "";
+    $("doneCount").textContent = done.length ? done.length + "개" : "";
+    $("open").replaceChildren(...(open.length ? open.map(openItem) : [emptyLi("적은 다짐이 여기서 마감을 기다립니다. 마감 전에 채점해도 됩니다.")]));
+    $("done").replaceChildren(...(done.length ? done.map(doneItem) : [emptyLi("채점한 다짐이 쌓이면 말값이 정확해집니다.")]));
+  }
+  const emptyLi = t => { const li = document.createElement("li"); li.className = "empty"; li.textContent = t; return li; };
+
+  function openItem(r) {
+    const li = document.createElement("li"); li.className = "item";
+    const row = document.createElement("div"); row.className = "row";
+    const t = document.createElement("span"); t.className = "text"; t.textContent = r.text;
+    const m = document.createElement("span"); m.className = "meta num";
+    const late = new Date(r.due) <= today();
+    m.innerHTML = `${r.p}% · <span class="${late ? "due-now" : ""}">${dueText(r)}</span>${r.stake ? " · " + fmtWon(r.stake) : ""}`;
+    row.append(t, m);
+    const acts = document.createElement("div"); acts.className = "acts";
+    const k = document.createElement("button"); k.className = "kept"; k.textContent = "지켰다";
+    const x = document.createElement("button"); x.className = "missed"; x.textContent = "못 지켰다";
+    k.onclick = () => ask(li, r, true); x.onclick = () => ask(li, r, false);
+    acts.append(k, x);
+    li.append(row, acts);
+    return li;
+  }
+
+  // 채점 직후 한 번만: 실제 돈이었다면 걸었을지 (E6 지표)
+  function ask(li, r, kept) {
+    const box = document.createElement("div"); box.className = "ask";
+    const q = document.createElement("span"); q.textContent = "실제 돈이었다면 이 다짐에 걸었을까요?";
+    const mk = (lab, v) => { const b = document.createElement("button"); b.className = "chip"; b.type = "button"; b.textContent = lab;
+      b.onclick = () => store.put({ ...r, kept, wouldPay: v, resolvedAt: new Date().toISOString() }); return b; };
+    box.append(q, mk("걸었다", "yes"), mk("안 걸었다", "no"));
+    li.querySelector(".acts").replaceWith(box);
+  }
+
+  function doneItem(r) {
+    const li = document.createElement("li"); li.className = "item";
+    const row = document.createElement("div"); row.className = "row";
+    const t = document.createElement("span"); t.className = "text"; t.textContent = r.text;
+    const m = document.createElement("span"); m.className = "meta num";
+    const pill = document.createElement("span"); pill.className = "pill " + (r.kept ? "y" : "n"); pill.textContent = r.kept ? "지켰다" : "못 지켰다";
+    m.append(`${r.p}% · `, pill);
+    row.append(t, m);
+    const undo = document.createElement("button"); undo.className = "ghost"; undo.type = "button"; undo.textContent = "채점 되돌리기";
+    undo.onclick = () => store.put({ ...r, kept: null, wouldPay: null, resolvedAt: null });
+    li.append(row, undo);
+    return li;
+  }
+
+  // ── 적기
+  $("p").addEventListener("input", hint);
+  $("text").addEventListener("input", () => $("go").disabled = !$("text").value.trim());
+  $("form").addEventListener("submit", e => {
+    e.preventDefault();
+    const text = $("text").value.trim(); if (!text) return;
+    const d = today(); d.setDate(d.getDate() + due);
+    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    store.put({ id, text, p: +$("p").value, due: d.toISOString().slice(0, 10), stake, kept: null, createdAt: new Date().toISOString() });
+    $("text").value = ""; $("go").disabled = true;
+  });
+
+  $("where").textContent ||= "";
+  if ($("where").textContent === "불러오는 중…") $("where").textContent = "이 기기에만 저장 중";
+  render();
+})();
+</script>
