@@ -1,141 +1,157 @@
 <title>말값</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap">
 <style>
-/* 레이아웃: 휴대폰 한 손 앱. 위에서 아래로 — 내 말값(결과) → 적기 → 채점 대기 → 지난 기록 */
+/* 레이아웃: 휴대폰 한 손 앱. 언덕 위 내 말(말값) → 레벨 → 코스 적기 → 달려야 할 코스 → 기록. 밝은 하늘·풀밭 한 가지 세계로 고정 */
 :root {
-  --bg: #F3F5F4; --surface: #FFFFFF; --fg: #121715; --muted: #5E6B66; --line: #DCE3E0;
-  --seal: #0E7A5A; --seal-soft: #E1F1EA; --miss: #B5541C; --miss-soft: #F8E9DF;
-  --f-display: "Do Hyeon", "IBM Plex Sans KR", system-ui, sans-serif;
-  --f-body: "IBM Plex Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
-  --f-num: "IBM Plex Mono", ui-monospace, monospace;
+  --sky: #CFE8FF; --grass: #9BDB8E; --cream: #FFF3E6; --paper: #FFFFFF; --ink: #3A2E2A; --soft: #7A6A63;
+  --carrot: #FF8A3D; --peach: #FFD3B8; --dirt: #F1E6DA;
+  --f-display: "Jua", "Apple SD Gothic Neo", system-ui, sans-serif;
+  --f-body: "Gowun Dodum", "Apple SD Gothic Neo", system-ui, sans-serif;
+  color-scheme: light;
 }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #0F1412; --surface: #171E1B; --fg: #E8EEEB; --muted: #94A39D; --line: #2A3531;
-  --seal: #45C796; --seal-soft: #173328; --miss: #F0915A; --miss-soft: #3A2418; color-scheme: dark } }
-:root[data-theme="dark"] {
-  --bg: #0F1412; --surface: #171E1B; --fg: #E8EEEB; --muted: #94A39D; --line: #2A3531;
-  --seal: #45C796; --seal-soft: #173328; --miss: #F0915A; --miss-soft: #3A2418; color-scheme: dark }
-html, body { background: var(--bg); color: var(--fg); }
+html, body { background: var(--sky); color: var(--ink); }
+[hidden] { display: none !important; }
 body { font-family: var(--f-body); font-size: 15px; line-height: 1.55; }
-.wrap { max-width: 480px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 48px; display: grid; gap: 18px; }
+.wrap { max-width: 460px; margin: 0 auto; padding-inline: 16px; padding-block: 18px 48px; display: grid; gap: 16px; }
 h1, h2 { font-family: var(--f-display); font-weight: 400; margin: 0; text-wrap: balance; }
-h2 { font-size: 20px; }
-.muted { color: var(--muted); }
-.small { font-size: 13px; }
-.num { font-family: var(--f-num); font-variant-numeric: tabular-nums; }
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 12px; min-width: 0; }
-header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-header h1 { font-size: 30px; letter-spacing: .5px; }
-.tag { font-size: 12px; color: var(--muted); }
+h2 { font-size: 21px; }
+header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+header h1 { font-size: 32px; }
+.chip-carrot { display: flex; align-items: center; gap: 4px; background: var(--paper); border: 2.5px solid var(--ink); border-radius: 999px; padding: 4px 12px 4px 8px; font-family: var(--f-display); font-size: 16px; }
+.card { background: var(--paper); border: 2.5px solid var(--ink); border-radius: 24px; padding: 16px; display: grid; gap: 12px; min-width: 0; }
+.small { font-size: 13px; color: var(--soft); }
 
-/* 말값 */
-.score { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; }
-.big { font-family: var(--f-display); font-size: 64px; line-height: 1; color: var(--seal); }
-.big.low { color: var(--miss); }
+/* 언덕 장면 */
+.scene { position: relative; height: 270px; margin-inline: -16px; overflow: hidden; }
+.cloud { position: absolute; background: #FFFFFF; border-radius: 999px; }
+.hill { position: absolute; left: -30%; right: -30%; top: 196px; height: 220px; border-radius: 50%; background: var(--grass); border: 3px solid var(--ink); }
+.pony { position: absolute; left: 50%; top: 58px; transform: translateX(-58%); width: min(230px, 62vw); }
+.pony svg { width: 100%; height: auto; display: block; }
+.bubble { position: absolute; right: 16px; top: 4px; max-width: 58%; background: var(--paper); border: 2.5px solid var(--ink); border-radius: 20px 20px 6px 20px; padding: 8px 14px; font-family: var(--f-display); font-size: 16px; line-height: 1.35; }
+@media (prefers-reduced-motion: no-preference) { .pony.hop svg { animation: hop .6s ease-out; } @keyframes hop { 40% { transform: translateY(-18px) rotate(-6deg); } } }
+
+.level { margin-top: -40px; position: relative; }
+.row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.bar { height: 14px; border-radius: 7px; background: var(--dirt); border: 2px solid var(--ink); overflow: hidden; }
+.bar > div { height: 100%; background: var(--carrot); }
 .say { font-size: 15px; }
-.say b { font-family: var(--f-num); }
-.example { font-size: 11px; letter-spacing: .08em; color: var(--muted); border: 1px dashed var(--line); border-radius: 999px; padding: 2px 8px; justify-self: start; }
+.say b { font-family: var(--f-display); font-weight: 400; font-size: 17px; }
+.example { font-size: 12px; color: var(--soft); border: 1.5px dashed var(--soft); border-radius: 999px; padding: 2px 10px; justify-self: start; }
 
 /* 적기 */
-label { font-size: 13px; color: var(--muted); }
-input[type=text] { width: 100%; box-sizing: border-box; font: inherit; font-size: 16px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--fg); }
-input[type=text]:focus-visible, button:focus-visible, input[type=range]:focus-visible { outline: 2px solid var(--seal); outline-offset: 2px; }
-.prob { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; }
-.prob output { font-family: var(--f-display); font-size: 34px; min-width: 3.2ch; text-align: right; }
-input[type=range] { width: 100%; accent-color: var(--seal); }
-.hint { font-size: 13px; background: var(--seal-soft); border-radius: 8px; padding: 8px 10px; }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { font: inherit; font-size: 14px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
-.chip[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
-.go { font: inherit; font-weight: 700; font-size: 16px; padding: 13px; border-radius: 12px; border: 0; background: var(--seal); color: var(--surface); cursor: pointer; }
-.go:disabled { opacity: .4; cursor: default; }
+.write { background: var(--cream); }
+label, .lab { font-family: var(--f-display); font-size: 16px; }
+input[type=text] { width: 100%; box-sizing: border-box; font: inherit; font-size: 17px; font-weight: 700; padding: 14px 16px; border: 2.5px solid var(--ink); border-radius: 20px; background: var(--paper); color: var(--ink); }
+input[type=text]::placeholder { color: #A99A92; font-weight: 400; }
+:focus-visible { outline: 3px solid var(--carrot); outline-offset: 2px; }
+.conf { background: var(--paper); border: 2.5px solid var(--ink); border-radius: 22px; padding: 12px 14px; display: grid; gap: 6px; }
+.conf output { font-family: var(--f-display); font-size: 44px; line-height: 1; color: var(--carrot); }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 34px; background: transparent; }
+input[type=range]::-webkit-slider-runnable-track { height: 12px; border-radius: 6px; background: var(--dirt); border: 2px solid var(--ink); }
+input[type=range]::-moz-range-track { height: 8px; border-radius: 6px; background: var(--dirt); border: 2px solid var(--ink); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 32px; height: 32px; margin-top: -12px; border-radius: 50%; background: var(--grass); border: 2.5px solid var(--ink); }
+input[type=range]::-moz-range-thumb { width: 28px; height: 28px; border-radius: 50%; background: var(--grass); border: 2.5px solid var(--ink); }
+.ticks { display: flex; justify-content: space-between; font-size: 13px; color: var(--soft); }
+.tip { display: flex; gap: 8px; align-items: flex-end; }
+.tip svg { flex: none; width: 64px; height: auto; }
+.tip p { margin: 0; background: var(--paper); border: 2.5px solid var(--ink); border-radius: 20px 20px 20px 6px; padding: 8px 12px; font-size: 14px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font: inherit; font-family: var(--f-display); font-size: 15px; min-height: 42px; padding: 0 14px; border-radius: 999px; border: 2.5px solid var(--ink); background: var(--paper); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; gap: 3px; }
+.chip[aria-pressed="true"] { background: var(--ink); color: #FFFFFF; }
+.chip.carrot[aria-pressed="true"] { background: var(--carrot); color: var(--ink); }
+.go { font-family: var(--f-display); font-size: 20px; min-height: 58px; border-radius: 999px; border: 0; background: var(--ink); color: #FFFFFF; cursor: pointer; }
+.go:disabled { opacity: .35; cursor: default; }
 
-/* 목록 */
-ul.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.item { display: grid; gap: 8px; padding-block: 10px; border-top: 1px solid var(--line); }
-.item:first-child { border-top: 0; padding-top: 0; }
-.row { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
-.text { font-weight: 500; overflow-wrap: anywhere; min-width: 0; }
-.meta { font-size: 12px; color: var(--muted); white-space: nowrap; }
-.due-now { color: var(--miss); }
+/* 코스 목록 */
+ul.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.item { display: grid; gap: 8px; padding: 12px 14px; border: 2.5px solid var(--ink); border-radius: 20px; background: var(--paper); }
+.text { font-weight: 700; overflow-wrap: anywhere; min-width: 0; }
+.meta { font-family: var(--f-display); font-size: 14px; color: #8C5A3C; white-space: nowrap; }
+.late { color: #C2410C; }
 .acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.kept, .missed { font: inherit; font-size: 14px; padding: 9px; border-radius: 10px; cursor: pointer; border: 1px solid; }
-.kept { background: var(--seal-soft); border-color: var(--seal); color: var(--fg); }
-.missed { background: var(--miss-soft); border-color: var(--miss); color: var(--fg); }
-.ask { font-size: 13px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.pill { font-size: 12px; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
-.pill.y { background: var(--seal-soft); color: var(--seal); }
-.pill.n { background: var(--miss-soft); color: var(--miss); }
-.empty { color: var(--muted); font-size: 14px; }
+.ran, .stop { font-family: var(--f-display); font-size: 17px; min-height: 46px; border-radius: 999px; border: 2.5px solid var(--ink); color: var(--ink); cursor: pointer; }
+.ran { background: var(--grass); }
+.stop { background: var(--peach); }
+.ask { display: grid; gap: 8px; font-family: var(--f-display); font-size: 15px; }
+.ask div { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pill { font-family: var(--f-display); font-size: 13px; padding: 1px 10px; border-radius: 999px; border: 2px solid var(--ink); white-space: nowrap; }
+.pill.y { background: var(--grass); } .pill.n { background: var(--peach); }
+.empty { color: var(--soft); font-size: 14px; }
+.ghost { font: inherit; font-size: 12px; background: none; border: 0; color: var(--soft); text-decoration: underline; cursor: pointer; padding: 0; justify-self: start; min-height: 24px; }
 
-/* 보정 그림 */
 svg.cal { width: 100%; height: auto; display: block; }
-svg.cal text { fill: var(--muted); font-family: var(--f-num); font-size: 11px; }
+svg.cal text { fill: var(--soft); font-family: var(--f-display); font-size: 12px; }
 .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-.stat { background: var(--bg); border-radius: 10px; padding: 8px 10px; }
-.stat .v { font-family: var(--f-num); font-size: 18px; }
-.stat .k { font-size: 12px; color: var(--muted); }
-.foot { font-size: 12px; color: var(--muted); }
-.ghost { font: inherit; font-size: 12px; background: none; border: 0; color: var(--muted); text-decoration: underline; cursor: pointer; padding: 0; justify-self: start; }
-@media (prefers-reduced-motion: no-preference) { .item { animation: in .25s ease-out; } @keyframes in { from { transform: translateY(4px); opacity: .6 } } }
+.stat { background: var(--cream); border-radius: 14px; padding: 8px 10px; border: 2px solid var(--ink); }
+.stat .v { font-family: var(--f-display); font-size: 20px; }
+.stat .k { font-size: 12px; color: var(--soft); }
+.foot { font-size: 12px; color: var(--soft); text-align: center; }
 </style>
 
 <div class="wrap">
   <header>
     <h1>말값</h1>
-    <span class="tag">미리 적고, 채점까지</span>
+    <div class="chip-carrot" aria-label="가진 당근"><span id="carrotIcon"></span><span id="carrots">당근 10</span></div>
   </header>
 
-  <section class="card" aria-labelledby="h-score">
-    <h2 id="h-score" class="muted" style="font-size:15px; font-family:var(--f-body)">내 말값</h2>
-    <div class="score">
-      <div class="big num" id="big">—</div>
-      <div class="say" id="say"></div>
-    </div>
-    <span class="example" id="exampleTag" hidden>예시 — 다짐 3개를 채점하면 내 숫자로 바뀝니다</span>
+  <div class="scene" aria-hidden="false">
+    <div class="cloud" style="left:30px;top:70px;width:70px;height:24px"></div>
+    <div class="cloud" style="left:52px;top:58px;width:36px;height:28px"></div>
+    <div class="cloud" style="right:30px;top:150px;width:56px;height:20px"></div>
+    <div class="hill"></div>
+    <div class="pony" id="pony"></div>
+    <div class="bubble" id="bubble">안녕! 나는 당근이</div>
+  </div>
+
+  <section class="card level" aria-labelledby="h-level">
+    <div class="row"><h2 id="h-level" style="font-size:19px">당근이 · <span id="lvName">망아지</span></h2><span class="small" id="lvNext"></span></div>
+    <div class="bar" role="progressbar" aria-labelledby="h-level" id="lvBar"><div id="lvFill" style="width:0%"></div></div>
+    <div class="say" id="say"></div>
+    <span class="example" id="exampleTag" hidden>예시 — 코스 3개를 채점하면 내 말값으로 바뀌어요</span>
   </section>
 
-  <form class="card" id="form" aria-labelledby="h-new" autocomplete="off">
-    <h2 id="h-new">다짐 적기</h2>
+  <form class="card write" id="form" aria-labelledby="h-new" autocomplete="off">
+    <h2 id="h-new">이번엔 어디까지 달릴까?</h2>
     <div style="display:grid; gap:6px">
-      <label for="text">무엇을 할 건가요</label>
+      <label for="text">다짐 한 줄</label>
       <input type="text" id="text" maxlength="80" placeholder="예: 이번 주 코테 5문제">
     </div>
-    <div style="display:grid; gap:6px">
-      <label for="p">지킬 확률</label>
-      <div class="prob"><input type="range" id="p" min="5" max="95" step="5" value="70"><output id="pOut" for="p" class="num">70%</output></div>
-      <div class="hint" id="hint" hidden></div>
+    <div class="conf">
+      <div class="row"><label for="p">자신감</label><output id="pOut" for="p">70%</output></div>
+      <input type="range" id="p" min="5" max="95" step="5" value="70">
+      <div class="ticks"><span>걷기</span><span>총총</span><span>전력질주</span></div>
     </div>
+    <div class="tip" id="tip" hidden><span id="tipPony"></span><p id="tipText"></p></div>
     <div style="display:grid; gap:6px">
-      <span class="small muted" id="lDue">언제까지</span>
+      <span class="lab" id="lDue">결승선</span>
       <div class="chips" role="group" aria-labelledby="lDue" id="due"></div>
     </div>
     <div style="display:grid; gap:6px">
-      <span class="small muted" id="lStake">걸 돈 (가상, 실제 결제 없음)</span>
+      <span class="lab" id="lStake">당근 걸기 <span class="small" style="font-family:var(--f-body)">(가상 · 지키면 돌려받아요)</span></span>
       <div class="chips" role="group" aria-labelledby="lStake" id="stake"></div>
     </div>
-    <button class="go" id="go" type="submit" disabled>적기</button>
+    <button class="go" id="go" type="submit" disabled>출발!</button>
   </form>
 
   <section class="card" aria-labelledby="h-open">
-    <div class="row"><h2 id="h-open">채점 기다리는 다짐</h2><span class="meta num" id="openCount"></span></div>
+    <div class="row"><h2 id="h-open">달려야 할 코스</h2><span class="meta" id="openCount"></span></div>
     <ul class="list" id="open"></ul>
   </section>
 
   <section class="card" aria-labelledby="h-cal">
-    <h2 id="h-cal">말한 확률 vs 실제</h2>
-    <svg class="cal" id="cal" viewBox="0 0 320 200" role="img" aria-label="말한 확률 구간별 실제로 지킨 비율"></svg>
+    <h2 id="h-cal">말한 자신감 vs 실제로 달린 비율</h2>
+    <svg class="cal" id="cal" viewBox="0 0 320 200" role="img" aria-label="자신감 구간별 실제로 지킨 비율"></svg>
     <div class="stats">
-      <div class="stat"><div class="v" id="sN">0</div><div class="k">채점한 다짐</div></div>
-      <div class="stat"><div class="v" id="sKept">—</div><div class="k">실제 지킨 비율</div></div>
-      <div class="stat"><div class="v" id="sBrier">—</div><div class="k">정밀도 (Brier, 낮을수록 좋음)</div></div>
+      <div class="stat"><div class="v" id="sN">0</div><div class="k">채점한 코스</div></div>
+      <div class="stat"><div class="v" id="sKept">—</div><div class="k">실제로 달린 비율</div></div>
+      <div class="stat"><div class="v" id="sBrier">—</div><div class="k">정밀도 (낮을수록 좋음)</div></div>
     </div>
-    <p class="foot" style="margin:0">점선 위의 점은 말한 만큼 지킨 것. 점선 아래면 큰소리친 것, 위면 겸손한 것.</p>
+    <p class="small" style="margin:0">점선 위의 점 = 말한 만큼 달림. 점선 아래면 큰소리친 것, 위면 겸손한 것.</p>
   </section>
 
   <section class="card" aria-labelledby="h-done">
-    <div class="row"><h2 id="h-done">지난 기록</h2><span class="meta num" id="doneCount"></span></div>
+    <div class="row"><h2 id="h-done">지난 코스</h2><span class="meta" id="doneCount"></span></div>
     <ul class="list" id="done"></ul>
   </section>
 
@@ -144,13 +160,41 @@ svg.cal text { fill: var(--muted); font-family: var(--f-num); font-size: 11px; }
 
 <script>
 (() => {
-  const DUE = [["오늘", 0], ["이번 주", 7], ["2주", 14], ["4주", 28]];
-  const STAKE = [["안 걸기", 0], ["1만 원", 10000], ["3만 원", 30000], ["5만 원", 50000]];
+  const DUE = [["오늘", 0], ["이번 주", 7], ["2주", 14], ["한 달", 28]];
+  const STAKE = [0, 1, 3, 5];
+  const START_CARROTS = 10;
+  const LEVELS = [[0, "망아지"], [5, "조랑말"], [15, "준마"], [30, "천리마"]];
   const EXAMPLE = [ // 비어 있을 때만 보여주는 예시. 저장하지 않음
     { p: 80, kept: true }, { p: 70, kept: false }, { p: 70, kept: true }, { p: 90, kept: false }, { p: 60, kept: false }, { p: 80, kept: true }, { p: 50, kept: true },
   ];
   const $ = id => document.getElementById(id);
   let rows = [], store = null, due = 7, stake = 0;
+
+  // ── 그림: 조랑말 (숫자·표정만 바뀜, 사용자 글은 넣지 않음)
+  function pony(num, mood) {
+    const eye = mood === "happy" ? '<path d="M95 28q5-5 10 0" fill="none" stroke="#3A2E2A" stroke-width="2.8" stroke-linecap="round"/>'
+      : '<circle cx="100" cy="27" r="3.6" fill="#3A2E2A"/><circle cx="101.3" cy="25.8" r="1.2" fill="#FFFFFF"/>';
+    const mouth = mood === "sad" ? '<path d="M109 48q4-3 8 0" fill="none" stroke="#3A2E2A" stroke-width="2.4" stroke-linecap="round"/>'
+      : mood === "happy" ? '<path d="M106 44q6 7 12 0z" fill="#FF7A8A" stroke="#3A2E2A" stroke-width="2.4" stroke-linejoin="round"/>'
+      : '<path d="M108 45q4 3 9 0" fill="none" stroke="#3A2E2A" stroke-width="2.4" stroke-linecap="round"/>';
+    const label = num == null ? "" : `<path d="M46 40h26v16q-13 6-26 0z" fill="#FF8A3D" stroke="#3A2E2A" stroke-width="2.5" stroke-linejoin="round"/><text x="59" y="52" text-anchor="middle" font-family="Jua" font-size="12" fill="#FFFFFF">${Number(num)}</text>`;
+    return `<svg viewBox="0 0 130 110" role="img" aria-label="내 말 당근이${num == null ? "" : ", 말값 " + Number(num)}">
+      <path d="M24 50c-14 2-18 16-14 28 6-4 10-10 18-14z" fill="#8C5A3C" stroke="#3A2E2A" stroke-width="3" stroke-linejoin="round"/>
+      <rect x="32" y="66" width="11" height="30" rx="5.5" fill="#F4C98B" stroke="#3A2E2A" stroke-width="3"/>
+      <rect x="46" y="68" width="11" height="28" rx="5.5" fill="#E8B676" stroke="#3A2E2A" stroke-width="3"/>
+      <rect x="64" y="68" width="11" height="28" rx="5.5" fill="#E8B676" stroke="#3A2E2A" stroke-width="3"/>
+      <rect x="78" y="66" width="11" height="30" rx="5.5" fill="#F4C98B" stroke="#3A2E2A" stroke-width="3"/>
+      <ellipse cx="58" cy="60" rx="34" ry="22" fill="#F4C98B" stroke="#3A2E2A" stroke-width="3"/>
+      <path d="M76 52 L86 26 L104 34 L92 62 Z" fill="#F4C98B"/>
+      <path d="M84 18c-8 6-10 16-6 26-6 2-8 10-6 16 6-2 10-8 12-14 4-6 4-18 0-28z" fill="#8C5A3C" stroke="#3A2E2A" stroke-width="3" stroke-linejoin="round"/>
+      <ellipse cx="98" cy="30" rx="20" ry="18" fill="#F4C98B" stroke="#3A2E2A" stroke-width="3"/>
+      <ellipse cx="112" cy="40" rx="13" ry="10" fill="#FBE3C2" stroke="#3A2E2A" stroke-width="3"/>
+      <path d="M88 15l3-12 9 10z" fill="#F4C98B" stroke="#3A2E2A" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M92 12c4-4 12-2 12 4-4 0-8 2-10 6z" fill="#8C5A3C" stroke="#3A2E2A" stroke-width="2.5" stroke-linejoin="round"/>
+      ${eye}<ellipse cx="104" cy="35" rx="4.5" ry="3" fill="#FF9EB5"/><circle cx="118" cy="38" r="1.6" fill="#3A2E2A"/>${mouth}${label}</svg>`;
+  }
+  const carrotSvg = (fill = "#FF8A3D", leaf = "#5DBB63") => `<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24"><path d="M4 20 L14 8 L18 12 Z" fill="${fill}" stroke="#3A2E2A" stroke-width="1.8" stroke-linejoin="round"/><path d="M15 8l3-5M16 10l5-2M17 9l4-4" stroke="${leaf}" stroke-width="2" stroke-linecap="round"/></svg>`;
+  $("carrotIcon").innerHTML = carrotSvg();
 
   // ── 저장소: 로그인했으면 계정별 비공개 db, 아니면 이 기기에만
   const local = {
@@ -158,7 +202,6 @@ svg.cal text { fill: var(--muted); font-family: var(--f-num); font-size: 11px; }
     all() { try { return JSON.parse(localStorage.getItem(this.key) || "[]"); } catch { return []; } },
     save(list) { try { localStorage.setItem(this.key, JSON.stringify(list)); } catch {} },
     async put(r) { const l = this.all().filter(x => x.id !== r.id); l.push(r); this.save(l); rows = l; render(); },
-    async del(id) { const l = this.all().filter(x => x.id !== id); this.save(l); rows = l; render(); },
   };
   function useLocal(msg) { store = local; rows = local.all(); $("where").textContent = msg; render(); }
   store = local; rows = local.all();
@@ -167,13 +210,10 @@ svg.cal text { fill: var(--muted); font-family: var(--f-num); font-size: 11px; }
     const uid = user ? await user.id() : null;
     if (!db || !uid) return;
     const col = db.collection("data/users/" + uid);
-    store = {
-      async put(r) { await col.doc(r.id).set(r); },
-      async del(id) { await col.doc(id).delete(); },
-    };
+    store = { async put(r) { await col.doc(r.id).set(r); } };
     col.onSnapshot(snap => { rows = snap.docs.map(d => d.data()).filter(Boolean); render(); },
       () => useLocal("계정 저장소에 연결하지 못해 이 기기에만 저장 중"));
-    $("where").textContent = "내 계정에 비공개로 저장 중. 다른 사람은 볼 수 없습니다.";
+    $("where").textContent = "내 계정에 비공개로 저장 중. 다른 사람은 볼 수 없어요.";
   })();
 
   // ── 계산
@@ -185,135 +225,159 @@ svg.cal text { fill: var(--muted); font-family: var(--f-num); font-size: 11px; }
     const brier = list.reduce((s, r) => s + (r.p / 100 - (r.kept ? 1 : 0)) ** 2, 0) / n;
     return { n, said, kept, brier, value: Math.round(Math.min(kept / said, 1.5) * 100) };
   }
-  const fmtWon = w => w ? (w / 10000) + "만 원" : "";
+  const carrotsOf = r => Number(r.carrots) || 0;
+  function balance() {
+    let b = START_CARROTS;
+    for (const r of rows) if (r.kept !== true) b -= carrotsOf(r);   // 진행 중은 묶여 있고, 멈춘 코스는 잃음
+    return b;
+  }
   const today = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
   const dueText = r => {
     const days = Math.round((new Date(r.due) - today()) / 864e5);
-    return days < 0 ? `${-days}일 지남` : days === 0 ? "오늘 마감" : `${days}일 남음`;
+    return days < 0 ? `${-days}일 지남` : days === 0 ? "오늘 결승선" : `D-${days}`;
   };
 
   // ── 그리기
-  function chips(el, opts, cur, set) {
+  function chips(el, opts, cur, set, isCarrot) {
     el.replaceChildren(...opts.map(([lab, v]) => {
-      const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = lab;
-      b.setAttribute("aria-pressed", v === cur); b.onclick = () => { set(v); chips(el, opts, v, set); }; return b;
+      const b = document.createElement("button"); b.type = "button"; b.className = "chip" + (isCarrot ? " carrot" : "");
+      if (isCarrot && v) { b.innerHTML = carrotSvg(v === cur ? "#FFFFFF" : "#FF8A3D", v === cur ? "#3A2E2A" : "#5DBB63"); b.append(String(v)); b.setAttribute("aria-label", `당근 ${v}개`); }
+      else b.textContent = lab;
+      b.setAttribute("aria-pressed", v === cur);
+      b.onclick = () => { set(v); chips(el, opts, v, set, isCarrot); };
+      return b;
     }));
   }
   chips($("due"), DUE, due, v => due = v);
-  chips($("stake"), STAKE, stake, v => stake = v);
+  chips($("stake"), STAKE.map(v => [v ? String(v) : "안 걸기", v]), stake, v => stake = v, true);
 
   function render() {
     const res = resolved(), s = stats(res), ex = !s || s.n < 3;
     const show = ex ? stats(EXAMPLE) : s;
+    const open = rows.filter(r => r.kept !== true && r.kept !== false);
+    const dueNow = open.filter(r => new Date(r.due) <= today()).length;
+    // 말
+    const mood = ex ? "normal" : s.value >= 90 ? "happy" : s.value < 70 ? "sad" : "normal";
+    $("pony").innerHTML = pony(ex ? null : s.value, mood);
+    $("bubble").textContent = ex ? (rows.length ? "코스 3개만 채점하면 내 말값이 생겨!" : "안녕! 나는 당근이. 첫 코스 적어줘!")
+      : dueNow ? `주인님 말값 ${s.value}! 오늘 ${dueNow}번 달려야 해` : open.length ? `말값 ${s.value}! 결승선까지 기다리는 중` : `말값 ${s.value}! 새 코스 적어줘`;
+    // 레벨
+    const n = res.length; let li = 0; LEVELS.forEach(([min], i) => { if (n >= min) li = i; });
+    $("lvName").textContent = LEVELS[li][1];
+    const next = LEVELS[li + 1];
+    $("lvNext").textContent = next ? `${next[1]}까지 ${next[0] - n}번` : "최고 단계!";
+    const pct = next ? (n - LEVELS[li][0]) / (next[0] - LEVELS[li][0]) * 100 : 100;
+    $("lvFill").style.width = pct + "%"; $("lvBar").setAttribute("aria-valuenow", Math.round(pct));
+    // 말값 문장
     $("exampleTag").hidden = !ex;
-    $("big").textContent = show.value;
-    $("big").classList.toggle("low", show.value < 85);
     const p70 = Math.round(70 * show.value / 100);
     $("say").replaceChildren();
-    const line = document.createElement("div");
-    line.innerHTML = `내 말은 액면가의 <b>${show.value}%</b>.`;
-    const line2 = document.createElement("div"); line2.className = "small muted";
-    line2.textContent = show.value < 95 ? `"70%"라고 하면 실제로는 약 ${p70}%만 지킵니다.` : show.value > 110 ? `말보다 더 지킵니다. 확률을 조금 올려 적어도 됩니다.` : `말한 만큼 지킵니다.`;
-    $("say").append(line, line2);
-    hint();
+    const a = document.createElement("div"); a.append("내 말은 액면가의 ");
+    const b = document.createElement("b"); b.textContent = show.value + "%"; a.append(b);
+    const c = document.createElement("div"); c.className = "small";
+    c.textContent = show.value < 95 ? `"70%"라고 하면 실제로는 ${p70}%쯤 달려요.` : show.value > 110 ? "말보다 더 달려요. 자신감을 올려 적어도 돼요." : "말한 만큼 달려요. 최고!";
+    $("say").append(a, c);
+    $("carrots").textContent = "당근 " + balance();
+    tip();
     $("sN").textContent = res.length;
     $("sKept").textContent = s ? Math.round(s.kept * 100) + "%" : "—";
-    $("sBrier").textContent = s ? s.brier.toFixed(3) : "—";
+    $("sBrier").textContent = s ? s.brier.toFixed(2) : "—";
     drawCal(ex ? EXAMPLE : res, ex);
-    list();
+    list(open);
   }
 
-  function hint() {
+  function tip() {
     const s = stats(resolved()), p = +$("p").value;
     $("pOut").textContent = p + "%";
-    if (!s || s.n < 3 || Math.abs(s.value - 100) < 5) { $("hint").hidden = true; return; }
-    $("hint").hidden = false;
-    $("hint").textContent = `지금까지 말값 ${s.value} 기준이면 실제로는 약 ${Math.round(Math.min(p * s.value / 100, 99))}%. ${s.value < 100 ? "목표를 줄이거나 확률을 낮춰 적어 보세요." : ""}`;
+    if (!s || s.n < 3 || Math.abs(s.value - 100) < 5) { $("tip").hidden = true; return; }
+    $("tip").hidden = false;
+    $("tipPony").innerHTML = pony(null, s.value < 100 ? "sad" : "happy");
+    $("tipText").textContent = s.value < 100
+      ? `흠… 지금 말값이면 실제론 ${Math.round(Math.min(p * s.value / 100, 99))}%쯤이야. 코스를 조금 줄여 볼까?`
+      : `나 생각보다 잘 달려! 실제론 ${Math.round(Math.min(p * s.value / 100, 99))}%쯤 될 거야.`;
   }
 
   function drawCal(list, ex) {
-    const W = 320, H = 200, L = 34, R = 10, T = 10, B = 26;
+    const W = 320, H = 200, L = 44, R = 22, T = 22, B = 26;
     const x = v => L + v * (W - L - R), y = v => T + (1 - v) * (H - T - B);
     const bins = [[0, .45, "~40%"], [.45, .75, "50~70%"], [.75, 1.01, "80%~"]];
     let g = "";
-    for (const v of [0, .5, 1]) g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v * 100}%</text>`;
-    g += `<line x1="${x(0)}" y1="${y(0)}" x2="${x(1)}" y2="${y(1)}" stroke="var(--muted)" stroke-dasharray="4 4"/>`;
+    for (const v of [0, .5, 1]) g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#E6DDD5"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v * 100}%</text>`;
+    g += `<line x1="${x(0)}" y1="${y(0)}" x2="${x(1)}" y2="${y(1)}" stroke="#7A6A63" stroke-dasharray="4 4"/>`;
     for (const [a, b, lab] of bins) {
       const inb = list.filter(r => r.p / 100 >= a && r.p / 100 < b);
       g += `<text x="${x((a + Math.min(b, 1)) / 2)}" y="${H - 8}" text-anchor="middle">${lab}</text>`;
       if (!inb.length) continue;
       const said = inb.reduce((s, r) => s + r.p, 0) / inb.length / 100, kept = inb.filter(r => r.kept).length / inb.length;
-      const col = kept + .05 < said ? "var(--miss)" : "var(--seal)";
-      g += `<line x1="${x(said)}" x2="${x(said)}" y1="${y(said)}" y2="${y(kept)}" stroke="${col}" stroke-width="2"/>`;
-      g += `<circle cx="${x(said)}" cy="${y(kept)}" r="${6 + Math.min(inb.length, 10)}" fill="${col}" fill-opacity="${ex ? .35 : .85}" stroke="var(--surface)" stroke-width="2"><title>${lab}: ${inb.length}개, 말한 ${Math.round(said * 100)}% → 실제 ${Math.round(kept * 100)}%</title></circle>`;
+      const col = kept + .05 < said ? "#FF8A3D" : "#5DBB63";
+      g += `<line x1="${x(said)}" x2="${x(said)}" y1="${y(said)}" y2="${y(kept)}" stroke="#3A2E2A" stroke-width="2"/>`;
+      g += `<circle cx="${x(said)}" cy="${y(kept)}" r="${7 + Math.min(inb.length, 10)}" fill="${col}" fill-opacity="${ex ? .45 : 1}" stroke="#3A2E2A" stroke-width="2.5"><title>${lab}: ${inb.length}개, 말한 ${Math.round(said * 100)}% → 실제 ${Math.round(kept * 100)}%</title></circle>`;
     }
     $("cal").innerHTML = g;
   }
 
-  function list() {
-    const open = rows.filter(r => r.kept !== true && r.kept !== false).sort((a, b) => a.due.localeCompare(b.due));
+  function list(open) {
+    open = open.slice().sort((a, b) => a.due.localeCompare(b.due));
     const done = resolved().sort((a, b) => (b.resolvedAt || "").localeCompare(a.resolvedAt || ""));
     $("openCount").textContent = open.length ? open.length + "개" : "";
     $("doneCount").textContent = done.length ? done.length + "개" : "";
-    $("open").replaceChildren(...(open.length ? open.map(openItem) : [emptyLi("적은 다짐이 여기서 마감을 기다립니다. 마감 전에 채점해도 됩니다.")]));
-    $("done").replaceChildren(...(done.length ? done.map(doneItem) : [emptyLi("채점한 다짐이 쌓이면 말값이 정확해집니다.")]));
+    $("open").replaceChildren(...(open.length ? open.map(openItem) : [emptyLi("적은 코스가 여기서 결승선을 기다려요. 결승선 전에 채점해도 돼요.")]));
+    $("done").replaceChildren(...(done.length ? done.map(doneItem) : [emptyLi("채점한 코스가 쌓일수록 말값이 정확해져요.")]));
   }
   const emptyLi = t => { const li = document.createElement("li"); li.className = "empty"; li.textContent = t; return li; };
 
-  function openItem(r) {
-    const li = document.createElement("li"); li.className = "item";
+  function head(r, metaParts) {
     const row = document.createElement("div"); row.className = "row";
     const t = document.createElement("span"); t.className = "text"; t.textContent = r.text;
-    const m = document.createElement("span"); m.className = "meta num";
+    const m = document.createElement("span"); m.className = "meta"; m.append(...metaParts);
+    row.append(t, m); return row;
+  }
+  function openItem(r) {
+    const li = document.createElement("li"); li.className = "item";
     const late = new Date(r.due) <= today();
-    m.innerHTML = `${r.p}% · <span class="${late ? "due-now" : ""}">${dueText(r)}</span>${r.stake ? " · " + fmtWon(r.stake) : ""}`;
-    row.append(t, m);
+    const d = document.createElement("span"); d.textContent = dueText(r); if (late) d.className = "late";
+    li.append(head(r, [`자신감 ${r.p}% · `, d, carrotsOf(r) ? ` · 당근 ${carrotsOf(r)}` : ""]));
     const acts = document.createElement("div"); acts.className = "acts";
-    const k = document.createElement("button"); k.className = "kept"; k.textContent = "지켰다";
-    const x = document.createElement("button"); x.className = "missed"; x.textContent = "못 지켰다";
+    const k = document.createElement("button"); k.className = "ran"; k.textContent = "달렸다!";
+    const x = document.createElement("button"); x.className = "stop"; x.textContent = "멈췄어…";
     k.onclick = () => ask(li, r, true); x.onclick = () => ask(li, r, false);
-    acts.append(k, x);
-    li.append(row, acts);
+    acts.append(k, x); li.append(acts);
     return li;
   }
-
   // 채점 직후 한 번만: 실제 돈이었다면 걸었을지 (E6 지표)
   function ask(li, r, kept) {
     const box = document.createElement("div"); box.className = "ask";
-    const q = document.createElement("span"); q.textContent = "실제 돈이었다면 이 다짐에 걸었을까요?";
+    const q = document.createElement("span"); q.textContent = kept ? "히힝! 진짜 돈이었어도 걸었을 거야?" : "괜찮아. 진짜 돈이었으면 걸었을 거야?";
+    const row = document.createElement("div");
     const mk = (lab, v) => { const b = document.createElement("button"); b.className = "chip"; b.type = "button"; b.textContent = lab;
-      b.onclick = () => store.put({ ...r, kept, wouldPay: v, resolvedAt: new Date().toISOString() }); return b; };
-    box.append(q, mk("걸었다", "yes"), mk("안 걸었다", "no"));
+      b.onclick = () => { store.put({ ...r, kept, wouldPay: v, resolvedAt: new Date().toISOString() }); if (kept) hop(); }; return b; };
+    row.append(mk("당연하지", "yes"), mk("글쎄…", "no"));
+    box.append(q, row);
     li.querySelector(".acts").replaceWith(box);
   }
-
+  function hop() { const el = $("pony"); el.classList.remove("hop"); void el.offsetWidth; el.classList.add("hop"); }
   function doneItem(r) {
     const li = document.createElement("li"); li.className = "item";
-    const row = document.createElement("div"); row.className = "row";
-    const t = document.createElement("span"); t.className = "text"; t.textContent = r.text;
-    const m = document.createElement("span"); m.className = "meta num";
-    const pill = document.createElement("span"); pill.className = "pill " + (r.kept ? "y" : "n"); pill.textContent = r.kept ? "지켰다" : "못 지켰다";
-    m.append(`${r.p}% · `, pill);
-    row.append(t, m);
+    const pill = document.createElement("span"); pill.className = "pill " + (r.kept ? "y" : "n"); pill.textContent = r.kept ? "달렸다" : "멈춤";
+    li.append(head(r, [`${r.p}% `, pill]));
     const undo = document.createElement("button"); undo.className = "ghost"; undo.type = "button"; undo.textContent = "채점 되돌리기";
     undo.onclick = () => store.put({ ...r, kept: null, wouldPay: null, resolvedAt: null });
-    li.append(row, undo);
+    li.append(undo);
     return li;
   }
 
   // ── 적기
-  $("p").addEventListener("input", hint);
+  $("p").addEventListener("input", tip);
   $("text").addEventListener("input", () => $("go").disabled = !$("text").value.trim());
   $("form").addEventListener("submit", e => {
     e.preventDefault();
     const text = $("text").value.trim(); if (!text) return;
     const d = today(); d.setDate(d.getDate() + due);
     const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    store.put({ id, text, p: +$("p").value, due: d.toISOString().slice(0, 10), stake, kept: null, createdAt: new Date().toISOString() });
+    store.put({ id, text, p: +$("p").value, due: d.toISOString().slice(0, 10), carrots: Math.min(stake, Math.max(balance(), 0)), kept: null, createdAt: new Date().toISOString() });
     $("text").value = ""; $("go").disabled = true;
   });
 
-  $("where").textContent ||= "";
   if ($("where").textContent === "불러오는 중…") $("where").textContent = "이 기기에만 저장 중";
   render();
 })();
