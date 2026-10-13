@@ -471,3 +471,13 @@ def test_crisis_no_lookahead_and_range_flag():
     now = crisis.current(p, n_boot=20)
     assert set(now.market) == set(crisis.MARKETS) and (now.lo80 <= now.hi80).all()
     assert "vol12" in now.set_index("market").loc["코스피", "out_of_range"]   # 학습에 없던 변동성은 외삽으로 표시
+
+
+def test_crisis_credit_lagged():
+    from llmrel import crisis
+    c = crisis.credit_gdp()["미국"]
+    assert c.index.min() >= pd.Timestamp("1961-06-30")                # 1960년 값은 1961년 6월부터 보임 (발표 시차)
+    p = crisis.panel(crisis.FEATS_V1)
+    assert {"cg3", "dd12"} <= set(p.columns) and (p.dd12 <= 0).all()
+    h = crisis.household_credit()
+    assert h["조원"].iloc[-1] > 1500 and abs(h["전년비"].iloc[-1]) < 0.2
