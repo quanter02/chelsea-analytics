@@ -114,6 +114,10 @@ svg.cal text { fill: var(--soft); font-family: var(--f-display); font-size: 12px
   <form class="card write" id="form" aria-labelledby="h-new" autocomplete="off">
     <h2 id="h-new">이번엔 어디까지 달릴까?</h2>
     <div style="display:grid; gap:6px">
+      <span class="lab" id="lPre">추천 다짐 <span class="small" style="font-family:var(--f-body)">(탭하면 채워져요. 자신감은 솔직하게 고치세요)</span></span>
+      <div class="chips" role="group" aria-labelledby="lPre" id="presets"></div>
+    </div>
+    <div style="display:grid; gap:6px">
       <label for="text">다짐 한 줄</label>
       <input type="text" id="text" maxlength="80" placeholder="예: 이번 주 코테 5문제">
     </div>
@@ -168,7 +172,13 @@ svg.cal text { fill: var(--soft); font-family: var(--f-display); font-size: 12px
     { p: 80, kept: true }, { p: 70, kept: false }, { p: 70, kept: true }, { p: 90, kept: false }, { p: 60, kept: false }, { p: 80, kept: true }, { p: 50, kept: true },
   ];
   const $ = id => document.getElementById(id);
-  let rows = [], store = null, due = 7, stake = 0;
+  let rows = [], store = null, due = 7, stake = 0, fixedDue = null;
+  const PRESETS = [ // [버튼 이름, 다짐, 자신감, 결승선(날짜 또는 일수)]
+    ["하루 순서", "매일 토익 30분 → 코테 30분 먼저, 그 뒤에만 다른 일", 60, 7],
+    ["주가 확인", "주가 확인은 일요일 20시 한 번만", 50, 7],
+    ["전치사·접속사", "10/22 재진단에서 전치사·접속사 70% 이상", 55, "2026-10-22"],
+    ["EPL 모델", "EPL 모델이 2026/27 시즌 기준선(RPS)을 이긴다 · 2027-07 채점", 30, "2027-07-31"],
+  ];
 
   // ── 그림: 조랑말 (숫자·표정만 바뀜, 사용자 글은 넣지 않음)
   function pony(num, mood) {
@@ -248,7 +258,17 @@ svg.cal text { fill: var(--soft); font-family: var(--f-display); font-size: 12px
       return b;
     }));
   }
-  chips($("due"), DUE, due, v => due = v);
+  chips($("due"), DUE, due, v => { due = v; fixedDue = null; });
+  $("presets").replaceChildren(...PRESETS.map(([lab, text, p, d]) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = lab;
+    b.onclick = () => {
+      $("text").value = text; $("p").value = p; $("go").disabled = false;
+      if (typeof d === "string") { fixedDue = d; chips($("due"), DUE, null, v => { due = v; fixedDue = null; }); $("go").textContent = `출발! 결승선 ${d}`; }
+      else { fixedDue = null; due = d; chips($("due"), DUE, d, v => { due = v; fixedDue = null; }); $("go").textContent = "출발!"; }
+      tip(); $("text").focus();
+    };
+    return b;
+  }));
   chips($("stake"), STAKE.map(v => [v ? String(v) : "안 걸기", v]), stake, v => stake = v, true);
 
   function render() {
@@ -372,10 +392,12 @@ svg.cal text { fill: var(--soft); font-family: var(--f-display); font-size: 12px
   $("form").addEventListener("submit", e => {
     e.preventDefault();
     const text = $("text").value.trim(); if (!text) return;
-    const d = today(); d.setDate(d.getDate() + due);
+    const d = today(); d.setDate(d.getDate() + (due ?? 7));
+    const dueStr = fixedDue || `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    store.put({ id, text, p: +$("p").value, due: d.toISOString().slice(0, 10), carrots: Math.min(stake, Math.max(balance(), 0)), kept: null, createdAt: new Date().toISOString() });
-    $("text").value = ""; $("go").disabled = true;
+    store.put({ id, text, p: +$("p").value, due: dueStr, carrots: Math.min(stake, Math.max(balance(), 0)), kept: null, createdAt: new Date().toISOString() });
+    $("text").value = ""; $("go").disabled = true; $("go").textContent = "출발!";
+    if (fixedDue) { fixedDue = null; due = 7; chips($("due"), DUE, due, v => { due = v; fixedDue = null; }); }
   });
 
   if ($("where").textContent === "불러오는 중…") $("where").textContent = "이 기기에만 저장 중";
