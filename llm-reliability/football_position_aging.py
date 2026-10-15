@@ -30,7 +30,7 @@ def load() -> pd.DataFrame:
                                                  contrib=("contrib", "sum"), prgp=("PrgP_Progression", "sum"),
                                                  has_xg=("npxG_Expected", lambda s: s.notna().all()),
                                                  has_prg=("PrgP_Progression", lambda s: s.notna().all())).reset_index()
-    g["age"] = pd.to_numeric(g.age, errors="coerce")
+    g["age"] = pd.to_numeric(g.age.astype(str).str.split("-").str[0], errors="coerce")   # 2023/24부터 "29-123"(세-일) 표기
     g["grp"] = np.select([g.pos == "MF", g.pos.fillna("").str.contains("FW")], ["MF", "FW·측면"], "기타")
     nxt = g[["Url", "Season_End_Year", "minutes", "contrib", "prgp", "has_xg", "has_prg"]].copy()
     nxt["Season_End_Year"] -= 1

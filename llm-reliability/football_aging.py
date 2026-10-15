@@ -37,7 +37,7 @@ def seasons() -> pd.DataFrame:
     d["has_xg"] = d.npxG_Expected.notna()
     g = d.groupby(["Url", "Season_End_Year"]).agg(player=("Player", "first"), age=("Age", "min"), pos=("pos", "first"),
                                                  minutes=("Min_Playing", "sum"), contrib=("contrib", "sum"), has_xg=("has_xg", "all")).reset_index()
-    g["age"] = pd.to_numeric(g.age, errors="coerce")
+    g["age"] = pd.to_numeric(g.age.astype(str).str.split("-").str[0], errors="coerce")   # 2023/24부터 "29-123"(세-일) 표기
     return g
 
 
