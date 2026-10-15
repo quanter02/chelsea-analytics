@@ -491,3 +491,12 @@ def test_epl_results_filled_from_understat():
     xs = pd.read_csv(epl.D / "xg_understat_2026-27.csv")
     last = xs[xs.hg.notna()].date.max()
     assert s[s.played].date.max() >= last            # openfootball가 늦어도 understat 결과까지 반영
+
+
+def test_market_probs_normalized():
+    import pytest
+    from llmrel import market
+    if not list(market.ODDS.glob("E0_*.csv")):
+        pytest.skip("배당 자료 없음 (football-data.co.uk 에서 받아야 함)")
+    o = market.load_odds().dropna(subset=["mH"])
+    assert ((o[["mH", "mD", "mA"]].sum(axis=1) - 1).abs() < 1e-9).all() and len(o) > 1000

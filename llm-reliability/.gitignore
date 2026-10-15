@@ -4,3 +4,4 @@ __pycache__/
 data_cache/
 notion/export/
 data_crisis/raw_*.json
+data_epl/odds/
