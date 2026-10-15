@@ -18,15 +18,20 @@ NAMES = {"Brighton": "Brighton & Hove Albion", "Coventry": "Coventry City", "Hul
          "Leeds": "Leeds United", "Leicester": "Leicester City", "Luton": "Luton Town", "Man City": "Manchester City",
          "Man United": "Manchester United", "Newcastle": "Newcastle United", "Norwich": "Norwich City",
          "Nott'm Forest": "Nottingham Forest", "Tottenham": "Tottenham Hotspur", "West Ham": "West Ham United",
-         "Wolves": "Wolverhampton Wanderers", "Sheffield United": "Sheffield United"}
-COLS = [("PSCH", "PSCD", "PSCA", "피나클 마감"), ("AvgCH", "AvgCD", "AvgCA", "평균 마감"), ("AvgH", "AvgD", "AvgA", "평균 경기 전")]
+         "Wolves": "Wolverhampton Wanderers", "Sheffield United": "Sheffield United",
+         "Birmingham": "Birmingham City", "Blackburn": "Blackburn Rovers", "Bolton": "Bolton Wanderers", "Cardiff": "Cardiff City",
+         "Huddersfield": "Huddersfield Town", "QPR": "Queens Park Rangers", "Stoke": "Stoke City", "Swansea": "Swansea City",
+         "West Brom": "West Bromwich Albion", "Wigan": "Wigan Athletic"}
+COLS = [("PSCH", "PSCD", "PSCA", "피나클 마감"), ("AvgCH", "AvgCD", "AvgCA", "평균 마감"), ("AvgH", "AvgD", "AvgA", "평균 경기 전"),
+        ("BbAvH", "BbAvD", "BbAvA", "BetBrain 평균"), ("B365H", "B365D", "B365A", "Bet365")]   # 예전 시즌은 아래쪽 열만 있음
 
 
 def load_odds() -> pd.DataFrame:
     parts = []
     for f in sorted(ODDS.glob("E0_*.csv")):
-        x = pd.read_csv(f, encoding="latin-1").dropna(subset=["HomeTeam"])
-        d = pd.to_datetime(x.Date, dayfirst=True, errors="coerce")
+        x = pd.read_csv(f, encoding="latin-1", on_bad_lines="skip").dropna(subset=["HomeTeam"])
+        d = pd.to_datetime(x.Date, format="%d/%m/%Y", errors="coerce")                # 예전 시즌은 두 자리 연도
+        d = d.fillna(pd.to_datetime(x.Date, format="%d/%m/%y", errors="coerce"))
         out = pd.DataFrame(dict(date=d.dt.strftime("%Y-%m-%d"), home=x.HomeTeam.replace(NAMES), away=x.AwayTeam.replace(NAMES)))
         out[["mH", "mD", "mA"]] = np.nan
         out["msrc"] = None

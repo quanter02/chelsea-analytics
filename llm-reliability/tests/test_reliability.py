@@ -500,3 +500,16 @@ def test_market_probs_normalized():
         pytest.skip("배당 자료 없음 (football-data.co.uk 에서 받아야 함)")
     o = market.load_odds().dropna(subset=["mH"])
     assert ((o[["mH", "mD", "mA"]].sum(axis=1) - 1).abs() < 1e-9).all() and len(o) > 1000
+
+
+def test_idea_lab_no_lookahead_and_null_idea():
+    import pytest
+    from llmrel import idea_lab, market
+    if not list(market.ODDS.glob("E0_*.csv")):
+        pytest.skip("배당 자료 없음")
+    ctx = idea_lab.context()
+    assert not {"hg", "ag", "hxg", "axg"} & set(ctx.columns)            # 경기 후 정보는 아이디어에 주지 않음
+    r = idea_lab.evaluate("빈 아이디어", lambda c: np.zeros((len(c), 3)), "효과 없음", ctx, n_boot=50, record=False)
+    assert r["beta"] == 0 and not r["passed"]
+    with pytest.raises(PermissionError):
+        idea_lab.evaluate("빈 아이디어", lambda c: np.zeros((len(c), 3)), "효과 없음", ctx, open_test=True, n_boot=50, record=False)
