@@ -513,3 +513,16 @@ def test_idea_lab_no_lookahead_and_null_idea():
     assert r["beta"] == 0 and not r["passed"]
     with pytest.raises(PermissionError):
         idea_lab.evaluate("빈 아이디어", lambda c: np.zeros((len(c), 3)), "효과 없음", ctx, open_test=True, n_boot=50, record=False)
+
+
+def test_paper_pick_and_settle():
+    import pandas as pd
+    from llmrel import paper
+    df = pd.DataFrame(dict(pH=[0.6, 0.3], pD=[0.2, 0.3], pA=[0.2, 0.4], oH=[2.0, 3.0], oD=[4.0, 3.0], oA=[5.0, 2.0],
+                           result=["H", "A"], cH=[0.55, 0.3], cD=[0.25, 0.3], cA=[0.2, 0.4]))
+    b = paper.pick(df)
+    assert list(b.side) == ["H"] and abs(b.ev.iloc[0] - 0.2) < 1e-9      # 둘째 경기는 EV 5% 미만 → 안 건다
+    s = paper.settle(b)
+    assert abs(s.pnl.iloc[0] - 1.0) < 1e-9 and abs(s.clv.iloc[0] - 0.1) < 1e-9
+    big = df.assign(oA=[10.0, 2.0], pA=[0.5, 0.4], pH=[0.3, 0.3])
+    assert "A" not in set(paper.pick(big).side)                           # 배당 6.0 초과는 제외
