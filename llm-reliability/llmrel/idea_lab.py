@@ -74,7 +74,9 @@ def evaluate(name: str, idea, hypothesis: str, ctx: pd.DataFrame | None = None, 
     M = ctx[["mH", "mD", "mA"]].to_numpy()
     tr, va, te = _split(ctx, "train"), _split(ctx, "val"), _split(ctx, "test")
     loss = [market.rps_rows(_adjust(M[tr], z[tr], b), ctx.result[tr]).mean() for b in BETAS]
-    beta = float(BETAS[int(np.argmin(loss))])
+    loss = np.array(loss)
+    tie = np.flatnonzero(loss <= loss.min() + 1e-12)                      # 동점이면 가장 약한 조정(β=0 쪽)을 고른다
+    beta = float(BETAS[tie[np.argmin(np.abs(BETAS[tie]))]])
     rng = np.random.default_rng(seed)
 
     def gain(mask):
@@ -82,7 +84,7 @@ def evaluate(name: str, idea, hypothesis: str, ctx: pd.DataFrame | None = None, 
         bs = [g[rng.integers(0, len(g), len(g))].mean() for _ in range(n_boot)]
         return float(g.mean()), float(np.percentile(bs, 2.5)), float(np.percentile(bs, 97.5)), int(mask.sum())
 
-    out = {"name": name, "hypothesis": hypothesis, "code": code, "beta": beta, "train_gain": float(loss[list(BETAS).index(0.0)] - min(loss))}
+    out = {"name": name, "hypothesis": hypothesis, "code": code, "beta": beta, "train_gain": float(loss[list(BETAS).index(0.0)] - loss.min())}
     out["val"], out["val_lo"], out["val_hi"], out["n_val"] = gain(va)
     out["passed"] = bool(out["val_lo"] > 0 and beta != 0)
     if open_test:
