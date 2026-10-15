@@ -47,7 +47,7 @@ def value_at(v: pd.DataFrame, pairs: pd.DataFrame) -> pd.Series:
     """pairs: player_id, y → y+1년 7월 1일 직전 400일 안의 최신 시장가치."""
     v = v.assign(date=pd.to_datetime(v.date)).sort_values("date")
     out = []
-    for y, g in pairs.groupby("y"):
+    for y, g in pairs.drop_duplicates().groupby("y"):
         cut = pd.Timestamp(f"{y + 1}-07-01")
         w = v[(v.date <= cut) & (v.date > cut - pd.Timedelta(days=400))].drop_duplicates("player_id", keep="last")
         out.append(g[["player_id", "y"]].merge(w[["player_id", "market_value_in_eur"]], on="player_id", how="left"))
@@ -61,6 +61,7 @@ def build() -> tuple[pd.DataFrame, float]:
     s = s.merge(bio, on="k", how="left")
     match = float(s[s.minutes >= MIN_T].player_id.notna().mean())
     s = s[s.player_id.notna() & s.pos.notna()].copy()
+    s = s[~s.duplicated(["player_id", "y"], keep=False)]              # understat 동명이인 둘이 한 선수로 연결되면 둘 다 버림
     s["age"] = np.floor((pd.to_datetime(s.y.astype(str) + "-09-01") - s.dob).dt.days / 365.25)
     per90 = s.minutes / 90
     s["role"] = np.where(s.pos == "FW", (s.npxg + s.xa) / per90, s.build / per90)
