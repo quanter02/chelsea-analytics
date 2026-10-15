@@ -481,3 +481,13 @@ def test_crisis_credit_lagged():
     assert {"cg3", "dd12"} <= set(p.columns) and (p.dd12 <= 0).all()
     h = crisis.household_credit()
     assert h["조원"].iloc[-1] > 1500 and abs(h["전년비"].iloc[-1]) < 0.2
+
+
+def test_epl_results_filled_from_understat():
+    from llmrel import epl
+    df = epl.load()
+    s = df[df.season == "2026-27"]
+    assert s[s.played].hg.notna().all() and set(s[s.played].result) <= {"H", "D", "A"}
+    xs = pd.read_csv(epl.D / "xg_understat_2026-27.csv")
+    last = xs[xs.hg.notna()].date.max()
+    assert s[s.played].date.max() >= last            # openfootball가 늦어도 understat 결과까지 반영

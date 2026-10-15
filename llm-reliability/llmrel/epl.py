@@ -51,7 +51,8 @@ def load_xg() -> pd.DataFrame:
         if add.empty:
             continue
         add["home"], add["away"] = add.home.map(norm), add.away.map(norm)
-        out = pd.concat([out, add[["date", "home", "away", "hxg", "axg"]]]).drop_duplicates(["date", "home", "away"], keep="last")
+        cols = ["date", "home", "away", "hxg", "axg"] + [c for c in ("hg", "ag") if c in add.columns]
+        out = pd.concat([out, add[cols]]).drop_duplicates(["date", "home", "away"], keep="last")
     return out
 
 
@@ -67,8 +68,12 @@ def load() -> pd.DataFrame:
             rows.append(dict(season=s, date=x["date"], home=norm(x["team1"]), away=norm(x["team2"]),
                              hg=ft[0] if ft else np.nan, ag=ft[1] if ft else np.nan, played=ft is not None))
     df = pd.DataFrame(rows).sort_values(["date"], kind="stable").reset_index(drop=True)
-    xg = load_xg()
+    xg = load_xg().rename(columns={"hg": "xg_hg", "ag": "xg_ag"})
     df = df.merge(xg, on=["date", "home", "away"], how="left")
+    if "xg_hg" in df:                                            # openfootball 갱신이 늦을 때: understat 경기 결과(골)로 빈칸 채움
+        fill = ~df.played & df.xg_hg.notna()
+        df.loc[fill, "hg"], df.loc[fill, "ag"], df.loc[fill, "played"] = df.loc[fill, "xg_hg"], df.loc[fill, "xg_ag"], True
+        df = df.drop(columns=["xg_hg", "xg_ag"])
     df["result"] = np.select([df.hg > df.ag, df.hg == df.ag], ["H", "D"], "A")
     df.loc[~df.played, "result"] = None
     return df
