@@ -1,0 +1,238 @@
+<title>셈법 베테랑 명단 2026/27</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 레이아웃: 위에서 아래로 '명단 → 등록 증거 → 규칙 → 근거 → 채점 일정'. 장부 영수증 같은 등록 증거 블록이 이 페이지의 중심 */
+:root{
+  --ink:#15202b; --muted:#5a6672; --paper:#f3f5f7; --card:#ffffff; --line:#dce2e7;
+  --blue:#2a63d4; --amber:#b9850f; --good:#148f68; --blue-soft:#e8eefb; --amber-soft:#f8efd9;
+  --f-body:"Nanum Gothic","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --ink:#e6ebf0; --muted:#9aa6b2; --paper:#0f1419; --card:#171e26; --line:#29323d;
+  --blue:#7ea4ff; --amber:#e3b54a; --good:#4fd1a1; --blue-soft:#1a2740; --amber-soft:#2e2614; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --ink:#e6ebf0; --muted:#9aa6b2; --paper:#0f1419; --card:#171e26; --line:#29323d;
+  --blue:#7ea4ff; --amber:#e3b54a; --good:#4fd1a1; --blue-soft:#1a2740; --amber-soft:#2e2614; color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.65}
+.wrap{max-width:900px;margin:0 auto;padding-block:32px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:36px}
+.brand{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.brand b{color:var(--ink);font-weight:800;font-size:1rem}
+h1{font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.25;margin:6px 0 10px;text-wrap:balance;font-weight:800}
+h2{font-size:1.2rem;margin:0;text-wrap:balance;font-weight:800}
+p{margin:0}
+.lead{max-width:62ch;color:var(--muted)}
+section{display:grid;gap:14px;min-width:0}
+.stats{display:flex;flex-wrap:wrap;gap:10px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-variant-numeric:tabular-nums}
+.stat span{display:block;font-size:.78rem;color:var(--muted);letter-spacing:.02em}
+.stat strong{font-size:1.15rem}
+.filters{display:flex;flex-wrap:wrap;gap:8px}
+.filters button{font:inherit;font-size:.85rem;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:4px 12px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.scroll{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:680px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:.78rem;color:var(--muted);font-weight:700;letter-spacing:.03em}
+tr:last-child td{border-bottom:none}
+td.num{text-align:right} th.num{text-align:right}
+.pos{font-family:var(--f-mono);font-size:.8rem;padding:1px 7px;border-radius:5px;background:var(--blue-soft);color:var(--blue)}
+.free{font-size:.75rem;padding:1px 7px;border-radius:99px;background:var(--amber-soft);color:var(--amber);margin-left:6px}
+.bar{display:inline-block;height:6px;border-radius:3px;background:var(--blue);vertical-align:middle;margin-right:8px}
+.receipt{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--good);border-radius:10px;padding:16px 18px;display:grid;gap:8px;min-width:0}
+.receipt .k{font-size:.78rem;color:var(--muted)}
+.receipt code{font-family:var(--f-mono);font-size:.82rem;word-break:break-all}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;align-items:baseline}
+@media (max-width:520px){.kv{grid-template-columns:1fr}}
+.warn{background:var(--amber-soft);border-radius:10px;padding:12px 14px;font-size:.92rem}
+ul{margin:0;padding-left:1.2em} li{margin-bottom:4px}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:640px){.cols{grid-template-columns:1fr}}
+.box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:8px;align-content:start}
+.verdict{font-weight:800}
+.verdict.ok{color:var(--good)} .verdict.mid{color:var(--amber)}
+.small{font-size:.85rem;color:var(--muted)}
+.timeline{display:grid;gap:10px}
+.step{display:grid;grid-template-columns:7.5rem 1fr;gap:12px;align-items:baseline}
+.step b{font-family:var(--f-mono);font-size:.85rem;color:var(--blue);font-weight:500}
+@media (max-width:520px){.step{grid-template-columns:1fr;gap:2px}}
+footer{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand"><b>셈법</b><span>미리 적고, 채점까지 공개합니다</span></div>
+    <h1>2026/27 시즌, 싸지만 제 몫을 할 베테랑 17명</h1>
+    <p class="lead">유럽 5대 리그에서 29~31세이면서 시장가치는 같은 포지션 하위 절반인데, 경기 기여도는 상위 25%인 선수들입니다. 고정된 규칙으로 기계적으로 골랐고, 2027년 여름에 이 명단이 맞았는지 채점해서 공개합니다.</p>
+  </header>
+
+  <section aria-label="요약">
+    <div class="stats">
+      <div class="stat"><span>선발</span><strong>17명</strong></div>
+      <div class="stat"><span>비교 기준선</span><strong>90명</strong></div>
+      <div class="stat"><span>시장가치 중앙값</span><strong>€6.0m</strong></div>
+      <div class="stat"><span>2027년 6월 계약 만료</span><strong>5명</strong></div>
+      <div class="stat"><span>채점</span><strong>2027년 여름</strong></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>명단</h2>
+    <div class="filters" role="group" aria-label="포지션 거르기">
+      <button type="button" id="f-all" data-f="all" aria-pressed="true">전체</button>
+      <button type="button" id="f-mf" data-f="MF" aria-pressed="false">미드필더</button>
+      <button type="button" id="f-df" data-f="DF" aria-pressed="false">수비수</button>
+      <button type="button" id="f-fw" data-f="FW" aria-pressed="false">공격수</button>
+      <button type="button" id="f-free" data-f="free" aria-pressed="false">2027년 계약 만료</button>
+    </div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>선수</th><th>나이</th><th>포지션</th><th>소속 (2025/26)</th><th class="num">시장가치</th><th>계약 만료</th><th>역할 백분위</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <p class="small">나이는 2025년 9월 1일 기준 만 나이. 시장가치는 2026년 7월 이전 트랜스퍼마크트 값. 계약 정보는 2026년 7월 기준이라 그 뒤 연장됐을 수 있습니다. "2027년 계약 만료" 선수는 2027년 여름 이적료 없이 데려올 수 있는 후보입니다.</p>
+  </section>
+
+  <section>
+    <h2>등록 증거</h2>
+    <p class="lead">이 명단은 아래 시각에 해시 체인 장부에 기록됐습니다. 장부는 줄을 추가만 할 수 있고, 지난 줄을 하나라도 고치면 그 뒤 해시가 전부 어긋납니다.</p>
+    <div class="receipt">
+      <div class="kv">
+        <span class="k">장부 번호</span><span>#865 (kind: scout_pick, key: 2026-27:veteran_v2)</span>
+        <span class="k">기록 시각</span><span>2026-10-15 05:35:22 UTC (한국 시각 14:35)</span>
+        <span class="k">이 줄의 해시</span><code>e82685196b2f689bdd3965b7c4da88700e70face26f9a57bf3bec556cd0210d4</code>
+        <span class="k">앞 줄의 해시</span><code>f33629dfeb4497d8…</code>
+        <span class="k">선발 규칙 등록</span><span>#863, 같은 날 05:35:03 UTC (명단보다 19초 먼저)</span>
+        <span class="k">외부 기록</span><span>Git 커밋 <code>1a59faa</code> (2026-10-15 05:36 UTC)</span>
+      </div>
+      <p class="small">검증: 저장소에서 <code>python -m llmrel.ledger verify</code>를 실행하면 체인 전체를 다시 계산합니다.</p>
+    </div>
+    <div class="warn"><b>시즌 시작 뒤에 등록했습니다.</b> 2026/27 시즌은 8월에 시작했고, 이 명단은 10월 15일에 등록했습니다. 그래서 선발에는 2025/26 시즌 기록과 2026년 7월 이전 시장가치만 썼고, 2026/27 출전 기록은 보지 않았습니다. 다음 시즌(2027/28)부터는 개막 전에 등록합니다.</div>
+  </section>
+
+  <section>
+    <h2>선발 규칙</h2>
+    <p class="lead">결과를 보기 전에 장부에 고정한 규칙입니다. 사람이 이름을 보고 고르지 않았습니다.</p>
+    <div class="cols">
+      <div class="box">
+        <b>선발군 (17명)</b>
+        <ul>
+          <li>2025/26 시즌 1500분 이상 출전</li>
+          <li>만 29~31세</li>
+          <li>시장가치가 같은 시즌·같은 포지션 1500분+ 선수 중 하위 절반</li>
+          <li>역할 지표 백분위 75 이상</li>
+        </ul>
+      </div>
+      <div class="box">
+        <b>기준선 (90명)</b>
+        <ul>
+          <li>나이, 출전 시간, 시장가치 조건은 같음</li>
+          <li>역할 지표 백분위만 75 미만</li>
+        </ul>
+        <p class="small">역할 지표 (90분당): 공격수는 기대득점(페널티 제외)+기대도움, 미드필더·수비수는 공격 전개 관여(xGBuildup).</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>왜 이 규칙인가: 과거 검증</h2>
+    <p class="lead">2017/18~2024/25 시즌에 같은 방식을 적용해 다음 시즌 결과로 채점했습니다. 이 가설들도 결과를 보기 전에 장부에 등록했습니다.</p>
+    <div class="cols">
+      <div class="box">
+        <span class="small">가설 1</span>
+        <b>같은 가격대면 29~31세가 25~28세보다 다음 시즌을 더 잘 보낸다</b>
+        <p>"좋은 시즌"(1500분 이상 + 역할 지표 상위 절반) 비율 차이 <b>+7.1%p</b>, 95% 범위 +4.2 ~ +9.9 (베테랑 1,283명)</p>
+        <p class="verdict ok">맞음: 시장이 나이를 과하게 깎는다</p>
+      </div>
+      <div class="box">
+        <span class="small">가설 2</span>
+        <b>싸고 역할 지표가 좋은 베테랑이 다음 시즌 더 많이 뛴다</b>
+        <p>1500분 이상 비율 55% vs 기준선 49%, 차이 +5.9%p, 95% 범위 −4.9 ~ +16.3</p>
+        <p class="verdict mid">불확실: 방향은 맞지만 표본이 작음</p>
+      </div>
+    </div>
+    <p class="small">정정 기록: 처음 계산에서는 이름이 같은 선수 둘이 한 선수로 연결되는 버그가 있었습니다. 고친 뒤 가설 1은 +8.9%p에서 +7.1%p로 바뀌었고, 판정은 그대로입니다. 명단은 바뀌지 않았습니다. 이 정정도 장부 #871에 남겼습니다.</p>
+  </section>
+
+  <section>
+    <h2>채점 방법과 일정</h2>
+    <div class="box">
+      <p><b>예측:</b> 선발군 17명의 2026/27 시즌 1500분 이상 출전 비율이 기준선 90명보다 높다. <b>자신감 55%.</b></p>
+      <p class="small">5대 리그를 떠나면(사우디·MLS 등) 0분으로 셉니다. 판정은 차이의 95% 범위로 합니다: 전체가 0보다 크면 맞음, 전체가 0보다 작으면 틀림, 걸치면 불확실.</p>
+    </div>
+    <div class="timeline">
+      <div class="step"><b>2026-10-15</b><span>명단 등록 (이 페이지)</span></div>
+      <div class="step"><b>2027년 1월</b><span>시즌 중간 점검: 출전 시간 현황 공개</span></div>
+      <div class="step"><b>2027년 6월</b><span>시즌 종료</span></div>
+      <div class="step"><b>2027년 7월</b><span>채점 결과 공개. 틀려도 공개합니다</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>함께 등록한 유망주 3명</h2>
+    <p class="lead">브라이턴처럼 "싸게 사서 비싸게 파는" 방식은 과거 검증에서 근거를 찾지 못했습니다(두 가설 모두 불확실). 그래도 규칙대로 고른 명단을 장부 #868에 남겨, 2028~2029년에 채점합니다.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>선수</th><th>나이</th><th>포지션</th><th>소속 (2025/26)</th><th class="num">시장가치</th><th>역할 백분위</th></tr></thead>
+        <tbody>
+          <tr><td>Alvaro Rodríguez</td><td>21</td><td><span class="pos">FW</span></td><td>Elche</td><td class="num">€10.0m</td><td>86</td></tr>
+          <tr><td>Nhoa Sangui</td><td>19</td><td><span class="pos">DF</span></td><td>Paris FC</td><td class="num">€10.0m</td><td>77</td></tr>
+          <tr><td>Matías Moreno</td><td>21</td><td><span class="pos">DF</span></td><td>Levante</td><td class="num">€6.0m</td><td>76</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>한계</h2>
+    <ul>
+      <li>시장가치는 트랜스퍼마크트 사용자 추정치이지 실제 이적료가 아닙니다. 연봉 자료는 없습니다.</li>
+      <li>수비수의 역할 지표는 수비 기록이 아니라 공격 전개 관여입니다. "수비를 잘하는 베테랑"이 아니라 "공을 잘 다루는 베테랑"을 고른 셈입니다.</li>
+      <li>선수 이름으로 자료를 연결했습니다. 동명이인은 버렸고, 연결되지 않은 선수는 명단에서 빠졌습니다.</li>
+      <li>17명은 작은 표본입니다. 한 시즌 결과에는 운이 크게 섞이므로, 여러 시즌 기록이 쌓여야 의미가 있습니다.</li>
+    </ul>
+  </section>
+
+  <footer>
+    자료: understat (선수 시즌 기록), transfermarkt-datasets (생년월일·시장가치·계약). 원자료는 각 권리자에게 있으며 연구 목적으로만 썼습니다. 베팅이나 투자 권유가 아닙니다.<br>
+    셈법 · 미리 적고, 채점까지 공개합니다
+  </footer>
+</div>
+
+<script>
+const P=[
+ ["Robert Andrich",30,"MF","Bayer Leverkusen","독일",6.0,"2028-06",94],
+ ["Piotr Zielinski",31,"MF","Inter","이탈리아",10.0,"2028-06",93],
+ ["Mario Pasalic",30,"MF","Atalanta","이탈리아",6.0,"2028-06",92],
+ ["Wesley Said",30,"FW","Lens","프랑스",5.0,"",92],
+ ["Amir Rrahmani",31,"DF","Napoli","이탈리아",10.0,"2027-06",91],
+ ["Adrien Thomasson",31,"MF","Lens","프랑스",4.0,"2029-06",88],
+ ["Valentin Rongier",30,"MF","Rennes","프랑스",8.0,"2028-06",87],
+ ["Ramy Bensebaini",30,"DF","Borussia Dortmund","독일",7.0,"2027-06",86],
+ ["Aleix Febas",29,"MF","Elche","스페인",5.0,"2029-06",86],
+ ["Pathé Ciss",31,"MF","Rayo Vallecano","스페인",1.8,"2027-06",85],
+ ["Pablo Fornals",29,"MF","Real Betis","스페인",8.0,"2029-06",83],
+ ["Corentin Tolisso",31,"MF","Lyon","프랑스",10.0,"2029-06",82],
+ ["Héctor Bellerín",30,"DF","Real Betis","스페인",2.4,"2028-06",80],
+ ["Nicolas Pepe",30,"FW","Villarreal","스페인",6.0,"2028-06",79],
+ ["Marc-Oliver Kempf",30,"DF","Como","이탈리아",3.5,"2027-06",78],
+ ["Carlens Arcus",29,"DF","Angers","프랑스",1.8,"2027-06",78],
+ ["Matthieu Udol",29,"DF","Lens","프랑스",8.0,"2028-06",77]
+];
+const tb=document.getElementById("rows");
+function draw(f){
+  tb.innerHTML="";
+  P.filter(p=>f==="all"||(f==="free"?p[6]==="2027-06":p[2]===f)).forEach(p=>{
+    const free=p[6]==="2027-06"?'<span class="free">이적료 없이 가능</span>':"";
+    tb.insertAdjacentHTML("beforeend",`<tr><td>${p[0]}</td><td>${p[1]}</td><td><span class="pos">${p[2]}</span></td><td>${p[3]} <span class="small">(${p[4]})</span></td><td class="num">€${p[5].toFixed(1)}m</td><td>${p[6]||"미확인"}${free}</td><td><span class="bar" style="width:${Math.round((p[7]-70)*2)}px"></span>${p[7]}</td></tr>`);
+  });
+}
+document.querySelectorAll(".filters button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".filters button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  draw(b.dataset.f);
+}));
+draw("all");
+</script>
