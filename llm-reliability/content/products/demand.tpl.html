@@ -1,0 +1,127 @@
+<title>셈법 지역 혼인 수요 조회</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 레이아웃: 지역 검색 → 수요 카드(예측·범위·추세·신뢰도) → 지역 비교 표 → 구독 안내. 웨딩·혼수·분양 업체 담당자가 1분 안에 읽는 카드 */
+:root{--ink:#15202b;--muted:#5a6672;--paper:#f3f5f7;--card:#fff;--line:#dce2e7;--blue:#2a63d4;--amber:#b9850f;--good:#148f68;--bad:#b4442f;--blue-soft:#e8eefb;--amber-soft:#f8efd9;--good-soft:#e2f4ed;
+--f-body:"Nanum Gothic","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#e6ebf0;--muted:#9aa6b2;--paper:#0f1419;--card:#171e26;--line:#29323d;--blue:#7ea4ff;--amber:#e3b54a;--good:#4fd1a1;--bad:#ff8a73;--blue-soft:#1a2740;--amber-soft:#2e2614;--good-soft:#12302a;color-scheme:dark}}
+:root[data-theme="dark"]{--ink:#e6ebf0;--muted:#9aa6b2;--paper:#0f1419;--card:#171e26;--line:#29323d;--blue:#7ea4ff;--amber:#e3b54a;--good:#4fd1a1;--bad:#ff8a73;--blue-soft:#1a2740;--amber-soft:#2e2614;--good-soft:#12302a;color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{max-width:900px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:22px}
+.brand{font-size:.85rem;color:var(--muted)}.brand b{color:var(--ink);font-weight:800}
+h1{font-size:clamp(1.5rem,3.6vw,2rem);margin:4px 0 6px;font-weight:800;text-wrap:balance}
+h2{font-size:1.05rem;margin:0;font-weight:800}
+p{margin:0}.lead{color:var(--muted);max-width:64ch}.small{font-size:.83rem;color:var(--muted)}
+.search{display:flex;gap:8px;flex-wrap:wrap}
+.search input{flex:1;min-width:200px;font:inherit;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.sugg{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:.85rem;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:3px 11px;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:14px}
+.head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.head b{font-size:1.3rem}
+.badge{font-size:.78rem;font-weight:700;padding:2px 10px;border-radius:99px}
+.badge.g{background:var(--good-soft);color:var(--good)} .badge.m{background:var(--amber-soft);color:var(--amber)}
+.nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.n{background:var(--paper);border-radius:8px;padding:10px 12px;font-variant-numeric:tabular-nums}
+.n span{display:block;font-size:.76rem;color:var(--muted)}
+.n b{font-size:1.2rem}
+.up{color:var(--good)} .down{color:var(--bad)}
+svg{width:100%;height:auto;display:block}
+.add{font:inherit;font-size:.85rem;background:none;border:1px solid var(--blue);color:var(--blue);border-radius:8px;padding:5px 12px;cursor:pointer;justify-self:start}
+.scroll{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:620px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line)}
+th{font-size:.76rem;color:var(--muted)}
+td.num,th.num{text-align:right}
+.x{font:inherit;background:none;border:none;color:var(--muted);cursor:pointer}
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.plan{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:6px;align-content:start}
+.plan b{font-size:1rem}
+.price{font-size:1.1rem;font-weight:800}
+.hyp{font-size:.75rem;color:var(--amber)}
+.receipt{font-family:var(--f-mono);font-size:.76rem;color:var(--muted);word-break:break-all}
+footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand"><b>셈법</b> · 미리 적고, 채점까지 공개합니다</div>
+    <h1>우리 상권, 내년에 몇 쌍이 결혼할까</h1>
+    <p class="lead">웨딩홀·스튜디오·혼수 가전·신혼 분양 담당자를 위한 시군구별 혼인 수요 조회입니다. 2026년 예측은 결과가 나오기 전에 해시 장부에 등록했고, 2027년 3월 통계청 발표로 채점합니다.</p>
+  </header>
+
+  <section style="display:grid;gap:10px">
+    <div class="search"><input id="q" list="regions" placeholder="시군구 이름 (예: 수원, 강서구, 천안)" aria-label="시군구 검색"><datalist id="regions"></datalist></div>
+    <div class="sugg" id="sugg"></div>
+  </section>
+
+  <section class="card" id="card" aria-live="polite"></section>
+
+  <section style="display:grid;gap:10px">
+    <h2>지역 비교 <span class="small" id="cmpn"></span></h2>
+    <div class="scroll"><table><thead><tr><th>지역</th><th class="num">2025 혼인</th><th class="num">2026 예측</th><th class="num">변화</th><th class="num">80% 범위</th><th class="num">미혼 성비</th><th>신뢰도</th><th></th></tr></thead><tbody id="cmp"></tbody></table></div>
+    <p class="small">카드에서 "비교에 추가"를 누르면 여기에 쌓입니다. 매장 후보지 여러 곳을 나란히 볼 때 씁니다.</p>
+  </section>
+
+  <section style="display:grid;gap:10px">
+    <h2>이용 방식 (가격은 시험 중인 가정)</h2>
+    <div class="plans">
+      <div class="plan"><b>무료</b><span class="price">0원</span><span class="small">이 페이지의 시군구 조회와 비교</span></div>
+      <div class="plan"><b>지역 리포트</b><span class="price">1건 30만원</span><span class="hyp">가정 · 첫 고객과 확인 예정</span><span class="small">한 지역 상세 리포트(PDF): 10년 추세, 미혼 성비, 청년 순이동, 예측 근거</span></div>
+      <div class="plan"><b>월간 갱신</b><span class="price">월 10만원</span><span class="hyp">가정 · 첫 고객과 확인 예정</span><span class="small">지정 지역 3곳의 월별 신고 추이와 예측 갱신 메일</span></div>
+    </div>
+    <p class="small">문의는 아직 받지 않습니다. 2027년 상반기 무료 파일럿 3곳으로 먼저 시험합니다.</p>
+  </section>
+
+  <footer>자료: 통계청 KOSIS (시군구별 혼인 건수, 미혼 성비). 예측: 셈법 나우캐스트(1~6월 신고 신호), 2026-10-05 장부 등록. "신뢰도 높음"은 과거 두 구간 모두 '작년 값 그대로'보다 10% 이상 정확했던 지역, "범위 넓게 보기"는 최근 구간에서 작년 값보다 못했던 지역입니다. 예측은 보장이 아닙니다.</footer>
+</div>
+
+<script>
+const D=/*DATA*/[];
+const $=id=>document.getElementById(id);
+const by={};D.forEach(r=>by[r.c]=r);
+$("regions").innerHTML=D.map(r=>`<option value="${r.n}">`).join("");
+const SUG=["경기 수원시","경기 용인시","경기 성남시","충남 천안시","서울 강서구","인천 서구","경기 화성시","부산 해운대구"];
+$("sugg").innerHTML=SUG.filter(n=>D.some(r=>r.n===n)).map(n=>`<button type="button" class="chip" data-n="${n}">${n}</button>`).join("");
+let cur=null,cmp=[];
+function find(q){q=q.trim();if(!q)return null;return D.find(r=>r.n===q)||D.find(r=>r.n.includes(q))||null;}
+function spark(r){const ys=r.s.map(x=>x[0]),vs=r.s.map(x=>x[1]).concat([r.p,r.lo,r.hi]);const W=640,H=200,P=34;
+  const mn=Math.min(...vs)*0.9,mx=Math.max(...vs)*1.05,x=i=>P+i*(W-2*P)/(ys.length),y=v=>H-P+-(v-mn)/(mx-mn)*(H-2*P);
+  const pts=r.s.map((s,i)=>`${x(i)},${y(s[1])}`).join(" ");const xi=ys.length;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${r.n} 혼인 건수 추세와 2026 예측">
+  <line x1="${P}" y1="${H-P}" x2="${W-P/2}" y2="${H-P}" stroke="var(--line)"/>
+  <polyline points="${pts}" fill="none" stroke="var(--blue)" stroke-width="2"/>
+  <line x1="${x(xi)}" y1="${y(r.lo)}" x2="${x(xi)}" y2="${y(r.hi)}" stroke="var(--amber)" stroke-width="6" stroke-linecap="round" opacity=".45"/>
+  <circle cx="${x(xi)}" cy="${y(r.p)}" r="5" fill="var(--amber)"/>
+  <circle cx="${x(xi-1)}" cy="${y(r.s[r.s.length-1][1])}" r="4" fill="var(--blue)"/>
+  <text x="${x(0)}" y="${H-P+18}" font-size="12" fill="var(--muted)">${ys[0]}</text>
+  <text x="${x(xi-1)}" y="${H-P+18}" font-size="12" fill="var(--muted)" text-anchor="middle">${ys[ys.length-1]}</text>
+  <text x="${x(xi)}" y="${H-P+18}" font-size="12" fill="var(--amber)" text-anchor="middle">2026 예측</text>
+  <text x="${x(xi)+10}" y="${y(r.p)+4}" font-size="12" fill="var(--ink)">${r.p.toLocaleString()}</text>
+  </svg>`;}
+function show(r){cur=r;if(!r){$("card").innerHTML=`<p class="small">시군구를 찾지 못했습니다. "수원"처럼 이름 일부만 넣어 보세요.</p>`;return;}
+  const ch=r.p/r.v-1,sev=r.s.length>10?r.v/r.s[r.s.length-11][1]-1:null;
+  const conf=r.weak?`<span class="badge m">범위 넓게 보기</span>`:r.strong?`<span class="badge g">신뢰도 높음</span>`:`<span class="badge m">보통</span>`;
+  $("card").innerHTML=`<div class="head"><b>${r.n}</b>${conf}</div>
+   <div class="nums">
+    <div class="n"><span>2026년 혼인 예측</span><b>${r.p.toLocaleString()}쌍</b></div>
+    <div class="n"><span>2025년 실제</span><b>${r.v.toLocaleString()}쌍</b></div>
+    <div class="n"><span>작년 대비</span><b class="${ch>=0?"up":"down"}">${ch>=0?"+":""}${(ch*100).toFixed(1)}%</b></div>
+    <div class="n"><span>80% 범위</span><b>${r.lo.toLocaleString()} ~ ${r.hi.toLocaleString()}</b></div>
+    <div class="n"><span>미혼 성비 (남/여)</span><b>${r.r.toFixed(2)}</b></div>
+    ${sev!==null?`<div class="n"><span>10년 전 대비</span><b class="${sev>=0?"up":"down"}">${sev>=0?"+":""}${(sev*100).toFixed(0)}%</b></div>`:""}
+   </div>${spark(r)}
+   <p class="small">미혼 성비가 1보다 크면 미혼 남성이 더 많다는 뜻입니다 (전국 1.33). 80% 범위는 10번 중 8번 정도 실제 값이 들어올 것으로 보는 구간입니다.</p>
+   <p class="receipt">장부 등록 ${r.at} · ${r.h}… · 2027년 3월 통계청 발표로 채점</p>
+   <button type="button" class="add" id="addcmp">비교에 추가</button>`;
+  $("addcmp").addEventListener("click",()=>{if(!cmp.includes(r.c))cmp.push(r.c);drawCmp();});}
+function drawCmp(){$("cmpn").textContent=cmp.length?`(${cmp.length}곳)`:"";
+  $("cmp").innerHTML=cmp.length?cmp.map(c=>{const r=by[c],ch=r.p/r.v-1;return `<tr><td>${r.n}</td><td class="num">${r.v.toLocaleString()}</td><td class="num">${r.p.toLocaleString()}</td><td class="num ${ch>=0?"up":"down"}">${ch>=0?"+":""}${(ch*100).toFixed(1)}%</td><td class="num">${r.lo.toLocaleString()}~${r.hi.toLocaleString()}</td><td class="num">${r.r.toFixed(2)}</td><td>${r.weak?"범위 넓게":r.strong?"높음":"보통"}</td><td><button type="button" class="x" data-x="${c}" aria-label="${r.n} 빼기">✕</button></td></tr>`;}).join(""):`<tr><td colspan="8" class="small">아직 비교할 지역이 없습니다.</td></tr>`;}
+document.addEventListener("click",e=>{const c=e.target.closest(".chip");if(c){$("q").value=c.dataset.n;show(find(c.dataset.n));}
+  const x=e.target.closest("[data-x]");if(x){cmp=cmp.filter(v=>v!==x.dataset.x);drawCmp();}});
+$("q").addEventListener("change",()=>show(find($("q").value)));
+$("q").addEventListener("keydown",e=>{if(e.key==="Enter")show(find($("q").value));});
+const first=D.find(r=>r.n==="경기 수원시")||D[0];cmp=[first.c];show(first);drawCmp();
+</script>

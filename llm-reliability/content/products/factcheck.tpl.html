@@ -1,0 +1,116 @@
+<title>셈법 숫자 검증기</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 레이아웃: 기사·영상 속 주장 입력 → 판정 카드(공식 숫자와 나란히) → 붙여 쓸 검증 문구. 기자·유튜버가 쓰는 팩트체크 견본 */
+:root{--ink:#15202b;--muted:#5a6672;--paper:#f3f5f7;--card:#fff;--line:#dce2e7;--blue:#2a63d4;--amber:#b9850f;--good:#148f68;--bad:#b4442f;--blue-soft:#e8eefb;--amber-soft:#f8efd9;--good-soft:#e2f4ed;--bad-soft:#f9e6e2;
+--f-body:"Nanum Gothic","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#e6ebf0;--muted:#9aa6b2;--paper:#0f1419;--card:#171e26;--line:#29323d;--blue:#7ea4ff;--amber:#e3b54a;--good:#4fd1a1;--bad:#ff8a73;--blue-soft:#1a2740;--amber-soft:#2e2614;--good-soft:#12302a;--bad-soft:#3a1f1a;color-scheme:dark}}
+:root[data-theme="dark"]{--ink:#e6ebf0;--muted:#9aa6b2;--paper:#0f1419;--card:#171e26;--line:#29323d;--blue:#7ea4ff;--amber:#e3b54a;--good:#4fd1a1;--bad:#ff8a73;--blue-soft:#1a2740;--amber-soft:#2e2614;--good-soft:#12302a;--bad-soft:#3a1f1a;color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{max-width:820px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:22px}
+.brand{font-size:.85rem;color:var(--muted)}.brand b{color:var(--ink);font-weight:800}
+h1{font-size:clamp(1.5rem,3.6vw,2rem);margin:4px 0 6px;font-weight:800;text-wrap:balance}
+h2{font-size:1.05rem;margin:0;font-weight:800}
+p{margin:0}.lead{color:var(--muted);max-width:62ch}.small{font-size:.83rem;color:var(--muted)}
+.box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:12px}
+.claim{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:1.02rem;line-height:2.2}
+select,input{font:inherit;padding:6px 9px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+input[type=number]{width:7em}
+input[list]{width:11em}
+button{font:inherit;cursor:pointer;border-radius:8px}
+.main{background:var(--blue);color:#fff;border:none;padding:8px 16px}
+.ghost{background:none;border:1px solid var(--line);color:var(--ink);padding:6px 12px}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.ex{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:.83rem;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:3px 11px;cursor:pointer}
+.verdict{border-radius:12px;padding:16px;display:grid;gap:8px}
+.verdict.g{background:var(--good-soft)} .verdict.m{background:var(--amber-soft)} .verdict.b{background:var(--bad-soft)}
+.verdict .v{font-size:1.4rem;font-weight:800}
+.cmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.cmp div{background:var(--card);border-radius:8px;padding:10px 12px;font-variant-numeric:tabular-nums}
+.cmp span{display:block;font-size:.76rem;color:var(--muted)}
+.cmp b{font-size:1.15rem}
+pre{white-space:pre-wrap;font-family:var(--f-mono);font-size:.82rem;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px;margin:0}
+.scale{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;font-size:.8rem}
+@media (max-width:560px){.scale{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.scale div{border-radius:8px;padding:8px}
+footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand"><b>셈법</b> · 숫자 검증 서비스 견본</div>
+    <h1>그 숫자, 맞나요?</h1>
+    <p class="lead">기사나 영상에 나온 혼인 건수 주장을 통계청 공식 숫자와 바로 대조합니다. 판정 기준은 아래에 공개하고, 결과는 출처와 함께 붙여 쓸 수 있는 문구로 줍니다.</p>
+  </header>
+
+  <section class="box">
+    <h2>주장 입력</h2>
+    <div class="claim">
+      <input list="regions" id="rg" aria-label="지역" value="전국"><datalist id="regions"></datalist>
+      <span>의</span>
+      <select id="yr" aria-label="연도"></select>
+      <span>년 혼인 건수가</span>
+      <select id="kind" aria-label="주장 종류"><option value="pct">작년보다</option><option value="abs">모두</option></select>
+      <input type="number" id="num" step="0.1" aria-label="주장한 숫자" value="14.8">
+      <span id="unit">% 늘었다</span>
+    </div>
+    <div class="ex"><span class="small">예시 주장:</span>
+      <button type="button" class="chip" data-ex="전국|2024|pct|14.8">2024년 전국 혼인 14.8% 증가</button>
+      <button type="button" class="chip" data-ex="전국|2024|pct|20">2024년 전국 혼인 20% 급증</button>
+      <button type="button" class="chip" data-ex="서울특별시|2025|abs|50000">2025년 서울 혼인 5만 건</button>
+      <button type="button" class="chip" data-ex="전국|2023|pct|5">2023년 전국 혼인 5% 증가</button>
+    </div>
+    <button class="main" type="button" id="go">검증하기</button>
+  </section>
+
+  <section id="out" style="display:grid;gap:12px"></section>
+
+  <section class="box">
+    <h2>판정 기준</h2>
+    <div class="scale">
+      <div style="background:var(--good-soft)"><b>정확</b><br>증가율 차이 0.5%p 이내, 건수 차이 1% 이내</div>
+      <div style="background:var(--good-soft)"><b>대체로 맞음</b><br>2%p 이내 / 3% 이내</div>
+      <div style="background:var(--amber-soft)"><b>과장·축소</b><br>방향은 맞지만 그보다 큰 차이</div>
+      <div style="background:var(--bad-soft)"><b>틀림</b><br>증가·감소 방향이 반대</div>
+    </div>
+    <p class="small">지금은 혼인 건수만 다룹니다. 서비스로 넓힌다면 출생, 청년 인구 이동, 미혼 성비처럼 셈법이 이미 가진 공식 자료부터 추가합니다.</p>
+  </section>
+
+  <footer>자료: 통계청 KOSIS 인구동향 (시도·시군구별 혼인 건수, 2005~2025년, 신고 기준). 잠정치와 확정치가 다를 수 있습니다. 이 페이지는 판정 규칙을 그대로 계산할 뿐이며, 원문 맥락(기간, 지역 범위)은 사람이 확인해야 합니다.</footer>
+</div>
+
+<script>
+const D=/*DATA*/{};
+const $=id=>document.getElementById(id);
+const names=Object.keys(D);
+$("regions").innerHTML=names.map(n=>`<option value="${n}">`).join("");
+const yrs=Object.keys(D["전국"]).map(Number).sort((a,b)=>b-a);
+$("yr").innerHTML=yrs.map(y=>`<option>${y}</option>`).join("");$("yr").value=2024;
+$("kind").addEventListener("change",()=>{$("unit").textContent=$("kind").value==="pct"?"% 늘었다 (줄었으면 앞에 −)":"건이다";});
+document.querySelectorAll("[data-ex]").forEach(b=>b.addEventListener("click",()=>{const [r,y,k,n]=b.dataset.ex.split("|");$("rg").value=r;$("yr").value=y;$("kind").value=k;$("num").value=n;$("kind").dispatchEvent(new Event("change"));check();}));
+$("go").addEventListener("click",check);
+function check(){
+  const rg=$("rg").value.trim(),y=+$("yr").value,k=$("kind").value,c=+$("num").value,s=D[rg];
+  const out=$("out");
+  if(!s){out.innerHTML=`<div class="box"><p>"${rg.replace(/[<>&]/g,"")}" 지역을 찾지 못했습니다. 목록에서 골라 주세요 (예: 전국, 서울특별시, 수원시).</p></div>`;return;}
+  if(!(y in s)){out.innerHTML=`<div class="box"><p>${y}년 자료가 없습니다.</p></div>`;return;}
+  let v,cls,actualTxt,claimTxt,diffTxt;
+  if(k==="pct"){
+    if(!((y-1) in s)){out.innerHTML=`<div class="box"><p>${y-1}년 자료가 없어 증가율을 계산할 수 없습니다.</p></div>`;return;}
+    const a=(s[y]/s[y-1]-1)*100,d=Math.abs(c-a);
+    if(Math.sign(a)!==Math.sign(c)&&Math.abs(a)>0.5){v="틀림";cls="b";}else if(d<=0.5){v="정확";cls="g";}else if(d<=2){v="대체로 맞음";cls="g";}else{v=Math.abs(c)>Math.abs(a)?"과장":"축소";cls="m";}
+    actualTxt=`${a>=0?"+":""}${a.toFixed(1)}% (${s[y-1].toLocaleString()} → ${s[y].toLocaleString()}건)`;claimTxt=`${c>=0?"+":""}${c}%`;diffTxt=`${d.toFixed(1)}%p 차이`;
+  }else{
+    const a=s[y],r=(c/a-1)*100,d=Math.abs(r);
+    if(d<=1){v="정확";cls="g";}else if(d<=3){v="대체로 맞음";cls="g";}else{v=c>a?"과장":"축소";cls="m";}
+    actualTxt=`${a.toLocaleString()}건`;claimTxt=`${c.toLocaleString()}건`;diffTxt=`${r>=0?"+":""}${r.toFixed(1)}% 차이`;
+  }
+  const line=`[셈법 숫자 검증] "${rg} ${y}년 혼인 ${k==="pct"?claimTxt+" 변화":claimTxt}" → ${v}. 공식 숫자: ${actualTxt}. 출처: 통계청 KOSIS 인구동향(신고 기준). 판정 기준: 셈법 공개 규칙.`;
+  out.innerHTML=`<div class="verdict ${cls}"><span class="small">판정</span><span class="v">${v}</span><div class="cmp"><div><span>주장</span><b>${claimTxt}</b></div><div><span>공식 숫자</span><b>${actualTxt}</b></div></div><span class="small">${diffTxt}</span></div>
+   <div class="box"><h2>붙여 쓸 검증 문구</h2><pre id="line">${line}</pre><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="ghost" type="button" id="cp">문구 복사</button><span class="small" id="cpm"></span></div></div>`;
+  $("cp").addEventListener("click",()=>navigator.clipboard.writeText(line).then(()=>$("cpm").textContent="복사했습니다.").catch(()=>$("cpm").textContent="위 문구를 직접 복사해 주세요."));
+}
+check();
+</script>

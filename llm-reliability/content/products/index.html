@@ -1,0 +1,95 @@
+<title>셈법 수익 모델 지도</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap">
+<style>
+/* 레이아웃: 위 = 원칙과 검증 단계, 아래 = 모델 카드(누가 돈을 내나 · 가격 가정 · 다음 검증). 오늘 새로 만든 것과 기존 것을 같은 형식으로 */
+:root{--ink:#15202b;--muted:#5a6672;--paper:#f3f5f7;--card:#fff;--line:#dce2e7;--blue:#2a63d4;--amber:#b9850f;--good:#148f68;--blue-soft:#e8eefb;--amber-soft:#f8efd9;--good-soft:#e2f4ed;
+--f-body:"Nanum Gothic","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#e6ebf0;--muted:#9aa6b2;--paper:#0f1419;--card:#171e26;--line:#29323d;--blue:#7ea4ff;--amber:#e3b54a;--good:#4fd1a1;--blue-soft:#1a2740;--amber-soft:#2e2614;--good-soft:#12302a;color-scheme:dark}}
+:root[data-theme="dark"]{--ink:#e6ebf0;--muted:#9aa6b2;--paper:#0f1419;--card:#171e26;--line:#29323d;--blue:#7ea4ff;--amber:#e3b54a;--good:#4fd1a1;--blue-soft:#1a2740;--amber-soft:#2e2614;--good-soft:#12302a;color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{max-width:980px;margin:0 auto;padding-block:30px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:26px}
+.brand{font-size:.85rem;color:var(--muted)}.brand b{color:var(--ink);font-weight:800}
+h1{font-size:clamp(1.6rem,4vw,2.1rem);margin:4px 0 6px;font-weight:800}
+h2{font-size:1.08rem;margin:0;font-weight:800}
+p{margin:0}.lead{color:var(--muted);max-width:64ch}.small{font-size:.82rem;color:var(--muted)}
+.steps{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.85rem}
+.steps span{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:3px 11px}
+.steps span.now{border-color:var(--amber);background:var(--amber-soft)}
+.rule{background:var(--amber-soft);border-radius:10px;padding:12px 14px;font-size:.92rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.m{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:8px;align-content:start}
+.m .top{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.m b.t{font-size:1.02rem}
+.tag{font-size:.7rem;font-weight:700;padding:1px 8px;border-radius:99px}
+.tag.new{background:var(--good-soft);color:var(--good)} .tag.old{background:var(--blue-soft);color:var(--blue)}
+dl{display:grid;grid-template-columns:max-content 1fr;gap:3px 12px;margin:0;font-size:.88rem}
+dt{color:var(--muted)} dd{margin:0}
+.curve{font-size:.78rem;color:var(--muted)}
+a.open{justify-self:start;color:var(--blue);font-weight:700;text-decoration:none;font-size:.9rem}
+a.open:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand"><b>셈법</b> · 수익 구조: 쌓인 신뢰를 파는 방법</div>
+    <h1>셈법 수익 모델 지도</h1>
+    <p class="lead">노션에 정리한 수익 아이디어를 실제로 눌러 볼 수 있는 작은 모델로 만들었습니다. 모든 모델은 같은 부품(공식 데이터 → 예측 → 해시 장부 → 채점)을 씁니다.</p>
+  </header>
+
+  <section style="display:grid;gap:10px">
+    <h2>검증 단계 (지금 모두 L0)</h2>
+    <div class="steps"><span class="now">L0 시제품</span>→<span>L1 회신</span>→<span>L2 관심 확인</span>→<span>L3 첫 결제</span>→<span>L4 재결제</span>→<span>L5 소개</span></div>
+    <p class="rule"><b>원칙:</b> 12월 토익 시험까지는 영업하지 않습니다. 이 모델들은 겨울방학 무료 파일럿과 아이젠 포트폴리오용으로 미리 만들어 둔 것입니다. 실제로 돈을 낸 고객이 생기기 전까지 가격은 모두 가정입니다.</p>
+  </section>
+
+  <section style="display:grid;gap:12px">
+    <h2>오늘 새로 만든 모델</h2>
+    <div class="grid">
+      <div class="m"><div class="top"><b class="t">발표 전 예측 대회</b><span class="tag new">플랫폼 B</span></div>
+        <dl><dt>무엇</dt><dd>통계청 발표 전에 숫자를 적고 발표일에 채점. 첫 문제: 2026년 9월 혼인 건수</dd><dt>누가 돈을</dt><dd>집단 예측 지수 라이선스, 기업 교육용 대회, 후원</dd><dt>다음 검증</dt><dd>참가 20명 이상, 30% 재참가 (11월 말 발표 기준)</dd></dl>
+        <span class="curve">곡선: 볼록 (참가자가 늘수록 순위·집단 예측의 가치가 커짐)</span>
+        <a class="open" href="https://claude.ai/artifact/Sq9arb2nxLBSNHR6NK7N5j">열기 →</a></div>
+      <div class="m"><div class="top"><b class="t">지역 혼인 수요 조회</b><span class="tag new">E3</span></div>
+        <dl><dt>무엇</dt><dd>시군구 243곳의 2026년 혼인 예측·범위·추세·신뢰도, 후보지 비교</dd><dt>누가 돈을</dt><dd>웨딩홀, 스튜디오, 혼수 가전, 신혼 분양</dd><dt>가격 가정</dt><dd>리포트 1건 30만원, 월간 갱신 월 10만원</dd><dt>다음 검증</dt><dd>업체 3곳 무료 파일럿 → 1곳 재요청</dd></dl>
+        <span class="curve">곡선: 직선~오목 (현금흐름 바닥용)</span>
+        <a class="open" href="https://claude.ai/artifact/7rStg2X92zLuvhpPh6f3WQ">열기 →</a></div>
+      <div class="m"><div class="top"><b class="t">숫자 검증기</b><span class="tag new">핵심 2</span></div>
+        <dl><dt>무엇</dt><dd>기사·영상 속 혼인 숫자 주장을 공식 통계와 대조해 공개 기준으로 판정, 붙여 쓸 문구 제공</dd><dt>누가 돈을</dt><dd>언론사, 유튜버, 기업 홍보팀</dd><dt>다음 검증</dt><dd>실제 기사 10건 검증 → 기자·유튜버 3명에게 보여 주고 회신 받기</dd></dl>
+        <span class="curve">곡선: 직선 (자료 종류를 늘릴수록 넓어짐)</span>
+        <a class="open" href="https://claude.ai/artifact/Rn4cW1weVvD356WMvbwqtG">열기 →</a></div>
+      <div class="m"><div class="top"><b class="t">구단 스카우트 리포트</b><span class="tag new">축구 B2B</span></div>
+        <dl><dt>무엇</dt><dd>의뢰 조건(포지션·나이·예산)에 맞는 후보 5명 리포트. 견본은 가상의 의뢰</dd><dt>누가 돈을</dt><dd>K리그2·K3·하부 리그 구단, 에이전트</dd><dt>가격 가정</dt><dd>리포트 1건 50만원, 이적시장 패키지 200만원</dd><dt>다음 검증</dt><dd>2027년 1~2월 구단 1곳 무료 파일럿</dd></dl>
+        <span class="curve">곡선: 오목 (리포트마다 시간이 듦), 대신 기록이 쌓이면 가격이 오름</span>
+        <a class="open" href="https://claude.ai/artifact/38wcpj1MSAWf7P5sftk3bD">열기 →</a></div>
+    </div>
+  </section>
+
+  <section style="display:grid;gap:12px">
+    <h2>이미 있던 모델</h2>
+    <div class="grid">
+      <div class="m"><div class="top"><b class="t">지자체 인구 리포트</b><span class="tag old">E1 · 핵심 1</span></div>
+        <dl><dt>누가 돈을</dt><dd>지자체 인구정책 부서, 지역 연구원</dd><dt>가격 가정</dt><dd>연간 구독 1,200만원</dd><dt>다음 검증</dt><dd>수원·용인·성남 무료 샘플 (보류 중)</dd></dl>
+        <a class="open" href="https://claude.ai/artifact/3nDXqHqQJW6aGg2LQUXHi7">견본 열기 →</a></div>
+      <div class="m"><div class="top"><b class="t">우리 동네 결혼 카드</b><span class="tag old">E5 · 플랫폼 A</span></div>
+        <dl><dt>누가 돈을</dt><dd>지자체·지역 언론 임베드 (B2B 유입)</dd><dt>다음 검증</dt><dd>카드 3장 → 요청 10건</dd></dl>
+        <a class="open" href="https://claude.ai/artifact/JvfGqAeSGNjLcNFP1eiCg8">셈법 사이트에서 열기 →</a></div>
+      <div class="m"><div class="top"><b class="t">말값</b><span class="tag old">E6 · 소비자</span></div>
+        <dl><dt>누가 돈을</dt><dd>2030 취준생 (다짐에 확률 걸기)</dd><dt>다음 검증</dt><dd>30명 → 재방문 40%, 초대 5명</dd></dl>
+        <a class="open" href="https://claude.ai/artifact/MDU47g1KZhpLZC3zxKozeB">열기 →</a></div>
+      <div class="m"><div class="top"><b class="t">스카우트 찾기 · 베테랑 명단</b><span class="tag old">축구 콘텐츠</span></div>
+        <dl><dt>누가 돈을</dt><dd>콘텐츠·뉴스레터 구독자, 나중에 구단</dd><dt>다음 검증</dt><dd>2027년 7월 명단 채점 공개</dd></dl>
+        <a class="open" href="https://claude.ai/artifact/4z9DReuxQggstykkuTyxrN">열기 →</a></div>
+    </div>
+  </section>
+
+  <section class="m">
+    <h2>모델을 고르는 순서 (제안)</h2>
+    <p>1. <b>예측 대회</b>: 비용이 거의 없고, 11월 말 발표로 4주 안에 결과가 나옵니다. 친구 몇 명에게 먼저 공유해 볼 수 있습니다.<br>
+    2. <b>지역 수요 조회 · 구단 리포트</b>: 겨울방학 무료 파일럿. 실제로 돈을 낼 사람에게 처음 보여 주는 단계입니다.<br>
+    3. <b>숫자 검증기</b>: 실제 기사 10건으로 정확도를 먼저 확인한 뒤에 보여 줍니다.</p>
+  </section>
+
+  <footer>모든 모델은 비공개입니다. 공유하려면 각 페이지의 공유 메뉴를 쓰세요. 예측 대회는 참가자가 claude.ai에 로그인해야 예측을 남길 수 있습니다.</footer>
+</div>
