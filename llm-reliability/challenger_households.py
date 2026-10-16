@@ -3,7 +3,7 @@
     python challenger_households.py   # → output/model_upgrade/challenger_households.md, 장부 kind=model_result
 
 신호: 올해 1~7월 주민등록 세대 수 로그 증가율(작년 12월 → 7월) − 같은 시도 평균. 자료 KOSIS DT_1B040B3 (2011-01~).
-설계 2013~2018. 결과가 v5 위에서 의미 없으면 2026 예측은 등록하지 않고 '효과 없음'만 기록한다(사전에 정한 처리).
+설계 2013~2018. 점검(dry run)에서 v5 위 효과가 없어서, 2026 예측은 등록하지 않고 '효과 없음'만 기록한다.
 """
 from __future__ import annotations
 
@@ -68,7 +68,7 @@ def main():
 
 - 혼자 넣으면(v3 기준) 청년 인구 신호와 비슷하게 좋아집니다.
 - 그런데 청년 인구 신호와의 상관이 {corr:+.2f}로 거의 같은 정보라, v5 위에서는 {gain * 100:.2f}%p만 줄어듭니다.
-- 사전에 정한 대로 2026 예측은 등록하지 않고 '효과 없음'만 장부에 기록했습니다 (kind=model_result).
+- 점검 결과를 보고 2026 예측은 등록하지 않고 '효과 없음'만 장부에 기록했습니다 (kind=model_result).
 """, encoding="utf-8")
     print((OUT / "challenger_households.md").read_text())
 
