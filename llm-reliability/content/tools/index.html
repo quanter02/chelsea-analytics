@@ -1,0 +1,91 @@
+<title>셈법 도구함</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap">
+<style>
+/* 레이아웃: '매일 쓰는 것'을 맨 위에, 그다음 목적별 묶음. 카드 하나 = 도구 하나, 언제 쓰는지 한 줄 */
+:root{--ink:#15202b;--muted:#5a6672;--paper:#f3f5f7;--card:#fff;--line:#dce2e7;--blue:#2a63d4;--amber:#b9850f;--good:#148f68;--blue-soft:#e8eefb;--amber-soft:#f8efd9;--good-soft:#e2f4ed;
+--f-body:"Nanum Gothic","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#e6ebf0;--muted:#9aa6b2;--paper:#0f1419;--card:#171e26;--line:#29323d;--blue:#7ea4ff;--amber:#e3b54a;--good:#4fd1a1;--blue-soft:#1a2740;--amber-soft:#2e2614;--good-soft:#12302a;color-scheme:dark}}
+:root[data-theme="dark"]{--ink:#e6ebf0;--muted:#9aa6b2;--paper:#0f1419;--card:#171e26;--line:#29323d;--blue:#7ea4ff;--amber:#e3b54a;--good:#4fd1a1;--blue-soft:#1a2740;--amber-soft:#2e2614;--good-soft:#12302a;color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding-block:30px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:28px}
+.brand{font-size:.85rem;color:var(--muted)}.brand b{color:var(--ink);font-weight:800}
+h1{font-size:clamp(1.6rem,4vw,2.1rem);margin:4px 0 6px;font-weight:800}
+h2{font-size:1.05rem;margin:0;font-weight:800;display:flex;gap:8px;align-items:center}
+h2 .when{font-size:.75rem;font-weight:700;padding:1px 9px;border-radius:99px;background:var(--blue-soft);color:var(--blue)}
+p{margin:0}.lead{color:var(--muted);max-width:62ch}
+section{display:grid;gap:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+a.tool{display:grid;gap:4px;align-content:start;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;color:var(--ink);text-decoration:none}
+a.tool:hover{border-color:var(--blue)}
+a.tool:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+a.tool b{font-size:1rem}
+a.tool .use{font-size:.86rem;color:var(--muted)}
+a.tool .src{font-size:.75rem;color:var(--muted);margin-top:4px}
+.new{font-size:.7rem;font-weight:700;padding:1px 7px;border-radius:99px;background:var(--good-soft);color:var(--good);margin-left:6px;vertical-align:middle}
+.daily{background:var(--amber-soft);border-radius:10px;padding:14px 16px;display:grid;gap:6px}
+.daily ol{margin:0;padding-left:1.3em}
+footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand"><b>셈법</b> · 미리 적고, 채점까지 공개합니다</div>
+    <h1>셈법 도구함</h1>
+    <p class="lead">노션에 글로 정리했던 것들을 바로 쓸 수 있는 도구로 모았습니다. 무엇을 하려는지에 맞는 칸을 누르세요.</p>
+  </header>
+
+  <div class="daily">
+    <b>매일 순서</b>
+    <ol>
+      <li>복습판에서 오늘 할 복습 확인</li>
+      <li>토익 30분 (그날의 토익 페이지)</li>
+      <li>코테 30분 (막히면 막힘 도우미)</li>
+      <li>그다음에만 다른 일</li>
+    </ol>
+  </div>
+
+  <section>
+    <h2>공부 <span class="when">매일</span></h2>
+    <div class="grid">
+      <a class="tool" href="https://claude.ai/artifact/2VE3Gqq594grfAsU2iyNZr"><b>복습판<span class="new">새로</span></b><span class="use">틀린 문제를 넣으면 1·3·7일 복습 날짜가 잡히고, 오늘 할 복습만 보여 줍니다. 오답 규칙 카드 포함.</span><span class="src">노션: 토익·코테 학습 기록</span></a>
+      <a class="tool" href="https://claude.ai/artifact/Y1GigT86LECXWJHZSmgXUw"><b>코테 막힘 도우미<span class="new">새로</span></b><span class="use">막혔을 때 4단계, 혼자 10분 타이머, 힌트 요청 문구, 에러 해석, SQL 조립, 패턴 모음.</span><span class="src">노션: 코테 생각 로직 노트</span></a>
+      <a class="tool" href="https://claude.ai/artifact/T6uKG9KTxBv2hh7T1VsAwj"><b>10/17 토익 30분</b><span class="use">품사·전치사/접속사 암기 표와 16문제, 기록 복사.</span><span class="src">오늘 만든 하루치 페이지</span></a>
+      <a class="tool" href="https://claude.ai/artifact/YYwZX7sVNk8bLBSsSvxphC"><b>RC 오답 연습장</b><span class="use">미니 진단에서 틀린 유형만 모은 연습 문제.</span><span class="src">기존 도구</span></a>
+      <a class="tool" href="https://claude.ai/artifact/BoEzCEvyD5msrZQ75AnUnh"><b>RC 미니 진단</b><span class="use">2주마다 다시 보는 30문항 진단. 다음은 10/22.</span><span class="src">기존 도구</span></a>
+      <a class="tool" href="https://claude.ai/artifact/MYgw9Azdu3jDN7knJ2rbvZ"><b>토익 진단판</b><span class="use">기출문제집으로 실전 1회분을 풀 때 타이머와 파트별 기록.</span><span class="src">기존 도구</span></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>축구 데이터 <span class="when">셈법 프로젝트</span></h2>
+    <div class="grid">
+      <a class="tool" href="https://claude.ai/artifact/4z9DReuxQggstykkuTyxrN"><b>스카우트 찾기</b><span class="use">나이·포지션·가격 조건으로 2025/26 후보 896명 중에서 가격 대비 제 몫을 하는 선수 찾기.</span><span class="src">스카우트 v2</span></a>
+      <a class="tool" href="https://claude.ai/artifact/W8FwCkQZ91cA3q4rMqikjc"><b>영입 판단기<span class="new">새로</span></b><span class="use">선수 조건을 넣으면 구단 원칙과 검증 결과로 "명단 조건 충족 / 조건부 / 근거 약함" 판정.</span><span class="src">노션: 축구 데이터의 길 + 나의 구단 성공론</span></a>
+      <a class="tool" href="https://claude.ai/artifact/A6dFkEeZJrxpKVrTzs7SYt"><b>베테랑 명단 2026/27</b><span class="use">해시 장부에 등록한 17명과 등록 증거, 2027년 여름 채점 계획.</span><span class="src">공개용 페이지</span></a>
+      <a class="tool" href="https://claude.ai/artifact/NFdw42rXa8rzdYb7tzkAbZ"><b>Chelsea 2026/27 Live</b><span class="use">EPL 예측 채점 진열장.</span><span class="src">기존 도구</span></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>계획과 진로 <span class="when">매주·필요할 때</span></h2>
+    <div class="grid">
+      <a class="tool" href="https://claude.ai/artifact/WDwq5sqgDYDfnNzkV8LCPt"><b>시간 배분기<span class="new">새로</span></b><span class="use">이번 주 시간을 바닥(학업·회복·토익·코테) 먼저, 나머지는 중요도대로 자동 배분.</span><span class="src">노션: 주간 시간 배분기</span></a>
+      <a class="tool" href="https://claude.ai/artifact/8XmKLVct3cfyrNzoeo7xHT"><b>진로·자산 계산기<span class="new">새로</span></b><span class="use">삼성·아이젠·공기업 경로별로 35·40세 자산과 10억·30억 확률 보기.</span><span class="src">노션: 학생 버전 플랜 A + 진로 계산</span></a>
+      <a class="tool" href="https://claude.ai/artifact/MDU47g1KZhpLZC3zxKozeB"><b>말값</b><span class="use">다짐에 확률을 걸고 나중에 채점하는 앱.</span><span class="src">기존 도구</span></a>
+      <a class="tool" href="https://claude.ai/artifact/RdnsCTqpKX6yHmTToPCutw"><b>졸업 평점 역산기</b><span class="use">목표 졸업 평점에 필요한 남은 학기 성적 계산.</span><span class="src">기존 도구</span></a>
+      <a class="tool" href="https://claude.ai/artifact/6jhifctjo9TkTU2JnjxrqT"><b>공기업 자산 시뮬레이터</b><span class="use">공기업 경로의 자산 흐름.</span><span class="src">기존 도구</span></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>셈법 사업 <span class="when">겨울방학 뒤</span></h2>
+    <div class="grid">
+      <a class="tool" href="https://claude.ai/artifact/JvfGqAeSGNjLcNFP1eiCg8"><b>셈법 사이트</b><span class="use">전체 지도, 확장 지도, 동네 카드.</span><span class="src">기존 도구</span></a>
+      <a class="tool" href="https://claude.ai/artifact/3nDXqHqQJW6aGg2LQUXHi7"><b>지역 인구 이동 경보 제1호</b><span class="use">지자체 판매용 견본 (E1).</span><span class="src">기존 도구</span></a>
+      <a class="tool" href="https://claude.ai/artifact/C7je4vv5bq2MUB9VN9hxfq"><b>모의 포트폴리오 트랙레코드</b><span class="use">투자 판단 기록과 채점.</span><span class="src">기존 도구</span></a>
+    </div>
+  </section>
+
+  <footer>모든 도구는 비공개입니다. 다른 사람에게 보여 주려면 각 페이지의 공유 메뉴를 쓰세요. 복습판처럼 기록을 남기는 도구는 이 기기의 브라우저에만 저장됩니다.</footer>
+</div>

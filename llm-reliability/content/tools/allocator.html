@@ -1,0 +1,105 @@
+<title>셈법 시간 배분기</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 레이아웃: 위 = 이번 주 시간 요약, 가운데 = 배분 결과 막대, 아래 = 활동별 중요도 조절 */
+:root{--ink:#15202b;--muted:#5a6672;--paper:#f3f5f7;--card:#fff;--line:#dce2e7;--blue:#2a63d4;--amber:#b9850f;--good:#148f68;--blue-soft:#e8eefb;--amber-soft:#f8efd9;--fixed:#9aa6b2;
+--f-body:"Nanum Gothic","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#e6ebf0;--muted:#9aa6b2;--paper:#0f1419;--card:#171e26;--line:#29323d;--blue:#7ea4ff;--amber:#e3b54a;--good:#4fd1a1;--blue-soft:#1a2740;--amber-soft:#2e2614;--fixed:#56616d;color-scheme:dark}}
+:root[data-theme="dark"]{--ink:#e6ebf0;--muted:#9aa6b2;--paper:#0f1419;--card:#171e26;--line:#29323d;--blue:#7ea4ff;--amber:#e3b54a;--good:#4fd1a1;--blue-soft:#1a2740;--amber-soft:#2e2614;--fixed:#56616d;color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{max-width:860px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:22px}
+.brand{font-size:.85rem;color:var(--muted)}.brand b{color:var(--ink);font-weight:800}
+h1{font-size:clamp(1.5rem,3.6vw,1.9rem);margin:4px 0 6px;font-weight:800}
+h2{font-size:1.05rem;margin:0;font-weight:800}
+p{margin:0}.lead{color:var(--muted);max-width:64ch}.small{font-size:.83rem;color:var(--muted)}
+.box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:12px;min-width:0}
+.top{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+label{display:grid;gap:4px;font-size:.8rem;color:var(--muted);font-weight:700}
+input[type=number]{font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);width:100%;box-sizing:border-box}
+input[type=range]{width:100%;accent-color:var(--blue)}
+input:focus-visible,button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.sum{font-variant-numeric:tabular-nums}
+.sum strong{font-size:1.3rem}
+.bars{display:grid;gap:8px}
+.bar{display:grid;grid-template-columns:minmax(0,190px) 1fr 64px;gap:10px;align-items:center}
+@media (max-width:560px){.bar{grid-template-columns:minmax(0,120px) 1fr 54px}}
+.bar .nm{font-size:.9rem;overflow-wrap:anywhere}
+.track{background:var(--paper);border-radius:4px;height:14px;overflow:hidden}
+.fill{height:100%;background:var(--blue);border-radius:4px}
+.fill.fixed{background:var(--fixed)}
+.fill.cap{background:var(--amber)}
+.h{font-family:var(--f-mono);font-size:.88rem;text-align:right;font-variant-numeric:tabular-nums}
+.acts{display:grid;gap:10px}
+.act{display:grid;grid-template-columns:minmax(0,1fr) 160px;gap:12px;align-items:center;border-top:1px solid var(--line);padding-top:10px}
+.act:first-child{border-top:none;padding-top:0}
+@media (max-width:560px){.act{grid-template-columns:1fr}}
+.note{background:var(--amber-soft);border-radius:8px;padding:10px 12px;font-size:.92rem}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand"><b>셈법</b> · 주간 시간 배분기 (한계효용 균등)</div>
+    <h1>이번 주 시간 배분기</h1>
+    <p class="lead">바닥(학업·회복·토익·코테)을 먼저 빼고, 남은 시간을 "마지막 1시간의 가치"가 같아지도록 나눕니다. 중요도를 움직이면 결과가 바로 바뀝니다.</p>
+  </header>
+
+  <div class="box top">
+    <label for="total">이번 주 쓸 수 있는 시간<input type="number" id="total" min="10" max="100" value="60"></label>
+    <label for="study">학업 (수업·과제)<input type="number" id="study" min="0" max="60" value="28"></label>
+    <label for="rest">회복 (운동·휴식·약속)<input type="number" id="rest" min="0" max="40" value="8"></label>
+    <div class="sum"><span class="small">나눌 수 있는 시간</span><br><strong id="free"></strong></div>
+  </div>
+
+  <section class="box">
+    <h2>배분 결과</h2>
+    <div class="legend"><span><i style="background:var(--fixed)"></i>바닥 (고정)</span><span><i style="background:var(--blue)"></i>배분</span><span><i style="background:var(--amber)"></i>주간 상한 도달</span></div>
+    <div class="bars" id="bars"></div>
+    <div class="note" id="note"></div>
+  </section>
+
+  <section class="box">
+    <h2>활동별 중요도</h2>
+    <p class="small">중요도가 높을수록 시간을 먼저 받습니다. 같은 일을 오래 할수록 1시간의 가치는 줄어듭니다(체감). 상한은 한 주에 그 이상 해도 의미가 적은 시간입니다.</p>
+    <div class="acts" id="acts"></div>
+  </section>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const FIXED=[["토익 (매일 30분)",3.5],["코테 (매일 30분)",3.5]];
+const ACTS=[
+ {n:"아이젠 지원서·포트폴리오",w:60,tau:4,cap:8},
+ {n:"코테 추가 연습 (삼성 대비)",w:45,tau:4,cap:8},
+ {n:"셈법 스카우트 (명단·도구·리포트)",w:40,tau:3,cap:6},
+ {n:"토익 추가 (LC·실전)",w:35,tau:3,cap:6},
+ {n:"학업 추가 (전공 과목 성적)",w:25,tau:3,cap:8},
+ {n:"EPL 가상 베팅 채점",w:10,tau:1.5,cap:2}
+];
+function allocate(free){
+  const h=ACTS.map(()=>0);const mv=i=>ACTS[i].w/ACTS[i].tau*Math.exp(-h[i]/ACTS[i].tau);
+  let left=Math.max(0,free),last=0;
+  while(left>=0.5){let best=-1,bv=0;ACTS.forEach((a,i)=>{if(h[i]+0.5<=a.cap+1e-9&&a.w>0){const v=mv(i);if(v>bv){bv=v;best=i;}}});
+    if(best<0)break;h[best]+=0.5;left-=0.5;last=bv;}
+  return {h,left,last};
+}
+function draw(){
+  const total=+$("total").value,study=+$("study").value,rest=+$("rest").value;
+  const fixedSum=FIXED.reduce((s,f)=>s+f[1],0);
+  const free=total-study-rest-fixedSum;$("free").textContent=free>0?free+"시간":"0시간";
+  const {h,left,last}=allocate(free);
+  const rows=[["학업",study,"fixed"],["회복",rest,"fixed"],...FIXED.map(f=>[f[0],f[1],"fixed"]),...ACTS.map((a,i)=>[a.n,h[i],h[i]>=a.cap?"cap":""])];
+  const mx=Math.max(...rows.map(r=>r[1]),1);
+  $("bars").innerHTML=rows.map(r=>`<div class="bar"><span class="nm">${r[0]}</span><div class="track"><div class="fill ${r[2]}" style="width:${r[1]/mx*100}%"></div></div><span class="h">${r[1]}h</span></div>`).join("");
+  const top=ACTS.map((a,i)=>({a,i})).filter(x=>h[x.i]+0.5<=x.a.cap).sort((x,y)=>y.a.w/y.a.tau*Math.exp(-h[y.i]/y.a.tau)-x.a.w/x.a.tau*Math.exp(-h[x.i]/x.a.tau))[0];
+  const capped=ACTS.filter((a,i)=>h[i]>=a.cap).map(a=>a.n);
+  $("note").innerHTML=free<=0?"바닥만으로 시간이 꽉 찼습니다. 이번 주는 토익·코테·학업만 지키면 충분합니다.":
+    `모든 활동의 '마지막 1시간 가치'가 약 <b>${last.toFixed(1)}</b>으로 맞춰졌습니다.`+(top?` 시간이 1시간 더 생기면: <b>${top.a.n}</b>.`:"")+(capped.length?` 상한에 닿은 활동: ${capped.join(", ")} (이번 주 안에 끝내면 좋습니다).`:"")+(left>=0.5?` 남은 ${left}시간은 쉬어도 됩니다.`:"");
+}
+$("acts").innerHTML=ACTS.map((a,i)=>`<div class="act"><label for="w${i}">${a.n} <span class="small">중요도 <b id="wv${i}">${a.w}</b> · 상한 ${a.cap}h</span><input type="range" id="w${i}" min="0" max="100" value="${a.w}"></label><label for="c${i}">주간 상한 (시간)<input type="number" id="c${i}" min="0" max="30" step="0.5" value="${a.cap}"></label></div>`).join("");
+ACTS.forEach((a,i)=>{$("w"+i).addEventListener("input",e=>{a.w=+e.target.value;$("wv"+i).textContent=a.w;draw();});$("c"+i).addEventListener("input",e=>{a.cap=+e.target.value;draw();});});
+["total","study","rest"].forEach(k=>$(k).addEventListener("input",draw));
+draw();
+</script>

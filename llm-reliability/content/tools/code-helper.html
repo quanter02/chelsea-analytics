@@ -1,0 +1,162 @@
+<title>코테 막힘 도우미</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 레이아웃: 막혔을 때 순서대로 내려가는 한 줄기. 4단계 → 10분 타이머 → 힌트 요청 → 도구(에러·SQL·패턴) */
+:root{--ink:#15202b;--muted:#5a6672;--paper:#f3f5f7;--card:#fff;--line:#dce2e7;--blue:#2a63d4;--amber:#b9850f;--good:#148f68;--bad:#b4442f;--blue-soft:#e8eefb;--amber-soft:#f8efd9;--good-soft:#e2f4ed;
+--f-body:"Nanum Gothic","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#e6ebf0;--muted:#9aa6b2;--paper:#0f1419;--card:#171e26;--line:#29323d;--blue:#7ea4ff;--amber:#e3b54a;--good:#4fd1a1;--bad:#ff8a73;--blue-soft:#1a2740;--amber-soft:#2e2614;--good-soft:#12302a;color-scheme:dark}}
+:root[data-theme="dark"]{--ink:#e6ebf0;--muted:#9aa6b2;--paper:#0f1419;--card:#171e26;--line:#29323d;--blue:#7ea4ff;--amber:#e3b54a;--good:#4fd1a1;--bad:#ff8a73;--blue-soft:#1a2740;--amber-soft:#2e2614;--good-soft:#12302a;color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{max-width:820px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:26px}
+.brand{font-size:.85rem;color:var(--muted)}.brand b{color:var(--ink);font-weight:800}
+h1{font-size:clamp(1.5rem,3.6vw,1.9rem);margin:4px 0 6px;font-weight:800}
+h2{font-size:1.08rem;margin:0;font-weight:800}
+p{margin:0}.lead{color:var(--muted);max-width:62ch}.small{font-size:.83rem;color:var(--muted)}
+section{display:grid;gap:12px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:10px;min-width:0}
+.step{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
+.step .n{width:26px;height:26px;border-radius:50%;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center;font-family:var(--f-mono);font-size:.85rem}
+.step.ok .n{background:var(--good);color:#fff}
+.step b{display:block}
+textarea,input[type=text],select{font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);width:100%;box-sizing:border-box}
+textarea{min-height:56px;resize:vertical;font-size:.9rem}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border-radius:8px}
+.main{background:var(--blue);color:#fff;border:none;padding:8px 14px}
+.main:disabled{opacity:.45;cursor:not-allowed}
+.ghost{background:none;border:1px solid var(--line);color:var(--ink);padding:6px 12px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.clock{font-family:var(--f-mono);font-size:1.6rem;font-variant-numeric:tabular-nums}
+.hint{background:var(--amber-soft);border-radius:8px;padding:10px 12px;font-size:.92rem}
+pre{white-space:pre-wrap;font-family:var(--f-mono);font-size:.85rem;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px;margin:0;overflow-x:auto}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:560px){.grid2{grid-template-columns:1fr}}
+label{display:grid;gap:4px;font-size:.8rem;color:var(--muted);font-weight:700}
+.warn{color:var(--bad);font-size:.88rem}
+.ok{color:var(--good)}
+.pat{display:grid;gap:8px}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+summary{cursor:pointer;font-weight:700}
+details pre{margin-top:8px}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand"><b>셈법</b> · 코테 생각 로직 노트</div>
+    <h1>코테 막힘 도우미</h1>
+    <p class="lead">막혔을 때 위에서부터 순서대로 내려오세요. 혼자 10분이 지나야 힌트 요청 문구가 열립니다.</p>
+  </header>
+
+  <section>
+    <h2>1. 막혔을 때 4단계</h2>
+    <div class="box" id="steps"></div>
+  </section>
+
+  <section>
+    <h2>2. 혼자 10분</h2>
+    <div class="box">
+      <div class="row"><span class="clock" id="clock">10:00</span><button class="main" type="button" id="tStart">시작</button><button class="ghost" type="button" id="tReset">처음으로</button></div>
+      <p class="small" id="tMsg">4단계를 적으면서 10분을 버텨 보세요. 끝나면 아래 힌트 요청이 열립니다.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. 그래도 막히면: 힌트만 요청</h2>
+    <div class="box">
+      <p class="small">도움 받는 순서: 혼자 10분 → 에러 메시지 읽기 → <b>힌트만</b> → 정답 코드는 마지막. 통과하면 초기화하고 백지에서 다시 풉니다.</p>
+      <label for="probName">문제 이름<input type="text" id="probName" placeholder="예: 같은 숫자는 싫어"></label>
+      <button class="main" type="button" id="askBtn" disabled>힌트 요청 문구 만들기</button>
+      <pre id="askOut" hidden></pre>
+      <p class="small" id="askMsg"></p>
+    </div>
+  </section>
+
+  <section>
+    <h2>에러 해석기</h2>
+    <div class="box">
+      <label for="err">에러 메시지 붙여넣기<textarea id="err" placeholder="예: IndentationError: unexpected indent"></textarea></label>
+      <div id="errOut" class="hint">에러를 붙여넣으면 뜻과 볼 곳을 알려 줍니다.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>SQL 조립기: 문제 문장을 네 질문으로</h2>
+    <div class="box">
+      <div class="grid2">
+        <label for="q1">무엇을 보여줄까? (열)<input type="text" id="q1" placeholder="ANIMAL_ID"></label>
+        <label for="q2">어디에서? (테이블)<input type="text" id="q2" placeholder="ANIMAL_INS"></label>
+        <label for="q3">어떤 줄만? (조건)<input type="text" id="q3" placeholder="NAME = NULL"></label>
+        <div class="grid2">
+          <label for="q4">어떤 순서로? (기준 열)<input type="text" id="q4" placeholder="ANIMAL_ID"></label>
+          <label for="q5">방향<select id="q5"><option value="ASC">오름차순</option><option value="DESC">내림차순</option></select></label>
+        </div>
+      </div>
+      <pre id="sqlOut"></pre>
+      <p id="sqlWarn" class="warn" hidden></p>
+      <p class="small">테이블·열 이름은 문제에서 복사해 붙여넣으세요. 철자 실수가 가장 흔한 에러입니다.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>자주 나오는 패턴</h2>
+    <div class="pat" id="pats"></div>
+  </section>
+</div>
+
+<script>
+const STEPS=[
+ ["예시를 손으로 따라간다","입력을 하나씩 짚으며 표로 적기. 사람이 하는 순서가 곧 코드 순서","예: [1,1,3] → 1 넣기, 1 버리기, 3 넣기"],
+ ["작은 질문 하나로 줄인다","'지금 보는 값을 남길까, 버릴까?' 같은 한 문장","예: t초에 i번 신호등은 무슨 색?"],
+ ["무식한 방법부터","하나씩 다 해 보는 코드. 부분 점수도 빈칸보다 낫다","예: 이중 for로 전부 비교"],
+ ["언제 멈출지 정한다","반복 범위, 끝 조건, 빈 리스트 같은 예외","예: 반복 주기 = 최소공배수"]
+];
+const sb=document.getElementById("steps");
+sb.innerHTML=STEPS.map((s,i)=>`<div class="step" id="st${i}"><span class="n">${i+1}</span><div style="display:grid;gap:6px;min-width:0"><div><b>${s[0]}</b><span class="small">${s[1]}</span></div><label for="note${i}" class="small" style="font-weight:400">${s[2]}<textarea id="note${i}" placeholder="여기에 적기"></textarea></label></div></div>`).join("");
+document.querySelectorAll("#steps textarea").forEach((t,i)=>t.addEventListener("input",()=>document.getElementById("st"+i).classList.toggle("ok",t.value.trim().length>0)));
+let left=600,tm=null;const clock=document.getElementById("clock"),ask=document.getElementById("askBtn"),tMsg=document.getElementById("tMsg");
+const show=()=>clock.textContent=`${String(Math.floor(left/60)).padStart(2,"0")}:${String(left%60).padStart(2,"0")}`;
+document.getElementById("tStart").addEventListener("click",()=>{if(tm)return;tMsg.textContent="혼자 푸는 중입니다.";tm=setInterval(()=>{left--;show();if(left<=0){clearInterval(tm);tm=null;ask.disabled=false;tMsg.textContent="10분을 채웠습니다. 에러 메시지를 먼저 읽고, 그래도 막히면 힌트를 요청하세요.";}},1000);});
+document.getElementById("tReset").addEventListener("click",()=>{clearInterval(tm);tm=null;left=600;show();ask.disabled=true;tMsg.textContent="4단계를 적으면서 10분을 버텨 보세요. 끝나면 아래 힌트 요청이 열립니다.";});
+ask.addEventListener("click",()=>{
+  const name=document.getElementById("probName").value.trim()||"(문제 이름)";
+  const notes=STEPS.map((s,i)=>`${i+1}. ${s[0]}: ${document.getElementById("note"+i).value.trim()||"(못 적음)"}`).join("\n");
+  const txt=`코테 문제 "${name}"에서 막혔어. 정답 코드는 주지 말고, 다음 한 걸음만 힌트로 줘.\n내가 지금까지 생각한 것:\n${notes}\n혼자 10분 고민했어.`;
+  const o=document.getElementById("askOut");o.textContent=txt;o.hidden=false;
+  navigator.clipboard.writeText(txt).then(()=>document.getElementById("askMsg").textContent="복사했습니다. 대화창에 붙여 넣으세요.").catch(()=>document.getElementById("askMsg").textContent="위 문구를 직접 복사해 주세요.");
+});
+const ERR=[
+ [/IndentationError/i,"들여쓰기가 어긋났습니다","에러에 나온 줄 번호와 그 위 줄. 같은 블록은 같은 칸만큼(보통 4칸) 들여 씁니다. 탭과 스페이스를 섞지 마세요."],
+ [/SyntaxError/i,"문법이 틀렸습니다","줄 끝 콜론(:) 빠짐, 괄호·따옴표 짝, = 와 == 혼동"],
+ [/NameError/i,"정의하지 않은 이름을 썼습니다","변수 철자, 만들기 전에 쓰지 않았는지, 대소문자"],
+ [/IndexError/i,"리스트 범위를 벗어났습니다","빈 리스트에서 [-1]이나 [0]을 꺼내지 않았는지, range 끝 값"],
+ [/TypeError/i,"자료형이 맞지 않습니다","문자열 + 숫자, 리스트에 숫자 연산, 함수 인자 개수"],
+ [/KeyError/i,"딕셔너리에 없는 키입니다","d.get(키, 기본값)을 쓰거나 키가 있는지 먼저 확인"],
+ [/ZeroDivisionError/i,"0으로 나눴습니다","나누기 전에 0인지 확인"],
+ [/1064|syntax to use near/i,"SQL 문법·키워드 철자","near 뒤 단어와 줄 번호. SELECT·FROM·WHERE 순서, 쉼표"],
+ [/1146|doesn't exist/i,"SQL 테이블 이름 철자","따옴표 안 이름과 문제 설명의 테이블 이름 비교. 복사해서 붙여넣기"],
+ [/1054|Unknown column/i,"SQL 열 이름 철자","따옴표 안 이름과 표의 열 이름 비교"],
+ [/time ?out|시간 초과/i,"시간 초과","반복문 안에서 다시 반복하는지(이중 for), 리스트에서 in 검사를 반복하는지 → 집합(set)이나 딕셔너리"]
+];
+document.getElementById("err").addEventListener("input",e=>{const v=e.target.value;const out=document.getElementById("errOut");
+  if(!v.trim()){out.textContent="에러를 붙여넣으면 뜻과 볼 곳을 알려 줍니다.";return;}
+  const m=ERR.find(x=>x[0].test(v));const line=(v.match(/line (\d+)/i)||[])[1];
+  out.innerHTML=m?`<b>${m[1]}</b>${line?` (${line}번째 줄)`:""}<br>볼 곳: ${m[2]}`:"아는 유형이 아닙니다. 에러 마지막 줄의 영어 단어를 그대로 검색해 보세요. 에러는 한 번에 하나씩 나옵니다.";});
+const ids=["q1","q2","q3","q4","q5"];
+function sql(){const [a,b,c,d,e]=ids.map(i=>document.getElementById(i).value.trim());
+  let cond=c;const w=document.getElementById("sqlWarn");w.hidden=true;
+  if(/(=|!=|<>)\s*NULL/i.test(c)){cond=c.replace(/!=\s*NULL|<>\s*NULL/ig,"IS NOT NULL").replace(/=\s*NULL/ig,"IS NULL");w.textContent="NULL은 = 로 비교할 수 없어서 IS NULL / IS NOT NULL로 바꿨습니다.";w.hidden=false;}
+  const lines=[`SELECT ${a||"열"}`,`FROM ${b||"테이블"}`];if(cond)lines.push(`WHERE ${cond}`);if(d)lines.push(`ORDER BY ${d}${e==="DESC"?" DESC":""}`);
+  document.getElementById("sqlOut").textContent=lines.join("\n")+";";}
+ids.forEach(i=>document.getElementById(i).addEventListener("input",sql));sql();
+const PATS=[
+ ["앞의 값과 비교","같은 숫자는 싫어",`answer = []\nfor x in arr:\n    if len(answer) == 0 or answer[-1] != x:\n        answer.append(x)`],
+ ["합계·최댓값 누적","배열의 합, 최댓값",`total = 0\nbest = None\nfor x in arr:\n    total += x\n    if best is None or x > best:\n        best = x`],
+ ["개수 세기 (딕셔너리)","가장 많이 나온 값",`count = {}\nfor x in arr:\n    count[x] = count.get(x, 0) + 1`],
+ ["스택: 같으면 빼고 다르면 넣기","배열 만들기 6",`stk = []\nfor x in arr:\n    if stk and stk[-1] == x:\n        stk.pop()\n    else:\n        stk.append(x)`],
+ ["정렬한 뒤 처리","k번째 수",`for a in sorted(arr):\n    ...  # 작은 값부터 처리`],
+ ["반복 주기 (최소공배수)","노란불 신호등",`from math import lcm\nperiod = lcm(*cycles)  # 이 시간 안에서만 확인하면 됨`]
+];
+document.getElementById("pats").innerHTML=PATS.map(p=>`<details><summary>${p[0]} <span class="small">예: ${p[1]}</span></summary><pre>${p[2]}</pre></details>`).join("");
+show();
+</script>

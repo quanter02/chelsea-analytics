@@ -1,0 +1,128 @@
+<title>셈법 진로·자산 계산기</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 레이아웃: 위 = 경로 고르기, 왼쪽 = 가정 조절, 오른쪽 = 35·40세 결과. 숫자는 모두 가정에서 나온다는 표시를 결과 옆에 */
+:root{--ink:#15202b;--muted:#5a6672;--paper:#f3f5f7;--card:#fff;--line:#dce2e7;--blue:#2a63d4;--amber:#b9850f;--good:#148f68;--blue-soft:#e8eefb;--amber-soft:#f8efd9;
+--f-body:"Nanum Gothic","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#e6ebf0;--muted:#9aa6b2;--paper:#0f1419;--card:#171e26;--line:#29323d;--blue:#7ea4ff;--amber:#e3b54a;--good:#4fd1a1;--blue-soft:#1a2740;--amber-soft:#2e2614;color-scheme:dark}}
+:root[data-theme="dark"]{--ink:#e6ebf0;--muted:#9aa6b2;--paper:#0f1419;--card:#171e26;--line:#29323d;--blue:#7ea4ff;--amber:#e3b54a;--good:#4fd1a1;--blue-soft:#1a2740;--amber-soft:#2e2614;color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{max-width:980px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:22px}
+.brand{font-size:.85rem;color:var(--muted)}.brand b{color:var(--ink);font-weight:800}
+h1{font-size:clamp(1.5rem,3.6vw,1.9rem);margin:4px 0 6px;font-weight:800}
+h2{font-size:1.05rem;margin:0;font-weight:800}
+p{margin:0}.lead{color:var(--muted);max-width:64ch}.small{font-size:.83rem;color:var(--muted)}
+.paths{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.path{font:inherit;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;color:var(--ink);display:grid;gap:2px}
+.path span{font-size:.8rem;color:var(--muted)}
+.path[aria-pressed="true"]{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+.cols{display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:760px){.cols{grid-template-columns:1fr}}
+.box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:12px;min-width:0}
+label{display:grid;gap:4px;font-size:.8rem;color:var(--muted);font-weight:700}
+input[type=range]{width:100%;accent-color:var(--blue)}
+.rv{font-family:var(--f-mono);color:var(--ink);font-weight:500}
+button:focus-visible,input:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.res{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:480px){.res{grid-template-columns:1fr}}
+.age{background:var(--paper);border-radius:10px;padding:14px;display:grid;gap:6px;font-variant-numeric:tabular-nums}
+.age .big{font-size:1.6rem;font-weight:800}
+.row{display:flex;justify-content:space-between;gap:8px;font-size:.9rem}
+.row b{font-family:var(--f-mono);font-weight:500}
+.prob{color:var(--good)}
+.note{background:var(--amber-soft);border-radius:8px;padding:10px 12px;font-size:.9rem}
+table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:420px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line)}
+th{font-size:.76rem;color:var(--muted)}
+.scroll{overflow-x:auto}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand"><b>셈법</b> · 학생 버전 플랜 A + 진로 계산 (2026-10-16)</div>
+    <h1>진로·자산 계산기</h1>
+    <p class="lead">경로를 고르고 가정을 움직이면, 35세와 40세의 순자산 분포를 5,000번 무작위로 계산합니다. 월급과 저축만 계산하고, 창업 지분은 아래 표에 따로 정리했습니다.</p>
+  </header>
+
+  <section class="paths" aria-label="경로">
+    <button type="button" class="path" id="p0" data-i="0" aria-pressed="true"><b>삼성 SW (2027 하반기)</b><span>26세 입사, 초봉 6,000만원</span></button>
+    <button type="button" class="path" id="p1" data-i="1" aria-pressed="false"><b>아이젠 → 삼성</b><span>아이젠 2년 지원금 후 28세 입사</span></button>
+    <button type="button" class="path" id="p2" data-i="2" aria-pressed="false"><b>공기업</b><span>26세 입사, 초봉 4,200만원</span></button>
+    <button type="button" class="path" id="p3" data-i="3" aria-pressed="false"><b>중견·중소 IT</b><span>26세 입사, 초봉 3,800만원</span></button>
+  </section>
+
+  <div class="cols">
+    <div class="box" aria-label="가정">
+      <label for="start">입사 나이 <span class="rv" id="startv"></span><input type="range" id="start" min="25" max="32"></label>
+      <label for="pay">초봉 (세전, 성과급 포함) <span class="rv" id="payv"></span><input type="range" id="pay" min="3000" max="9000" step="100"></label>
+      <label for="g">연봉 인상률 <span class="rv" id="gv"></span><input type="range" id="g" min="0" max="10" step="0.5"></label>
+      <label for="save">세후 소득 중 저축 <span class="rv" id="savev"></span><input type="range" id="save" min="5" max="70" step="5"></label>
+      <label for="ret">투자 기대 수익률 (연) <span class="rv" id="retv"></span><input type="range" id="ret" min="0" max="12" step="0.5"></label>
+      <label for="vol">투자 변동성 <span class="rv" id="volv"></span><input type="range" id="vol" min="0" max="35" step="1"></label>
+      <label for="init">지금 자산 <span class="rv" id="initv"></span><input type="range" id="init" min="0" max="10000" step="100"></label>
+      <label for="pre">입사 전 연간 수입 (아이젠 지원금 등) <span class="rv" id="prev"></span><input type="range" id="pre" min="0" max="3600" step="100"></label>
+      <p class="small">기본값: 세후 80%, 지금 만 24세, 지금 자산은 예시값입니다. 변동성 15%는 여러 종목에 나눈 포트폴리오, 30%는 두 종목 집중 정도입니다.</p>
+    </div>
+
+    <div style="display:grid;gap:14px;min-width:0">
+      <div class="res" id="res"></div>
+      <div class="note" id="note"></div>
+      <div class="box">
+        <h2>창업 지분은 따로 (제 추정, 2026-10-16 계산)</h2>
+        <div class="scroll"><table>
+          <thead><tr><th>길</th><th>창업 시점</th><th>40세까지 30억 이상</th><th>40세까지 10억 이상</th></tr></thead>
+          <tbody>
+            <tr><td>아이젠 → 창업</td><td>26세 전후</td><td>약 5~8%</td><td>약 20~30%</td></tr>
+            <tr><td>삼성 5~8년 → 창업 (벤엄의 길)</td><td>31~34세</td><td>약 3~6%</td><td>약 30~40%</td></tr>
+            <tr><td>월급만</td><td>-</td><td>거의 0%</td><td>위 계산 참고</td></tr>
+          </tbody>
+        </table></div>
+        <p class="small">창업 확률은 국내 신생기업 5년 생존율(약 30~35%)과 판단을 섞은 대략치입니다. 2027년 여름 스카우트 채점과 첫 유료 고객이 생기면 크게 달라집니다.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const PATHS=[
+ {start:26,pay:6000,g:6,pre:0},
+ {start:28,pay:6000,g:6,pre:3600},
+ {start:26,pay:4200,g:4,pre:0},
+ {start:26,pay:3800,g:5,pre:0}
+];
+const S={start:26,pay:6000,g:6,save:30,ret:6,vol:15,init:1000,pre:0};
+const NOW=24;
+function gauss(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function sim(){
+  const N=5000,res={35:[],40:[]};const mu=Math.log(1+S.ret/100)-(S.vol/100)**2/2,sd=S.vol/100;
+  for(let n=0;n<N;n++){let w=S.init*1e4;
+    for(let age=NOW;age<40;age++){
+      const r=Math.exp(mu+sd*gauss());
+      const inc=age>=S.start?S.pay*1e4*Math.pow(1+S.g/100,age-S.start)*0.8*S.save/100:(S.pre*1e4*0.5);
+      w=w*r+inc;
+      if(age+1===35)res[35].push(w);
+    }
+    res[40].push(w);}
+  return res;
+}
+const q=(a,p)=>{const s=[...a].sort((x,y)=>x-y);return s[Math.floor(p*(s.length-1))];};
+const eok=v=>(v/1e8).toFixed(1)+"억";
+function draw(){
+  $("startv").textContent=S.start+"세";$("payv").textContent=S.pay.toLocaleString()+"만원";$("gv").textContent=S.g+"%";$("savev").textContent=S.save+"%";
+  $("retv").textContent=S.ret+"%";$("volv").textContent=S.vol+"%";$("initv").textContent=S.init.toLocaleString()+"만원";$("prev").textContent=S.pre.toLocaleString()+"만원";
+  const r=sim();
+  $("res").innerHTML=[35,40].map(a=>{const x=r[a];const p10=x.filter(v=>v>=1e9).length/x.length,p30=x.filter(v=>v>=3e9).length/x.length;
+    return `<div class="age"><span class="small">${a}세 순자산 (중앙값)</span><span class="big">${eok(q(x,.5))}</span>
+      <div class="row"><span>나쁜 쪽 10%</span><b>${eok(q(x,.1))}</b></div><div class="row"><span>좋은 쪽 10%</span><b>${eok(q(x,.9))}</b></div>
+      <div class="row"><span>10억 이상</span><b class="prob">${(p10*100).toFixed(0)}%</b></div><div class="row"><span>30억 이상</span><b class="prob">${(p30*100).toFixed(1)}%</b></div></div>`;}).join("");
+  const m40=q(r[40],.5);
+  $("note").innerHTML=`가장 크게 바꾸는 손잡이는 <b>저축률</b>과 <b>초봉</b>입니다. 월급만으로 30억에 닿는 경우는 거의 없고, "빠른 부자"는 지분(창업)에서 나옵니다. 입사 전 수입은 절반을 저축한다고 계산했습니다.`;
+}
+const keys=["start","pay","g","save","ret","vol","init","pre"];
+function bind(){keys.forEach(k=>$(k).value=S[k]);draw();}
+keys.forEach(k=>$(k).addEventListener("input",e=>{S[k]=+e.target.value;document.querySelectorAll(".path").forEach(p=>p.setAttribute("aria-pressed","false"));draw();}));
+document.querySelectorAll(".path").forEach(b=>b.addEventListener("click",()=>{Object.assign(S,PATHS[+b.dataset.i]);document.querySelectorAll(".path").forEach(p=>p.setAttribute("aria-pressed",p===b));bind();}));
+bind();
+</script>

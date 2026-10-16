@@ -1,0 +1,129 @@
+<title>셈법 영입 판단기</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 레이아웃: 왼쪽 입력, 오른쪽 판정(좁으면 위아래). 판정마다 근거 숫자를 바로 옆에 */
+:root{--ink:#15202b;--muted:#5a6672;--paper:#f3f5f7;--card:#fff;--line:#dce2e7;--blue:#2a63d4;--amber:#b9850f;--good:#148f68;--bad:#b4442f;--blue-soft:#e8eefb;--amber-soft:#f8efd9;--good-soft:#e2f4ed;--bad-soft:#f9e6e2;
+--f-body:"Nanum Gothic","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#e6ebf0;--muted:#9aa6b2;--paper:#0f1419;--card:#171e26;--line:#29323d;--blue:#7ea4ff;--amber:#e3b54a;--good:#4fd1a1;--bad:#ff8a73;--blue-soft:#1a2740;--amber-soft:#2e2614;--good-soft:#12302a;--bad-soft:#3a1f1a;color-scheme:dark}}
+:root[data-theme="dark"]{--ink:#e6ebf0;--muted:#9aa6b2;--paper:#0f1419;--card:#171e26;--line:#29323d;--blue:#7ea4ff;--amber:#e3b54a;--good:#4fd1a1;--bad:#ff8a73;--blue-soft:#1a2740;--amber-soft:#2e2614;--good-soft:#12302a;--bad-soft:#3a1f1a;color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{max-width:980px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:22px}
+.brand{font-size:.85rem;color:var(--muted)}.brand b{color:var(--ink);font-weight:800}
+h1{font-size:clamp(1.5rem,3.6vw,1.9rem);margin:4px 0 6px;font-weight:800}
+h2{font-size:1.05rem;margin:0;font-weight:800}
+p{margin:0}.lead{color:var(--muted);max-width:64ch}.small{font-size:.83rem;color:var(--muted)}
+.cols{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:760px){.cols{grid-template-columns:1fr}}
+.box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:12px;min-width:0}
+label{display:grid;gap:4px;font-size:.8rem;color:var(--muted);font-weight:700}
+input[type=number],select{font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);width:100%;box-sizing:border-box}
+input[type=range]{width:100%;accent-color:var(--blue)}
+.rv{font-family:var(--f-mono);color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:.85rem;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:3px 11px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.verdict{border-radius:10px;padding:14px 16px;display:grid;gap:4px}
+.verdict.g{background:var(--good-soft)} .verdict.m{background:var(--amber-soft)} .verdict.b{background:var(--bad-soft)}
+.verdict b{font-size:1.15rem}
+.chk{display:grid;grid-template-columns:26px 1fr;gap:10px;border-top:1px solid var(--line);padding-top:10px}
+.chk:first-child{border-top:none;padding-top:0}
+.ic{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.8rem;font-weight:800;color:#fff}
+.ic.g{background:var(--good)} .ic.m{background:var(--amber)} .ic.b{background:var(--bad)}
+.ev{font-size:.82rem;color:var(--muted)}
+.presets{display:flex;gap:8px;flex-wrap:wrap}
+.pbtn{font:inherit;font-size:.85rem;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:5px 11px;cursor:pointer}
+footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand"><b>셈법</b> · 나의 구단 성공론 + 과거 검증 결과</div>
+    <h1>영입 판단기</h1>
+    <p class="lead">영입하려는 선수의 조건을 넣으면, 셈법의 구단 원칙과 2017/18~2025/26 검증 결과로 판정합니다. 역할·가격 백분위는 "스카우트 찾기"에서 확인할 수 있습니다.</p>
+    <div class="presets" style="margin-top:10px"><span class="small">예시로 채우기:</span>
+      <button type="button" class="pbtn" id="ex1">싼 베테랑 미드필더</button>
+      <button type="button" class="pbtn" id="ex2">비싼 31세 공격수</button>
+      <button type="button" class="pbtn" id="ex3">20세 유망주 되팔기</button>
+    </div>
+  </header>
+
+  <div class="cols">
+    <div class="box" aria-label="선수 조건">
+      <label for="age">나이 (만)<input type="number" id="age" min="16" max="40"></label>
+      <div><span class="small" style="font-weight:700">포지션</span>
+        <div class="chips" id="pos"><button type="button" class="chip" id="p-FW" data-v="FW">공격수</button><button type="button" class="chip" id="p-MF" data-v="MF">미드필더</button><button type="button" class="chip" id="p-DF" data-v="DF">수비수</button></div></div>
+      <label for="min">지난 시즌 리그 출전 (분)<input type="number" id="min" min="0" max="3500" step="100"></label>
+      <label for="role">역할 백분위 <span class="rv" id="rolev"></span><input type="range" id="role" min="0" max="100"></label>
+      <label for="val">시장가치 백분위 (같은 포지션 안에서) <span class="rv" id="valv"></span><input type="range" id="val" min="0" max="100"></label>
+      <label for="con">남은 계약 (년)<select id="con"><option value="0.5">1년 미만</option><option value="1">1년</option><option value="2">2년</option><option value="3">3년 이상</option></select></label>
+      <div><span class="small" style="font-weight:700">영입 목적</span>
+        <div class="chips" id="goal"><button type="button" class="chip" id="g-win" data-v="win">성적 유지 (1~2시즌)</button><button type="button" class="chip" id="g-sell" data-v="sell">키워서 되팔기</button></div></div>
+    </div>
+
+    <div style="display:grid;gap:14px;min-width:0">
+      <div class="verdict" id="verdict"></div>
+      <div class="box" id="checks"></div>
+    </div>
+  </div>
+
+  <footer>근거: understat·트랜스퍼마크트 기반 셈법 검증(장부 #869 등), fbref 기반 노화 곡선·스카우트 v0. 시장가치는 추정치이고 연봉은 반영하지 않았습니다. 과거 평균이 개별 선수를 보장하지 않습니다.</footer>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const S={age:30,pos:"MF",min:2400,role:85,val:35,con:"1",goal:"win"};
+function bind(){["age","min"].forEach(k=>$(k).value=S[k]);$("role").value=S.role;$("val").value=S.val;$("con").value=S.con;
+  document.querySelectorAll("#pos .chip").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===S.pos));
+  document.querySelectorAll("#goal .chip").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===S.goal));judge();}
+["age","min","role","val","con"].forEach(k=>$(k).addEventListener("input",()=>{S[k]=k==="con"?$(k).value:+$(k).value;judge();}));
+document.querySelectorAll("#pos .chip").forEach(b=>b.addEventListener("click",()=>{S.pos=b.dataset.v;bind();}));
+document.querySelectorAll("#goal .chip").forEach(b=>b.addEventListener("click",()=>{S.goal=b.dataset.v;bind();}));
+$("ex1").addEventListener("click",()=>{Object.assign(S,{age:30,pos:"MF",min:2700,role:88,val:30,con:"1",goal:"win"});bind();});
+$("ex2").addEventListener("click",()=>{Object.assign(S,{age:31,pos:"FW",min:2100,role:80,val:85,con:"3",goal:"win"});bind();});
+$("ex3").addEventListener("click",()=>{Object.assign(S,{age:20,pos:"MF",min:1800,role:78,val:40,con:"3",goal:"sell"});bind();});
+function judge(){
+  $("rolev").textContent=S.role;$("valv").textContent=S.val;
+  const C=[];const add=(lv,t,e)=>C.push([lv,t,e]);
+  // 출전
+  if(S.min>=1500) add("g","지난 시즌 1500분 이상 뛰었습니다","검증은 1500분 이상 선수만 대상입니다. 주전으로 뛴 기록이 있어야 다음 시즌 예측이 의미 있습니다.");
+  else add("b","지난 시즌 1500분 미만입니다","출전이 적으면 역할 지표가 흔들려 판단 근거가 약합니다.");
+  // 나이와 목적
+  if(S.goal==="win"){
+    if(S.age>=29&&S.age<=31) add("g",`${S.age}세: 셈법이 찾은 '싼 베테랑' 나이대입니다`,"같은 가격대에서 29~31세가 25~28세보다 다음 시즌 '좋은 시즌'(1500분+ & 역할 상위 절반) 비율이 +7.1%p 높았습니다 (95% +4.2 ~ +9.9). 시장이 나이를 과하게 깎는다는 뜻입니다.");
+    else if(S.age>=32) add("m",`${S.age}세: 출전이 먼저 줄어드는 나이입니다`,"31~33세는 다음 시즌 출전 유지율이 60% (25~29세는 74%), 90분당 공격 기여는 약 9% 줄었습니다. 1시즌 계약이 안전합니다.");
+    else if(S.age>=25) add("m",`${S.age}세: 전성기 나이라 가격 할인이 적습니다`,"25~28세는 시장이 제값을 매기는 경우가 많아 '싸게 사기'의 여지가 작습니다.");
+    else add("m",`${S.age}세: 성적 유지용으로는 변동이 큽니다`,"어린 선수는 성장 여지가 크지만 다음 시즌 기여는 들쭉날쭉합니다.");
+  }else{
+    if(S.age<=22) add("m",`${S.age}세 되팔기: 5대 리그 안에서는 차익 근거를 찾지 못했습니다`,"같은 가격대에서 역할 좋은 유망주의 2년 뒤 가치 상승 약 +6% (95% −3% ~ +16%, 불확실), 3년 안 2배 이상 판매 11% vs 18% (불확실). 차익은 시장이 덜 보는 리그(남미·하부 리그)에서 나올 가능성이 큽니다.");
+    else add("b",`${S.age}세: 되팔기에는 나이가 많습니다`,"되팔기 가치는 나이가 들수록 빠르게 줄어듭니다. 이 나이라면 성적 유지 목적이 맞습니다.");
+  }
+  // 역할
+  if(S.role>=75) add("g",`역할 백분위 ${S.role}: 상위 25% 안입니다`,"셈법 명단 조건(75 이상)을 채웁니다. 스카우트 v0에서 이 조건의 베테랑은 다음 시즌 1500분+ 비율이 61% vs 42%였습니다.");
+  else if(S.role>=50) add("m",`역할 백분위 ${S.role}: 평균 위지만 명단 기준(75)에는 못 미칩니다`,"평범한 역할의 베테랑은 다음 시즌 출전이 기준선 수준입니다.");
+  else add("b",`역할 백분위 ${S.role}: 하위권입니다`,"가격이 싸도 쓸모가 작을 수 있습니다.");
+  // 가격
+  if(S.val<=50) add("g",`시장가치 백분위 ${S.val}: 같은 포지션 하위 절반입니다`,"'싸다'의 기준을 채웁니다. 가성비(역할 − 가격) = "+(S.role-S.val>0?"+":"")+(S.role-S.val)+".");
+  else add("m",`시장가치 백분위 ${S.val}: 비싼 편입니다`,"가성비(역할 − 가격) = "+(S.role-S.val>0?"+":"")+(S.role-S.val)+". 가격에 이미 실력이 반영돼 있을 가능성이 큽니다.");
+  // 포지션 (원칙)
+  if(S.goal==="win"&&S.age>=29){
+    if(S.pos==="MF") add("g","미드필더: 경기 조율은 경험이 중요하다는 원칙과 맞습니다","포지션별 노화 검증(P1~P3)은 모두 '불확실'이라, 데이터로 확정된 차이는 아직 없습니다. 원칙으로 판단한 부분입니다.");
+    else if(S.pos==="DF") add("g","수비수: 경험 많은 수비수를 싸게 1~2시즌 쓰는 원칙과 맞습니다","셈법의 수비수 역할 지표는 수비가 아니라 공격 전개 관여입니다. 수비 능력은 따로 봐야 합니다.");
+    else add("m","공격수: 활동량이 많은 포지션이라 나이에 약할 수 있습니다","원칙상 주의할 포지션입니다. 데이터상 포지션 차이는 아직 '불확실'입니다.");
+  }
+  // 계약
+  const con=+S.con;
+  if(con<=1) add("g",con<1?"계약 1년 미만: 이적료 없이 또는 아주 싸게 데려올 수 있습니다":"계약 1년 남음: 이적료 협상에서 유리합니다","계약이 끝나 가는 선수는 원 소속팀이 팔 수밖에 없는 처지입니다.");
+  else add("m",`계약 ${con>=3?"3년 이상":con+"년"} 남음: 이적료를 내야 합니다`,"가격 백분위가 낮아도 실제 이적료는 계약 기간에 따라 올라갑니다.");
+  if(S.goal==="win"&&S.age>=29) add("m","2시즌 계획은 신중하게","'2시즌 뒤에도 1500분+'는 검증에서 '불확실'이었습니다. 1+1년(옵션) 같은 계약이 원칙(최소 2시즌 기회)과 위험 관리를 함께 맞춥니다.");
+  const g=C.filter(c=>c[0]==="g").length,b=C.filter(c=>c[0]==="b").length;
+  const meetsList=S.goal==="win"&&S.min>=1500&&S.age>=29&&S.age<=31&&S.role>=75&&S.val<=50;
+  const v=$("verdict");
+  if(meetsList){v.className="verdict g";v.innerHTML=`<b>셈법 명단 조건을 모두 채웁니다</b><span>가격에 비해 제 몫을 할 가능성이 높은 유형입니다. 과거 검증에서 근거가 가장 강한 조합입니다.</span>`;}
+  else if(b===0&&g>=3){v.className="verdict m";v.innerHTML=`<b>조건부 추천</b><span>큰 문제는 없지만 명단 조건 중 일부가 빠졌습니다. 아래 주황 항목을 확인하세요.</span>`;}
+  else {v.className="verdict b";v.innerHTML=`<b>근거가 약합니다</b><span>셈법 검증 결과로는 이 영입을 뒷받침하기 어렵습니다. 아래 빨간 항목이 이유입니다.</span>`;}
+  $("checks").innerHTML=C.map(c=>`<div class="chk"><span class="ic ${c[0]}">${c[0]==="g"?"✓":c[0]==="m"?"!":"✕"}</span><div><b>${c[1]}</b><div class="ev">${c[2]}</div></div></div>`).join("");
+}
+bind();
+</script>
