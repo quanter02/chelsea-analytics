@@ -1,0 +1,181 @@
+<title>셈법 스카우트 찾기</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 레이아웃: 위 = 빠른 시작 버튼, 가운데 = 조건 패널, 아래 = 결과 표. 셈법 브랜드 색 그대로 */
+:root{
+  --ink:#15202b; --muted:#5a6672; --paper:#f3f5f7; --card:#ffffff; --line:#dce2e7;
+  --blue:#2a63d4; --amber:#b9850f; --good:#148f68; --bad:#b4442f; --blue-soft:#e8eefb; --amber-soft:#f8efd9; --good-soft:#e2f4ed;
+  --f-body:"Nanum Gothic","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --ink:#e6ebf0; --muted:#9aa6b2; --paper:#0f1419; --card:#171e26; --line:#29323d;
+  --blue:#7ea4ff; --amber:#e3b54a; --good:#4fd1a1; --bad:#ff8a73; --blue-soft:#1a2740; --amber-soft:#2e2614; --good-soft:#12302a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --ink:#e6ebf0; --muted:#9aa6b2; --paper:#0f1419; --card:#171e26; --line:#29323d;
+  --blue:#7ea4ff; --amber:#e3b54a; --good:#4fd1a1; --bad:#ff8a73; --blue-soft:#1a2740; --amber-soft:#2e2614; --good-soft:#12302a; color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{max-width:1000px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:24px}
+.brand{font-size:.85rem;color:var(--muted)} .brand b{color:var(--ink);font-weight:800}
+h1{font-size:clamp(1.5rem,3.6vw,2rem);margin:4px 0 6px;font-weight:800;text-wrap:balance}
+h2{font-size:1rem;margin:0;font-weight:800}
+p{margin:0}
+.lead{color:var(--muted);max-width:64ch}
+.presets{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.preset{font:inherit;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;color:var(--ink);display:grid;gap:2px}
+.preset b{font-size:.98rem}
+.preset span{font-size:.82rem;color:var(--muted)}
+.preset[aria-pressed="true"]{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.field{display:grid;gap:6px;min-width:0}
+.field>label,.field>.lbl{font-size:.8rem;color:var(--muted);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:.85rem;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:3px 11px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+select,input[type=range]{font:inherit;width:100%}
+select{padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.rangeval{font-family:var(--f-mono);font-size:.85rem}
+.check{display:flex;gap:8px;align-items:center;font-size:.9rem}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.count{font-weight:800}
+.reset{font:inherit;font-size:.85rem;background:none;border:1px solid var(--line);border-radius:8px;padding:5px 12px;color:var(--ink);cursor:pointer}
+.scroll{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:760px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:.76rem;color:var(--muted);font-weight:700}
+td.num,th.num{text-align:right}
+.pos{font-family:var(--f-mono);font-size:.78rem;padding:1px 7px;border-radius:5px;background:var(--blue-soft);color:var(--blue)}
+.pick{font-size:.72rem;padding:1px 7px;border-radius:99px;background:var(--good-soft);color:var(--good);margin-left:6px}
+.free{font-size:.72rem;padding:1px 7px;border-radius:99px;background:var(--amber-soft);color:var(--amber);margin-left:6px}
+.vs{font-family:var(--f-mono);font-weight:500}
+.vs.up{color:var(--good)} .vs.down{color:var(--bad)}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+summary{cursor:pointer;font-weight:700}
+details ul{margin:10px 0 0;padding-left:1.2em} details li{margin-bottom:4px}
+.small{font-size:.82rem;color:var(--muted)}
+footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand"><b>셈법</b> · 미리 적고, 채점까지 공개합니다</div>
+    <h1>스카우트 찾기: 가격에 비해 제 몫을 하는 선수</h1>
+    <p class="lead">유럽 5대 리그 2025/26 시즌 1500분 이상 뛴 선수 중에서 조건에 맞는 후보를 찾습니다. 아래 빠른 시작을 누르거나, 조건을 직접 바꿔 보세요.</p>
+  </header>
+
+  <section class="presets" aria-label="빠른 시작">
+    <button type="button" class="preset" id="p-vet" data-p="vet" aria-pressed="true"><b>싼 베테랑</b><span>29~31세, €10m 이하, 가성비 순</span></button>
+    <button type="button" class="preset" id="p-free" data-p="free" aria-pressed="false"><b>내년 여름 자유계약 후보</b><span>계약 2027년 6월 이전 만료, 역할 순</span></button>
+    <button type="button" class="preset" id="p-mf" data-p="mf" aria-pressed="false"><b>경기 조율형 미드필더</b><span>미드필더, 28세 이상, 역할 순</span></button>
+    <button type="button" class="preset" id="p-young" data-p="young" aria-pressed="false"><b>저평가 유망주</b><span>22세 이하, 가성비 순</span></button>
+  </section>
+
+  <section class="panel" aria-label="조건">
+    <div class="grid">
+      <div class="field"><span class="lbl">포지션</span>
+        <div class="chips" id="pos">
+          <button type="button" class="chip" id="pos-FW" data-v="FW" aria-pressed="true">공격수</button>
+          <button type="button" class="chip" id="pos-MF" data-v="MF" aria-pressed="true">미드필더</button>
+          <button type="button" class="chip" id="pos-DF" data-v="DF" aria-pressed="true">수비수</button>
+        </div>
+      </div>
+      <div class="field"><span class="lbl">리그</span>
+        <div class="chips" id="lg">
+          <button type="button" class="chip" id="lg-1" data-v="잉글랜드" aria-pressed="true">잉글랜드</button>
+          <button type="button" class="chip" id="lg-2" data-v="스페인" aria-pressed="true">스페인</button>
+          <button type="button" class="chip" id="lg-3" data-v="독일" aria-pressed="true">독일</button>
+          <button type="button" class="chip" id="lg-4" data-v="이탈리아" aria-pressed="true">이탈리아</button>
+          <button type="button" class="chip" id="lg-5" data-v="프랑스" aria-pressed="true">프랑스</button>
+        </div>
+      </div>
+      <div class="field"><label for="amin">나이</label>
+        <div style="display:flex;gap:8px;align-items:center"><select id="amin"></select><span>~</span><select id="amax"></select></div>
+      </div>
+      <div class="field"><label for="vmax">최대 시장가치 <span class="rangeval" id="vmaxv"></span></label>
+        <input type="range" id="vmax" min="0" max="10" step="1">
+      </div>
+      <div class="field"><label for="sort">정렬</label>
+        <select id="sort">
+          <option value="vs">가성비 높은 순</option>
+          <option value="role">역할 백분위 높은 순</option>
+          <option value="price">시장가치 낮은 순</option>
+          <option value="age">나이 많은 순</option>
+        </select>
+      </div>
+      <div class="field"><span class="lbl">계약</span>
+        <label class="check"><input type="checkbox" id="free"> 2027년 6월까지 만료되는 선수만</label>
+        <label class="check"><input type="checkbox" id="picks"> 셈법 등록 명단만</label>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:grid;gap:10px">
+    <div class="bar"><span><span class="count" id="count"></span> <span class="small" id="countnote"></span></span><button type="button" class="reset" id="reset">조건 처음으로</button></div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>선수</th><th>나이</th><th>포지션</th><th>소속</th><th class="num">출전(분)</th><th class="num">시장가치</th><th>계약 만료</th><th class="num">역할 백분위</th><th class="num">가성비</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <details>
+    <summary>숫자 읽는 법</summary>
+    <ul>
+      <li><b>역할 백분위:</b> 같은 시즌, 같은 포지션에서 1500분 이상 뛴 선수 중 몇 등인지(100이 최고). 공격수는 90분당 기대득점+기대도움, 미드필더·수비수는 90분당 공격 전개 관여로 잽니다.</li>
+      <li><b>가성비:</b> 역할 백분위 − 시장가치 백분위. <span class="vs up">+40</span>이면 역할은 상위권인데 가격은 그보다 40계단 아래라는 뜻입니다. 음수면 가격에 비해 역할이 작습니다.</li>
+      <li><b>셈법 등록 명단:</b> 2026-10-15 해시 장부에 등록하고 2027년 여름에 채점할 17명입니다.</li>
+      <li><b>근거:</b> 2017/18~2024/25 검증에서 같은 가격대의 29~31세가 25~28세보다 다음 시즌 "좋은 시즌" 비율이 7.1%p 높았습니다(95% 범위 +4.2 ~ +9.9).</li>
+    </ul>
+  </details>
+
+  <footer>
+    자료: understat (출전·기대득점), transfermarkt-datasets (생년월일·시장가치·계약, 2026년 7월 스냅샷). 시장가치는 추정치이고 실제 이적료가 아닙니다. 수비수는 수비 기록이 아니라 공격 전개 관여로 잽니다. 연구용이며 투자·베팅 권유가 아닙니다.
+  </footer>
+</div>
+
+<script>
+const D=/*DATA*/[];
+const VSTEPS=[1,2,3,5,7,10,15,20,30,50,999];
+const $=id=>document.getElementById(id);
+const amin=$("amin"),amax=$("amax"),vmax=$("vmax"),sort=$("sort"),free=$("free"),picks=$("picks");
+for(let a=17;a<=38;a++){amin.add(new Option(a+"세",a));amax.add(new Option(a+"세",a));}
+const on=g=>[...document.querySelectorAll(`#${g} .chip`)].filter(b=>b.getAttribute("aria-pressed")==="true").map(b=>b.dataset.v);
+document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")!=="true");clearPreset();draw();}));
+[amin,amax,vmax,sort,free,picks].forEach(el=>el.addEventListener("input",()=>{clearPreset();draw();}));
+function setChips(g,vals){document.querySelectorAll(`#${g} .chip`).forEach(b=>b.setAttribute("aria-pressed",vals.includes(b.dataset.v)));}
+function clearPreset(){document.querySelectorAll(".preset").forEach(p=>p.setAttribute("aria-pressed","false"));}
+const PRE={
+  vet:{pos:["FW","MF","DF"],a:[29,31],v:5,s:"vs",f:false},
+  free:{pos:["FW","MF","DF"],a:[17,38],v:10,s:"role",f:true},
+  mf:{pos:["MF"],a:[28,38],v:10,s:"role",f:false},
+  young:{pos:["FW","MF","DF"],a:[17,22],v:10,s:"vs",f:false}
+};
+function apply(k){const p=PRE[k];setChips("pos",p.pos);setChips("lg",["잉글랜드","스페인","독일","이탈리아","프랑스"]);
+  amin.value=p.a[0];amax.value=p.a[1];vmax.value=p.v;sort.value=p.s;free.checked=p.f;picks.checked=false;
+  document.querySelectorAll(".preset").forEach(b=>b.setAttribute("aria-pressed",b.dataset.p===k));draw();}
+document.querySelectorAll(".preset").forEach(b=>b.addEventListener("click",()=>apply(b.dataset.p)));
+$("reset").addEventListener("click",()=>apply("vet"));
+function draw(){
+  const vm=VSTEPS[+vmax.value]; $("vmaxv").textContent=vm>=999?"제한 없음":"€"+vm+"m 이하";
+  const P=on("pos"),L=on("lg"),lo=+amin.value,hi=+amax.value;
+  let r=D.filter(d=>P.includes(d[2])&&L.includes(d[4])&&d[1]>=lo&&d[1]<=hi&&d[6]<=vm&&(!free.checked||(d[7]&&d[7]<="2027-06"))&&(!picks.checked||d[10]));
+  const key={vs:d=>-d[9],role:d=>-d[8],price:d=>d[6],age:d=>-d[1]}[sort.value];
+  r.sort((a,b)=>key(a)-key(b)||b[8]-a[8]);
+  $("count").textContent=`${r.length}명`;
+  $("countnote").textContent=r.length>100?"(위에서 100명만 표시)":"";
+  const tb=$("rows");
+  if(!r.length){tb.innerHTML=`<tr><td colspan="9" class="empty">조건에 맞는 선수가 없습니다. 나이 범위나 최대 시장가치를 넓혀 보세요.</td></tr>`;return;}
+  tb.innerHTML=r.slice(0,100).map(d=>{
+    const fr=d[7]&&d[7]<="2027-06"?'<span class="free">이적료 없이 가능</span>':"";
+    const pk=d[10]?'<span class="pick">셈법 명단</span>':"";
+    const vs=d[9]>0?`<span class="vs up">+${d[9]}</span>`:`<span class="vs down">${d[9]}</span>`;
+    return `<tr><td>${d[0]}${pk}</td><td>${d[1]}</td><td><span class="pos">${d[2]}</span></td><td>${d[3]} <span class="small">(${d[4]})</span></td><td class="num">${d[5].toLocaleString()}</td><td class="num">€${d[6]<1?d[6].toFixed(2):d[6].toFixed(1)}m</td><td>${d[7]||"미확인"}${fr}</td><td class="num">${d[8]}</td><td class="num">${vs}</td></tr>`;
+  }).join("");
+}
+apply("vet");
+</script>
